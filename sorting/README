@@ -3,3 +3,5 @@ The original inspiration comes from a visualizing soring website: http://jsdo.it
 Furthermore, despite all of the complexity discussion in the textbook, I found the Quick3 is the fastest algorithm given the pseudo-random inputs generated from the same block of code.
 
 For one million random input and runing in the same computer, the heap sort takes about 0.55s; shell sort takes about 0.64s; quick sort takes about 1.5s; and quick sort with 3-way partition takes about 0.16s.
+
+BY THE WAY, the python file is not written by me. It visualize all of the sorting algorithm in a fancinating way. So, I put it here. Just for further looking up.
