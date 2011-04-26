@@ -1,0 +1,5 @@
+The original inspiration comes from a visualizing soring website: http://jsdo.it/norahiko/oxIy/fullscreen. Digging deeper, there is another more comprehensive webpage introducing all kinds of sorting algorithm (http://coolshell.cn/articles/399.html). Of course, the wikipidia (http://en.wikipedia.org/wiki/Sorting_algorithm#Comparison_of_algorithms) is always a right place to go.
+
+Furthermore, despite all of the complexity discussion in the textbook, I found the Quick3 is the fastest algorithm given the pseudo-random inputs generated from the same block of code.
+
+For one million random input and runing in the same computer, the heap sort takes about 0.55s; shell sort takes about 0.64s; quick sort takes about 1.5s; and quick sort with 3-way partition takes about 0.16s.
