@@ -15,8 +15,7 @@
 
 
 (ns
-  ^{:author "Jeffrey Straszheim",
-     :doc "A library to support a dataflow model of state"}
+  ^{:doc "A library to support a dataflow model of state"}
   clojure.contrib.dataflow
   (:use [clojure.set :only (union intersection difference)])
   (:use [clojure.contrib.graph :only (directed-graph
