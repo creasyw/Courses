@@ -43,6 +43,7 @@ int main(int argc, char *argv[]){
 		line++;
 	}
 
+	free(root);
 	fclose(fp);
 	return 0;
 }
@@ -71,6 +72,8 @@ int calculate(struct node *n){
 		default:
 			return 0;
 	}
+	free(n->rc);
+	free(n->lc);
 	return 1;
 }
 
