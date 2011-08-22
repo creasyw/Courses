@@ -59,5 +59,3 @@ public class WordTypeCount
 		new WordTypeCount();
 	}
 }
-
-
