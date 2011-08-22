@@ -60,8 +60,11 @@ public class ListTest{
 	}
 
 	private void printReversedList(List<String> list){
+		// add index to set the iterator.
+		// This might be another way to achieve RANDOM ACCESS
 		ListIterator<String> iterator = list.listIterator(list.size());
 		System.out.println("\nReversed list:");
+		// using .hasPrevious and .previous are exactly as using .hasNext and .next 
 		while(iterator.hasPrevious())
 			System.out.printf("%s ",iterator.previous());
 	}
