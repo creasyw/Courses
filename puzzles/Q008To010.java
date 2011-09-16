@@ -3,13 +3,13 @@ import java.lang.*;
 
 public class Q008To010
 {
-	int result;
+	long result;
 	// for Q9 to store all of the facotors
 	static List<Integer> list = new ArrayList<Integer>();
 
 	public Q008To010()
 	{
-		result = question9();
+		result = question10();
 	}
 	// Find the greatest product of five consecutive digits in the given 1000-digit number.
 	private int question8()
@@ -110,6 +110,47 @@ public class Q008To010
 		b =factors[1]-a;
 		return (int)(Math.pow(a,2)-Math.pow(b,2))*(2*a*b)*(int)(Math.pow(a,2)+Math.pow(b,2));
 	}
+
+	// The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.
+	// Find the sum of all the primes below two million.
+	// SOLUTION: The idea is repeated as Q1: testing all primes from 2 to sqrt(n) to see if n is a prime.
+	// The only tricky part is the range of "sum". The range of int is (-2,147,483,648,2,147,483,648)
+	// which make "sum" out of range. Changing it to "long" should be fine.
+	private long question10()
+	{
+		int THRESHOLD = 2000000;
+		ArrayList<Integer> prime = new ArrayList<Integer>();
+		long sum = 2;
+		boolean flag = true;
+
+		prime.add(2);
+		for(int i=3; i<THRESHOLD; i++)
+		{
+			Iterator<Integer> iter = prime.iterator();
+			int j = iter.next().intValue();
+			while(j<=Math.sqrt(i))
+			{
+				if(i%j==0)
+				{
+					flag = false;
+					break;
+				}
+				if(iter.hasNext())
+					j = iter.next().intValue();
+				else
+					break;
+			}
+			if(flag)
+			{
+				prime.add(i);
+				sum +=i;
+			}
+			else
+				flag = true;
+		}
+		return sum;
+	}
+
 
 	public static void main (String args[])
 	{
