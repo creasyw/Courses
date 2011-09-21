@@ -3,6 +3,7 @@ import java.lang.*;
 
 public class Q008To010
 {
+	// long for Q10 and int for Q8 and Q9
 	long result;
 	// for Q9 to store all of the facotors
 	static List<Integer> list = new ArrayList<Integer>();
