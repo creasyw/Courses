@@ -7,11 +7,13 @@ public class Q011To015
 {
 	int q011;
 	int q012;
+	String q013;
 
 	public Q011To015()
 	{
 		q011 = question11();
 		q012 = question12();
+		q013 = question13();
 	}
 
 	// What is the greatest product of four adjacent numbers in any direction
@@ -184,12 +186,49 @@ public class Q011To015
 		return num;
 	}
 
+	// Question13: Work out the first ten digits of the sum of the following one-hundred 50-digit numbers.
+	private ArrayList<Long> readDataFile()
+	{
+		ArrayList<Long> data = new ArrayList<Long>();
+		try
+		{
+			File file = new File("Q13.data");
+			FileReader reader = new FileReader(file);
+			BufferedReader in = new BufferedReader(reader);
+			String string;
+			long temp;
+			while((string=in.readLine())!=null)
+			{
+				temp = Long.valueOf(string.substring(0,12));
+				data.add(temp);
+			}
+		}
+		catch(IOException ioe)
+		{
+			System.out.println("Exception while reading the file: "+ioe);
+		}
+		return data;
+	}	
+		
+	private String question13()
+	{
+		ArrayList<Long> data = readDataFile();
+		Iterator<Long> iterator = data.iterator();
+		long sum = 0;
+		String result;
+		while(iterator.hasNext())
+			sum += iterator.next();
+		result=Long.toString(sum);
+		return result.substring(0,10);
+	}
 
+	// Main function to print out all of the results
 	public static void main (String args[])
 	{
 		Q011To015 question = new Q011To015();
 		System.out.printf("Q011: result = %d.\n", question.q011);
 		System.out.printf("Q012: result = %d.\n", question.q012);
+		System.out.printf("Q013: result = %s.\n", question.q013);
 	}
 }
 
