@@ -8,12 +8,14 @@ public class Q011To015
 	int q011;
 	int q012;
 	String q013;
+	long q014;
 
 	public Q011To015()
 	{
 		q011 = question11();
 		q012 = question12();
 		q013 = question13();
+		q014 = question14();
 	}
 
 	// What is the greatest product of four adjacent numbers in any direction
@@ -187,6 +189,9 @@ public class Q011To015
 	}
 
 	// Question13: Work out the first ten digits of the sum of the following one-hundred 50-digit numbers.
+	// SOLUTION: because 50-digit number would make either int or long overflowed, and the final result
+	// only asks for 10 digits, I just subtract the first 12 digit (actucally 10 digit might also be enough)
+	// and add all 100 numbers together, then find the 10 digits as result.
 	private ArrayList<Long> readDataFile()
 	{
 		ArrayList<Long> data = new ArrayList<Long>();
@@ -209,7 +214,8 @@ public class Q011To015
 		}
 		return data;
 	}	
-		
+	// I use String to subtract the several digits both in the main function of the function 
+	// and the sub-function, because it might be the most straightforward way to do so.
 	private String question13()
 	{
 		ArrayList<Long> data = readDataFile();
@@ -222,6 +228,79 @@ public class Q011To015
 		return result.substring(0,10);
 	}
 
+	// Q14: The following iterative sequence is defined for the set of positive integers:
+	// n → n/2 (n is even); n → 3n + 1 (n is odd)
+	// Using the rule above and starting with 13, we generate the following sequence:
+	// 13 → 40 → 20 → 10 → 5 → 16 → 8 → 4 → 2 → 1
+	// It can be seen that this sequence (starting at 13 and finishing at 1) contains 10 terms.
+	// Although it has not been proved yet (Collatz Problem), 
+	// it is thought that all starting numbers finish at 1.
+	// Which starting number, under one million, produces the longest chain?
+	// SOLUTION: The Collatz conjecture has two main properties:
+	// 1. no infinite trajectory occurs; 2. no cycle occurs.
+	// So, if we put the trajectory into the table and make value as key,
+	// there will be no duplicated keys and we can trace trajectory conjecture in O(1) in average.
+	private long question14()
+	{
+		Map<Long,Integer> collatzRoute = new HashMap<Long,Integer>();
+		ArrayList<Long> intermediate = new ArrayList<Long>();
+		Iterator<Long> iterator = intermediate.iterator();
+		long num = 3;
+		int step = 0;
+		int length;
+		long temp, iter;
+		long result = 0;
+
+		// initialize the map
+		collatzRoute.put((long)4,3);
+		collatzRoute.put((long)2,2);
+		while(num<1000000)
+		{
+			if(collatzRoute.containsKey(num))
+			{
+				num++;
+				continue;
+			}
+			iter = num;
+			intermediate.add(num);
+			while(iter!=1)
+			{
+				if(iter%2==0)
+					iter = iter/2;
+				else
+					iter = iter*3+1;
+				if(collatzRoute.containsKey(iter))
+				{
+					length = intermediate.size()+collatzRoute.get(iter);
+					iterator=intermediate.iterator();
+					while(iterator.hasNext())
+					{
+						temp=iterator.next();
+					// only store number under 1 million and omit those extremely
+					// large and seledom met ones. Or, heap space will be run out...
+						if(temp<1000000)
+							collatzRoute.put(temp,length);
+						length--;
+					}
+					intermediate.clear();
+					break;
+				}
+				else
+					intermediate.add(iter);
+			}
+			length = collatzRoute.get(num);
+			if(length>step)
+			{
+				step = length;
+				result = num;
+			}
+			num++;
+		}
+		return result;
+	}
+
+
+
 	// Main function to print out all of the results
 	public static void main (String args[])
 	{
@@ -229,7 +308,7 @@ public class Q011To015
 		System.out.printf("Q011: result = %d.\n", question.q011);
 		System.out.printf("Q012: result = %d.\n", question.q012);
 		System.out.printf("Q013: result = %s.\n", question.q013);
+		System.out.printf("Q014: result = %d.\n", question.q014);
 	}
 }
-
 
