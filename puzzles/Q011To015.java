@@ -9,6 +9,7 @@ public class Q011To015
 	int q012;
 	String q013;
 	long q014;
+	long q015;
 
 	public Q011To015()
 	{
@@ -16,6 +17,7 @@ public class Q011To015
 		q012 = question12();
 		q013 = question13();
 		q014 = question14();
+		q015 = question15();
 	}
 
 	// What is the greatest product of four adjacent numbers in any direction
@@ -299,6 +301,76 @@ public class Q011To015
 		return result;
 	}
 
+	// Starting in the top left corner of a 2×2 grid, there are 6 routes (without
+	// backtracking--only right and dowm permitted) to the bottom right corner.
+	// How many routes are there through a 20×20 grid?
+	private class gridPoint{
+		// x and y are the coordinates of this point
+		int x;
+		int y;
+		long ways;
+		public gridPoint(int i, int j, long k)
+		{
+			x = i;
+			y = j;
+			ways = k;
+		}
+		public void addWays(long n)
+		{
+			ways += n;
+		}
+	}
+	private long question15()
+	{
+		Queue<gridPoint> queue = new LinkedList<gridPoint>();
+		gridPoint[][] gridpoint = new gridPoint[21][21];
+		gridPoint temp;
+		for(int i=0;i<21;i++)
+			for(int j=0;j<21;j++)
+				gridpoint[i][j] = new gridPoint(i,j,0);
+		// initial the first two points
+		gridpoint[19][20].addWays(1);
+		gridpoint[20][19].addWays(1);
+		queue.add(gridpoint[19][20]);
+		queue.add(gridpoint[20][19]);
+		// loop to find the value of gridpoint[0][0]
+		while(queue.element()!=gridpoint[0][0])
+		{
+			temp=queue.element();
+			if(temp.x!=0 && temp.y!=0)
+			{
+				// add left child's ways
+				gridpoint[temp.x-1][temp.y].addWays(temp.ways);
+				// add right child's ways
+				gridpoint[temp.x][temp.y-1].addWays(temp.ways);
+				// remove itself from the queue
+				queue.remove();
+				// add left child to the queue
+				queue.add(gridpoint[temp.x-1][temp.y]);
+				if(temp.x==20)
+					// add right child to the queue
+					queue.add(gridpoint[temp.x][temp.y-1]);
+			}
+			else if(temp.x==0)
+			{
+				// add right child's ways
+				gridpoint[temp.x][temp.y-1].addWays(temp.ways);
+				// remove itself from the queue
+				queue.remove();
+			}
+			else if(temp.y==0)
+			{
+				// add left child's ways
+				gridpoint[temp.x-1][temp.y].addWays(temp.ways);
+				// remove itself from the queue
+				queue.remove();
+				// add left child to the queue
+				queue.add(gridpoint[temp.x-1][temp.y]);
+			}
+		}
+
+		return gridpoint[0][0].ways;
+	}
 
 
 	// Main function to print out all of the results
@@ -309,6 +381,7 @@ public class Q011To015
 		System.out.printf("Q012: result = %d.\n", question.q012);
 		System.out.printf("Q013: result = %s.\n", question.q013);
 		System.out.printf("Q014: result = %d.\n", question.q014);
+		System.out.printf("Q015: result = %d.\n", question.q015);
 	}
 }
 
