@@ -10,14 +10,17 @@
 # 
 #Evaluate the sum of all the amicable numbers under 10000. 
 
+from math import sqrt
 
 def findDivisor(num):
 	""" find all of the divisors for a given input """
 	divisors = [1]
-	for i in range(2,num/2-1,1):
-		if num%i==0 and not (i in divisors):
+	for i in range(2,int(sqrt(num))+1):
+		if num%i==0:
 			divisors.append(i)
-			divisors.append(num/i)
+			temp = num/i
+			if temp !=i:
+				divisors.append(temp)
 	return divisors
 	
 def sumDivisor(inputList):
