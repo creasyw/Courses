@@ -27,7 +27,7 @@ while 1:
 	fn = fn1+fn2
 	count +=1
 	# MUCH BETTER to treat long int as string!
-	# it saves me from calculate the target 10^1000
+	# it saves me from calculating the target 10^1000
 	if len(str(fn)) >=1000:
 		break
 	else:
