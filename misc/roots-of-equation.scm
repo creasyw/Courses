@@ -31,9 +31,13 @@
 	(try next))))
   (try first-guess))
 
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
 ;;; test
 (fixed-point (lambda (y) (+ (sin y) (cos y))) 1.0)
 
 (define (sqrt x)
-  (fixed-point (lambda (y) (average y (/ x y))) 1.0))
+  (fixed-point (average-damp (lambda (y) (/ x y)))
+	       1.0))
 
