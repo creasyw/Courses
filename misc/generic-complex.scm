@@ -50,7 +50,7 @@
 (define (make-from-mag-ang-polar r a)
   (attach-tag 'polar (cons r a)))
 
-;;; Universal Selectors
+;;; Selectors: Generic interface procedure
 (define (real-part z)
   (cond ((rectangular? z)
 	 (real-part-rectangular (contents z)))
