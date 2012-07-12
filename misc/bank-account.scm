@@ -5,7 +5,6 @@
       "Insufficient funds")))
 
 (define (make-account balance)
-  (define show-balance balance)
   (define (withdraw amount)
     (if (>= balance amount) (begin (set! balance (- balance amount)) balance)
       "Insufficient funds"))
@@ -15,6 +14,6 @@
   (define (dispatch m)
     (cond ((eq? m 'withdraw) withdraw)
 	  ((eq? m 'deposit) deposit)
-	  ((eq? m 'show) show-balance)
+	  ((eq? m 'show) balance)
 	  (else (error "Unknown request -- MAKE-ACCOUNT" m))))
   dispatch)
