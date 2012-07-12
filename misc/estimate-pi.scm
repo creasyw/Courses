@@ -1,8 +1,12 @@
 (define (estimate-pi trials)
   (sqrt (/ 6 (monte-carlo trials cesaro-test))))
 
+(define rand
+  (let ((x 99999))
+    (lambda () (random x))))
+
 (define (cesaro-test)
-  (= (gcd (random 9999) (random 9999)) 1))
+  (= (gcd (rand) (rand)) 1))
 
 (define (monte-carlo trials experiment)
   (define (iter trials-remaining trials-passed)
