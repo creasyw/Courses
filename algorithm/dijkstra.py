@@ -1,49 +1,68 @@
-#!/usr/bin/env python
-import os
-import sys
 from collections import defaultdict
+import os
 
-def dijkstra(matrix):
-    def neighbors(node):
-        (x, y) = node
-        n = []
-        if x < len(matrix[0]) - 1:
-            n.append((x + 1, y))
-        if y < len(matrix) - 1:
-            n.append((x, y + 1))
-        return n
+# The implementation of graph could be:
+# dict{ node:{node:distance, node:distance,...}, node{,,,}...}
+# distance: the value in the matrix, node: row*100+col
+def build_graph(matrix):
+    graph = {}
+    for i in range(len(matrix)):
+        for j in range(len(matrix[0])-1):
+            if j != 0:
+                if i != 0 and i != len(matrix)-1:
+                    graph[i*100+j] = {(i-1)*100+j:matrix[i-1][j], (i+1)*100+j:matrix[i+1][j], i*100+j+1:matrix[i][j+1]}
+                elif i == 0:
+                    graph[j] = {100+j:matrix[1][j], j+1:matrix[0][j+1]}
+                else:
+                    graph[i*100+j] = {(i-1)*100+j:matrix[i-1][j], i*100+j+1:matrix[i][j+1]}
+            else:
+                graph[i*100+j] = {i*100+j+1:matrix[i][j+1]}
+    return graph
 
-    def value(node):
-        (x, y) = node
-        return matrix[y][x]
-    
-    current = (0, 0)
-    dest = (len(matrix[0]) - 1, len(matrix) - 1)
-    unvisited = set((x, y) for x in range(dest[0] + 1) for y in range(dest[1] + 1))
-    nodes = {}
-    for node in unvisited: nodes[node] = sys.maxint
-    nodes[current] = value(current)
+# Use the 1th column as starting candidates feeding into Dijkstra's Algorithm.
+def gen_candidates(matrix):
+    candidates = {}
+    for i in range(len(matrix)):
+        candidates[i*100] = matrix[i][0]
+    return candidates
 
-    while 1:
-        for node in [n for n in neighbors(current) if n in unvisited]:
-            distance = nodes[current] + value(node)
-            if distance < nodes[node]:
-                nodes[node] = distance
+# According to the question, ending criterion is arriving at the right column.
+def end_criterion(ending, candidate):
+    return candidate in ending
 
-        unvisited.remove(current)
-        if current == dest:
+# The basic algorithm comes from Wikipedia http://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+# But there are some critical aspects missing in that article:
+# 1. there should be a list keeping track of visited nodes, or it will visit the same node over and over again.
+# 2. there are two other datasets: original graph and a priority queue
+# 3. the algorithm tends to visit every node in the graph if possible. It is the"Traveling salesman problem".
+# 4. if the goal is to find shortest path with given starting and ending points, just like this question. Keeping track of shortest distance from begining and returning the 1st hit of the ending point with accumulated distance should be fine.
+def dijkstra(graph, candidates):
+    ending = set(k*100+79 for k in range(80))
+    visited = {}
+    while candidates != {}:
+        candidate = min(candidates, key=candidates.get)
+        visited[candidate] =  candidates.get(candidate)
+        del candidates[candidate]
+        if end_criterion(ending, candidate):
             break
-        else:
-            current = min((nodes[node], node) for node in unvisited)[1]
-
-    return nodes[dest]
+        for node in graph[candidate]:
+            if node in visited:
+                continue
+            elif node in candidates:
+                candidates[node] = min(candidates[node], visited[candidate]+graph[candidate][node])
+            else:
+                candidates[node] = visited[candidate]+graph[candidate][node]
+    return visited[candidate]
 
 def main():
-    matrix = []
-    with open(os.path.join(os.path.dirname(__file__), "dijkstra_matrix.txt")) as matfile:
+    matrix = defaultdict(list)
+    count = 0
+    with  open(os.path.join(os.path.dirname(__file__), 'matrix.txt')) as matfile:
         for row in matfile:
-            matrix.append([int(n) for n in row.split(',')])
+            matrix[count] = [int(k) for k in row.split(',')]
+            count += 1
+    print dijkstra(build_graph(matrix), gen_candidates(matrix))
 
-    print dijkstra(matrix)
+if __name__ == "__main__":
+    main()
 
-if __name__ == "__main__": main()
