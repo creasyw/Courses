@@ -3,13 +3,18 @@ from math import pi, acos
 
 def fm_linear(length, finitial=0.0, ffinal=0.5):
     assert length>=100, "The required length is too short."
-    assert -0.5<=finitial<=0.5 and -0.5<=ffinal<=0.5, \
-            "The linear slope should be between [-0.5, 0.5]"
+#    assert -0.5<=finitial<=0.5 and -0.5<=ffinal<=0.5, \
+#            "The linear slope should be between [-0.5, 0.5]"
     y = np.arange(1, length, dtype=float)
     mid = int(length/2)
     y = finitial*(y-mid)+((ffinal-finitial)/(2.*(length-1)))*((y-1)**2-(mid-1)**2)
     y = np.exp(y*pi*2j)
     return  y/y[mid]
+
+def linear_chirp(length, ts=16000, f0=400, k=1.5):
+    phi0 = 0    # initial phase at time t=0
+    t = np.arange(1,length,dtype=float)
+    return np.sin(2*pi*((f0+k*t/2)*t/ts+phi0))
 
 def fm_sin(length, fmin=0.05, fmax=0.45):
     assert length>=100, "The required length is too short."
