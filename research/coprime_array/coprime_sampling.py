@@ -15,7 +15,7 @@ def sampling (signal, n1, n2, zero):
     x2 = np.array([[zero+n2[i], signal[zero+n2[i]]] for i in range(len(n2)) if zero+n2[i]>=0 and zero+n2[i]<len(signal)])
     return x1, x2
 
-def autocorrelation(r_xx, x1, x2, zero):
+def autocorrelation (r_xx, x1, x2, zero):
     """
     Calculate the autocorrelation operating upon the r_xx.
     Return the modified array of autocorrelation.
@@ -36,6 +36,36 @@ def autocorrelation(r_xx, x1, x2, zero):
                     r_xx[index][1] += 1
     return r_xx
 
+def dft (r_xx, hamming, window_size, overlap=True):
+    if overlap:
+        step = window_size/2
+    else:
+        step = window_size
+    zero = 0
+    nstep = int(ceil(len(r_xx)/float(step)))
+    psd = np.zeros((nstep, window_size), dtype=complex)
+    for i in range(nstep-2):
+        temp = r_xx[zero:(zero+window_size),0]*hamming
+        psd[i] = np.fft.fft(temp, window_size)
+        zero += step
+
+    # Line 255 of lib/matplotlib/mlab.py
+    step = NFFT - noverlap
+    ind = np.arange(0, len(x) - NFFT + 1, step)
+    n = len(ind)
+    Pxy = np.zeros((numFreqs, n), np.complex_)
+
+    # Line 289 of lib/matplotlib/mlab.py
+    t = 1./Fs * (ind + NFFT / 2.)
+    freqs = float(Fs) / pad_to * np.arange(numFreqs)
+
+    if (np.iscomplexobj(x) and sides == 'default') or sides == 'twosided':
+        # center the frequency range at zero
+        freqs = np.concatenate((freqs[numFreqs//2:] - Fs, freqs[:numFreqs//2]))
+        Pxy = np.concatenate((Pxy[numFreqs//2:, :], Pxy[:numFreqs//2, :]), 0)
+        
+    return psd
+
 def main (signal, window_size=256):
     # the times of moving for window
     steps = int(ceil(len(signal)/float(window_size)))
@@ -45,12 +75,11 @@ def main (signal, window_size=256):
     # calculate the range to generate hole-free co-prime combinations 
     n1 = np.arange(0,a)*b
     n2 = np.arange(-b+1,b)*a
-    print n1
-    print n2
     # r_xx with the same length of signal to store and average estimations
     # 1st column is the value of autocorrelation
     # 2nd column is the # of sample points contribute to this autocorrelation
     r_xx = np.zeros((len(signal),2))
+    overlap = True
 
     for i in range(steps):
         # the relative zero point for the current window
@@ -58,8 +87,8 @@ def main (signal, window_size=256):
         # slicing the signal and conduct co-prime sampling 
         x1, x2 = sampling(signal, n1, n2, zero)
         r_xx = autocorrelation(r_xx, x1, x2, zero)
-    # phi_xx * hamming window = s[m] in time domain
-    # S[K] = DFT(s[m])
-    return r_xx
+    hamming = np.hamming(window_size)
+    psd = dft(r_xx, hamming, window_size, overlap)
+    return psd
 
 
