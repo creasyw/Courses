@@ -7,7 +7,7 @@ def spectrogram(signal, fs, window_size=256):
     result = plt.specgram(signal, NFFT=window_size, Fs=fs, window=hamming, noverlap=window_size/2.)
     plt.xlabel("Time (second)")
     plt.ylabel("Frequency (Hz)")
-    plt.show()
+    #plt.show()
     return result
 
 def generate_signal(fs, tmax, fmin, fmax, tnorm):

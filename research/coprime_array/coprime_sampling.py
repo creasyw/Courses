@@ -1,6 +1,7 @@
 from gen_signal import generate_signal, spectrogram
 import numpy as np
-from math import ceil
+from math import ceil, log
+from fractions import gcd
 
 def sampling (signal, n1, n2, zero):
     """
@@ -26,6 +27,8 @@ def autocorrelation (r_xx, x1, x2, zero):
     for i in range(len(x1)):
         for j in range(len(x2)):
             index = abs(x1[i][0]-x2[j][0])
+            if index > 255:
+                continue
             if zero+index < len(r_xx):
                 index += zero
                 if r_xx[index][1] == 0:
@@ -36,42 +39,63 @@ def autocorrelation (r_xx, x1, x2, zero):
                     r_xx[index][1] += 1
     return r_xx
 
-def dft (r_xx, hamming, window_size, overlap=True):
+def dft (r_xx, Fs, NFFT, hamming, overlap=True, sides='default'):
     if overlap:
-        step = window_size/2
+        step = NFFT // 2
     else:
-        step = window_size
-    zero = 0
-    nstep = int(ceil(len(r_xx)/float(step)))
-    psd = np.zeros((nstep, window_size), dtype=complex)
-    for i in range(nstep-2):
-        temp = r_xx[zero:(zero+window_size),0]*hamming
-        psd[i] = np.fft.fft(temp, window_size)
-        zero += step
-
-    # Line 255 of lib/matplotlib/mlab.py
-    step = NFFT - noverlap
-    ind = np.arange(0, len(x) - NFFT + 1, step)
+        step = NFFT
+    ind = np.arange(0, len(r_xx)-NFFT+ 1, step)
     n = len(ind)
-    Pxy = np.zeros((numFreqs, n), np.complex_)
+    pad_to = NFFT
+    if (sides == 'default' and np.iscomplexobj(r_xx)) or sides == 'twosided':
+        numFreqs = pad_to
+        scaling_factor = 1.
+    elif sides in ('default', 'onesided'):
+        numFreqs = pad_to//2 + 1
+        scaling_factor = 2.
+    else:
+        raise ValueError("sides must be one of: 'default', 'onesided', or 'twosided'")
+    
+    psd = np.zeros((numFreqs, n), np.complex_)
+    
+    for i in range(n):
+        temp = r_xx[ind[i]:(ind[i]+NFFT),0]*hamming
+        #psd[:,i] = np.fft.fft(temp, window_size)
+        psd[:,i] = np.fft.fft(temp, n=pad_to)[:numFreqs]
+        #psd[:,i] = np.conjugate(fx[:numFreqs])*fx[:numFreqs]
+    
+    # Also include scaling factors for one-sided densities and dividing by the
+    # sampling frequency, if desired. Scale everything, except the DC component
+    # and the NFFT/2 component:
+    psd[1:-1] *= scaling_factor
 
-    # Line 289 of lib/matplotlib/mlab.py
-    t = 1./Fs * (ind + NFFT / 2.)
+    # MATLAB divides by the sampling frequency so that density function
+    # has units of dB/Hz and can be integrated by the plotted frequency
+    # values. Perform the same scaling here.
+    psd /= Fs
+    
+    t = 1./Fs * (ind + NFFT/2.)
     freqs = float(Fs) / pad_to * np.arange(numFreqs)
 
-    if (np.iscomplexobj(x) and sides == 'default') or sides == 'twosided':
+    if (np.iscomplexobj(r_xx) and sides == 'default') or sides == 'twosided':
         # center the frequency range at zero
         freqs = np.concatenate((freqs[numFreqs//2:] - Fs, freqs[:numFreqs//2]))
-        Pxy = np.concatenate((Pxy[numFreqs//2:, :], Pxy[:numFreqs//2, :]), 0)
-        
-    return psd
+        psd = np.concatenate((psd[numFreqs//2:, :], psd[:numFreqs//2, :]), 0)
 
-def main (signal, window_size=256):
+    return psd, freqs, t
+
+def main (signal, Fs, NFFT, a, b, window_size=256):
+    # check the property of co-prime
+    assert gcd(a,b) == 1, "The pair a and b should be co-prime."
+    # make sure that a is larger than b
+    if a < b:
+        b = temp
+        b = a
+        a = temp
+    if window_size > a*b:
+        window_size = 2**int(log(a*b)/log(2))
     # the times of moving for window
     steps = int(ceil(len(signal)/float(window_size)))
-    # the co-prime pair
-    a = 19
-    b = 17
     # calculate the range to generate hole-free co-prime combinations 
     n1 = np.arange(0,a)*b
     n2 = np.arange(-b+1,b)*a
@@ -79,7 +103,7 @@ def main (signal, window_size=256):
     # 1st column is the value of autocorrelation
     # 2nd column is the # of sample points contribute to this autocorrelation
     r_xx = np.zeros((len(signal),2))
-    overlap = True
+    overlap = False
 
     for i in range(steps):
         # the relative zero point for the current window
@@ -87,8 +111,9 @@ def main (signal, window_size=256):
         # slicing the signal and conduct co-prime sampling 
         x1, x2 = sampling(signal, n1, n2, zero)
         r_xx = autocorrelation(r_xx, x1, x2, zero)
-    hamming = np.hamming(window_size)
-    psd = dft(r_xx, hamming, window_size, overlap)
-    return psd
+    np.savetxt("rxx.csv", r_xx, fmt="%s", delimiter=' ')
+    hamming = np.hamming(NFFT)
+    psd, freq, time = dft(r_xx, Fs, NFFT, hamming, overlap)
+    return psd, freq, time
 
 
