@@ -27,8 +27,8 @@ def autocorrelation (r_xx, x1, x2, zero):
     for i in range(len(x1)):
         for j in range(len(x2)):
             index = abs(x1[i][0]-x2[j][0])
-            if index > 255:
-                continue
+            #if index > 255:
+            #    continue
             if zero+index < len(r_xx):
                 index += zero
                 if r_xx[index][1] == 0:

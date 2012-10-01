@@ -10,7 +10,7 @@ def spectrogram(signal, fs, window_size=256):
     #plt.show()
     return result
 
-def generate_signal(fs, tmax, fmin, fmax, tnorm):
+def generate_signal(fs, tmax, fmin, fmax, tnorm, methods='linear'):
     """
     Generate signal with linear frequency modulation.
     Input:  
@@ -20,11 +20,13 @@ def generate_signal(fs, tmax, fmin, fmax, tnorm):
             # configuration for frequency modulation
             fmin, fmax: The starting and ending frequency for modulation.
             tnorm: the time to achieve the fmax (in second)
+            method : Kind of frequency sweep.
+                {'linear', 'quadratic', 'logarithmic'}, optional
     Output: amplitude values in given sample points
     """
     assert tmax > 0 and tnorm > 0, "The ending time should be > zero."
     assert fs>0 and fmin>=0 and fmax>0 and fs>2*fmax, \
             "The freq and sammple rate setup should obey Nyquist theroem"
     ts = np.arange(0, tmax, 1./fs)
-    return chirp(ts, f0=fmin, t1=tnorm, f1=fmax)
+    return chirp(ts, f0=fmin, t1=tnorm, f1=fmax, method=methods)
 
