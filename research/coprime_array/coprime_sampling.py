@@ -2,6 +2,11 @@ from gen_signal import generate_signal, spectrogram
 import numpy as np
 from math import ceil, log
 from fractions import gcd
+import matplotlib.pyplot as plt
+
+def plot_contour(x, y, z):
+    z_prim = abs(z)
+    plt.contour(x, y, z_prim)
 
 def sampling (signal, n1, n2, zero):
     """
@@ -84,21 +89,21 @@ def dft (r_xx, Fs, NFFT, hamming, overlap=True, sides='default'):
 
     return psd, freqs, t
 
-def main (signal, Fs, NFFT, a, b, window_size=256):
+def main (signal, Fs, NFFT, N, M, window_size=256):
     # check the property of co-prime
-    assert gcd(a,b) == 1, "The pair a and b should be co-prime."
+    assert gcd(N,M) == 1, "The pair a and b should be co-prime."
     # make sure that a is larger than b
-    if a < b:
-        b = temp
-        b = a
-        a = temp
-    if window_size > a*b:
-        window_size = 2**int(log(a*b)/log(2))
+    if N < M:
+        M = temp
+        M = N
+        N = temp
+    if window_size > N*M:
+        window_size = 2**int(log(N*M)/log(2))
     # the times of moving for window
     steps = int(ceil(len(signal)/float(window_size)))
     # calculate the range to generate hole-free co-prime combinations 
-    n1 = np.arange(0,a)*b
-    n2 = np.arange(-b+1,b)*a
+    n1 = np.arange(0,N)*M
+    n2 = np.arange(-M+1,M)*N
     # r_xx with the same length of signal to store and average estimations
     # 1st column is the value of autocorrelation
     # 2nd column is the # of sample points contribute to this autocorrelation
@@ -114,6 +119,70 @@ def main (signal, Fs, NFFT, a, b, window_size=256):
     np.savetxt("rxx.csv", r_xx, fmt="%s", delimiter=' ')
     hamming = np.hamming(NFFT)
     psd, freq, time = dft(r_xx, Fs, NFFT, hamming, overlap)
+    plot_contour(time, freq, psd)
     return psd, freq, time
 
+
+def autocorr(x):
+    """Return result of autocorrelation of sequence without any sampling"""
+    result = np.correlate(x, x, mode='full')
+    return result[result.size/2:]
+
+def fourier (r_xx, Fs, NFFT, hamming, overlap=True, sides='default'):
+    if overlap:
+        step = NFFT // 2
+    else:
+        step = NFFT
+    ind = np.arange(0, len(r_xx)-NFFT+ 1, step)
+    n = len(ind)
+    pad_to = NFFT
+    if (sides == 'default' and np.iscomplexobj(r_xx)) or sides == 'twosided':
+        numFreqs = pad_to
+        scaling_factor = 1.
+    elif sides in ('default', 'onesided'):
+        numFreqs = pad_to//2 + 1
+        scaling_factor = 2.
+    else:
+        raise ValueError("sides must be one of: 'default', 'onesided', or 'twosided'")
+    
+    psd = np.zeros((numFreqs, n), np.complex_)
+    
+    for i in range(n):
+        temp = r_xx[ind[i]:(ind[i]+NFFT)]*hamming
+        #psd[:,i] = np.fft.fft(temp, window_size)
+        psd[:,i] = np.fft.fft(temp, n=pad_to)[:numFreqs]
+        #psd[:,i] = np.conjugate(fx[:numFreqs])*fx[:numFreqs]
+    
+    # Also include scaling factors for one-sided densities and dividing by the
+    # sampling frequency, if desired. Scale everything, except the DC component
+    # and the NFFT/2 component:
+    psd[1:-1] *= scaling_factor
+
+    # MATLAB divides by the sampling frequency so that density function
+    # has units of dB/Hz and can be integrated by the plotted frequency
+    # values. Perform the same scaling here.
+    psd /= Fs
+    
+    t = 1./Fs * (ind + NFFT/2.)
+    freqs = float(Fs) / pad_to * np.arange(numFreqs)
+
+    if (np.iscomplexobj(r_xx) and sides == 'default') or sides == 'twosided':
+        # center the frequency range at zero
+        freqs = np.concatenate((freqs[numFreqs//2:] - Fs, freqs[:numFreqs//2]))
+        psd = np.concatenate((psd[numFreqs//2:, :], psd[:numFreqs//2, :]), 0)
+
+    return psd, freqs, t
+
+def benchmark(signal, Fs, NFFT, window_size=256):
+    length = len(signal)
+    steps = int(ceil(length/float(window_size)))
+    r_xx = np.zeros(len(signal))
+    overlap = False
+    for i in range(steps):
+        upper = min((i+1)*window_size, length)
+        r_xx[i*window_size:upper] = autocorr(signal[i*window_size:upper])
+    hamming = np.hamming(NFFT)
+    psd, freq, time = fourier(r_xx, Fs, NFFT, hamming, overlap)
+    plot_contour(time, freq, psd)
+    return psd, freq, time
 
