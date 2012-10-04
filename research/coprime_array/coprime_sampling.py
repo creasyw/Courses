@@ -1,12 +1,15 @@
 from gen_signal import generate_signal, spectrogram
+from detect_peak import detect_peak, spread
 import numpy as np
 from math import ceil, log
 from fractions import gcd
 import matplotlib.pyplot as plt
 
 def plot_contour(x, y, z):
-    z_prim = abs(z)
-    plt.contour(x, y, z_prim)
+    z_prime = abs(z)
+    #z_prime = detect_peak(z_prime)
+    #plt.contour(x, y, z_prime)
+    return z_prime
 
 def sampling (signal, n1, n2, zero):
     """
@@ -119,7 +122,7 @@ def main (signal, Fs, NFFT, N, M, window_size=256):
     np.savetxt("rxx.csv", r_xx, fmt="%s", delimiter=' ')
     hamming = np.hamming(NFFT)
     psd, freq, time = dft(r_xx, Fs, NFFT, hamming, overlap)
-    plot_contour(time, freq, psd)
+    psd = plot_contour(time, freq, psd)
     return psd, freq, time
 
 
