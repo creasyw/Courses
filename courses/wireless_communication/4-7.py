@@ -1,8 +1,11 @@
 from math import exp, log, e
 from scipy.special import exp1
+#average SNR
+#average = 0.3162
+average = 10
 
 def function(x):
-    return 1/x*exp(-x/10)-exp1(x/10)/10
+    return 1/x*exp(-x/average)-exp1(x/average)/average
 
 def question_a():
     gamma = 0.0001
@@ -18,7 +21,7 @@ def question_a():
     return result
 
 def rxtx_csi(x, gamma_0):
-    return log(x/gamma_0,2)*exp(-x/10)/10
+    return log(x/gamma_0,2)*exp(-x/average)/average
 
 def question_b():
     gamma_0 = question_a()
@@ -32,7 +35,7 @@ def question_b():
     print "(b) The integral result is ", result*10
 
 def rx_csi(x):
-    return log((x+1),2)*exp(-x/10)/10
+    return log((x+1),2)*exp(-x/average)/average
 
 def question_d():
     limit = 100
@@ -43,7 +46,6 @@ def question_d():
         result += step*rx_csi(delta)
         delta += step
     print "(d) The integral result is ", result*10
-
 
 if __name__ == "__main__":
     question_b()
