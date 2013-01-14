@@ -21,6 +21,74 @@ def binary_insert (root, node):
             else:
                 binary_insert(root.r_child, node)
 
+def binary_search (root, val, route):
+    """
+    Find specific element in BST and return the route for that element
+    For the convenience of successive function, the route contains the node rather
+    than only values of them.
+    """
+    if root is None:
+        # print "The value %s is not stored in the tree"%(val)
+        return []
+    else:
+        route.append(root)
+        # root.data==val, then do nothing about recursion
+        if root.data > val:
+            route = binary_search(root.l_child, val, route)
+        elif root.data < val:
+            route = binary_search(root.r_child, val, route)
+    return route
+
+def binary_minimum (root):
+    while root.l_child is not None:
+        root = root.l_child
+    return root.data
+def binary_successor (root, val):
+    route = binary_search(root, val, [])
+    if len(route) != 0:
+        x = route.pop()
+        if x.r_child is not None:
+            return binary_minimum(x.r_child)
+        while len(route)!=0:
+            y = route.pop()
+            if x == y.l_child:
+                return y.data
+            else:
+                x = y
+    print "There is no successor for the given element."
+    return
+
+def replace_node (parent, target, replacement):
+    if parent.l_child == target:
+        parent.l_child = replacment
+    else:
+        parent.r_child = replacement
+
+def binary_delete (root, val):
+    route = binary_search(root, val, [])
+    if len(route)!=0:
+        z = route.pop()     # The deleted node
+        y = route.pop()
+        # z has no children
+        if z.l_child is None and z.r_child is None:
+            replace_node(y, z, None)
+        # z only has left child
+        elif z.r_child is None:
+            replace_node(y, z, z.l_child)
+        # z has right child
+        else:
+            x = binary_successor(z, z.data)
+            subroute = binary_search(z, x, [])
+            x = subroute.pop()
+            if len(subroute) == 0:
+                replace_node(y, z, x)
+            else:
+                x_p = subroute.pop()
+                # Because x is the successor of z, x is "left-most" node in the subtree
+                x_p.l_child = x.r_child
+                replace_node(y, z, x)
+    return root
+
 def in_order_print (root):
     if not root:
         return
@@ -49,12 +117,9 @@ def is_balanced (root):
 
 # for debug
 def quick_build ():
-    r = Node(3)
-    binary_insert(r, Node(7))
-    binary_insert(r, Node(1))
-    binary_insert(r, Node(5))
-    binary_insert(r, Node(4))
-    return r
+    arr = np.arange(1,100)
+    root = Node(0)
+    return build_balanced_tree(root, arr)
 
 # Given a sorted (increasing order) array, write an algorithm 
 # to create a binary tree with minimal height
@@ -88,10 +153,7 @@ def level_linklist (root, arr, level):
         arr = level_linklist(root.r_child, arr, level+1)
     return arr
 from collections import defaultdict
-def test_level_linklist():
-    arr = np.arange(1,100)
-    root = Node(0)
-    root = build_balanced_tree(root, arr)
+def test_level_linklist(root):
     arr = defaultdict(list)
     arr[1] = [root.data]
     arr = level_linklist(root, arr, 1)
@@ -124,5 +186,6 @@ def test_dfs ():
     root = build_balanced_tree(root, arr)
     result = dfs(root, 9, 31, [], False)
     print result
+
 
 
