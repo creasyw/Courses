@@ -29,7 +29,7 @@ def is_anagram (s, t):
         return True
     return False 
 
-# Write a method to replace all spaces in a string with ‘%20’
+# Write a method to replace all spaces in a string with '%20'
 import re
 def replace_space (s):
     return re.subn(' ', '%20', s)[0]
