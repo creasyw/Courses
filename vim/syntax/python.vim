@@ -79,7 +79,7 @@ elseif exists("b:current_syntax")
   finish
 endif
 
-set smartindent
+set nosmartindent
 set tabstop=4
 set shiftwidth=4
 set expandtab
