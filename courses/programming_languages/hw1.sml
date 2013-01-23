@@ -1,5 +1,5 @@
 fun is_older (date1:int*int*int, date2:int*int*int) =
-  (#1 date1 <= #1 date2) andalso (#2 date1 <= #2 date2) andalso (#3 date1 < #3
+  (#1 date1 < #1 date2) orelse (#2 date1 < #2 date2) orelse (#3 date1 < #3
   date2)
 
 fun number_in_month (dates: (int*int*int) list, month:int) =
@@ -35,7 +35,7 @@ fun get_nth (x: string list, y: int) =
 
 fun date_to_string (date:int*int*int) =
   let
-    val months = ["January", "Februray", "March", "April", "May", "June", "July",
+    val months = ["January", "February", "March", "April", "May", "June", "July",
     "August", "September", "October", "November", "December"]
   in
     get_nth(months, #2 date)^" "^Int.toString(#3 date)^", "^Int.toString(#1
@@ -70,8 +70,8 @@ fun oldest (dates:(int*int*int) list) =
     let val temp = oldest(tl dates)
     in
       if is_older(hd dates, valOf temp)
-      then temp
-      else SOME(hd dates)
+      then SOME(hd dates)
+      else temp
     end
 
 fun identical_list (x:int list) =
