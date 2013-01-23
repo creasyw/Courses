@@ -33,3 +33,64 @@ fun get_nth (x: string list, y: int) =
   then hd x
   else get_nth(tl x, y-1)
 
+fun date_to_string (date:int*int*int) =
+  let
+    val months = ["January", "Februray", "March", "April", "May", "June", "July",
+    "August", "September", "October", "November", "December"]
+  in
+    get_nth(months, #2 date)^" "^Int.toString(#3 date)^", "^Int.toString(#1
+    date)
+  end
+
+fun number_before_reaching_sum (sum:int, nums:int list) =
+  if sum-(hd nums) > 0
+  then 1+number_before_reaching_sum(sum-(hd nums), (tl nums))
+  else 0
+
+fun what_month (day:int) =
+  let
+    val days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  in
+    1+number_before_reaching_sum(day, days)
+  end
+
+
+fun month_range (day1:int, day2:int) =
+  if day1 > day2
+  then []
+  else
+    what_month(day1)::month_range(day1+1,day2)
+
+fun oldest (dates:(int*int*int) list) =
+  if null dates
+  then NONE
+  else if null (tl dates)
+  then SOME(hd dates)
+  else
+    let val temp = oldest(tl dates)
+    in
+      if is_older(hd dates, valOf temp)
+      then temp
+      else SOME(hd dates)
+    end
+
+fun identical_list (x:int list) =
+  if null x
+  then []
+  else
+    let
+      fun is_identical (v:int, y:int list) =
+        (null y) orelse ((v<>(hd y)) andalso is_identical(v, tl y))
+    in
+      if is_identical(hd x, tl x)
+      then (hd x)::identical_list(tl x)
+      else identical_list(tl x)
+    end
+
+fun number_in_months_challenge (dates:(int*int*int) list, months:int list) =
+  number_in_months(dates, identical_list(months))
+
+fun dates_in_months_challenge (dates:(int*int*int) list, months:int list) =
+  dates_in_months(dates, identical_list(months))
+
+

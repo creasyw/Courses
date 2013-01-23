@@ -26,5 +26,30 @@ get_nth(["a","b","c","d"],1) = "a";
 get_nth(["a","b","c","d"],2) = "b";
 (* get_nth(["a","b","c","d"],10);  ==> this would get exception *)
 
+(* test the 7th question *)
+date_to_string((1988,6,28)) = "June 28, 1988";
+
+(* 8th *)
+number_before_reaching_sum(10, [1,2,3,4,5,6,7]) = 3;
+number_before_reaching_sum(1, [1,2,3,4,5,6,7]) = 0;
+(* number_before_reaching_sum(30, [1,2,3,4,5,6,7]); ==> exception *)
+
+(* 9th *)
+what_month(32) = 2;
+
+(* 10th *)
+month_range(32, 360) = [2,3,4,5,6,7,8,9,10,11,12];
+
+(* 11th *)
+oldest([]) = NONE;
+oldest([(1988,6,28)]) = SOME (1988,6,28);
+oldest([(1988,6,28), (1988,6,29)]) = SOME (1988,6,29);
+
+(* 12th *)
+number_in_months_challenge([(1965,10,1),(1949,9,1),(1983,10,25)],[9,10,10,10]) = 3;
+dates_in_months_challenge([(1965,10,1),(1949,9,1),(1983,10,25)],[9,10,10,10,10])
+= [(1949,9,1),(1965,10,1),(1983,10,25)];
+
+
 
 
