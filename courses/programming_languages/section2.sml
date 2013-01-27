@@ -55,7 +55,55 @@ fun sum_list xs =
      | x::xs'   => x+sum_list(xs')
 
 
+fun sum_triple1 triple =
+  case triple of
+       (x, y, z) => x+y+z
+fun sum_triple2 triple = 
+  let val (x, y, z) = triple
+  in x+y+z
+  end
+fun sum_triple3 (x,y,z) =
+  x+y+z
+
+fun same_thing (x,y) =
+  if x = y then "yes" else "no"
+
+exception ListLengthMismatch
+fun zip3 list_triple = 
+  case list_triple of
+       ([],[],[]) => []
+     | (hd1::tl1,hd2::tl2,hd3::tl3) => (hd1,hd2,hd3)::zip3(tl1,tl2,tl3)
+     | _ => raise ListLengthMismatch
+
+fun unzip3 lst =
+  case lst of
+       [] =>([],[],[])
+     | (a,b,c)::tl => let val (l1,l2,l3) = unzip3 tl
+                      in (a::l1, b::l2, c::l3)
+                      end
 
 
+fun nondecreasing lst =
+  case lst of
+       [] => true
+     | _ ::[] => true
+     | head::(neck::rest) => head<=neck andalso nondecreasing(neck::rest)
+
+fun tail_sum xs =
+  let fun aux (xs, acc) =
+        case xs of
+             [] => acc
+           | x:: xs' => aux(xs', x+acc)
+  in
+    aux(xs, 0)
+  end
+
+fun rev xs =
+  let fun aux(xs, acc) =
+        case xs of
+             [] => acc
+           | x::xs' => aux(xs', x::acc)
+  in aux(xs,[])
+  end
 
 
