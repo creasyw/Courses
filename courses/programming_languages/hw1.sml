@@ -95,3 +95,21 @@ fun dates_in_months_challenge (dates:(int*int*int) list, months:int list) =
   dates_in_months(dates, identical_list(months))
 
 
+fun reasonable_date (date: (int * int * int)) =
+    let
+        fun get_days (ns: int list, n: int) =
+            if n = 1 then hd ns
+            else get_days (tl ns, n - 1)
+
+        val days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        val (y, m, d) = date
+    in
+        if (y < 1) orelse (m < 1) orelse (m > 12) orelse (d < 1) then false
+        else let
+                 val leap_year = (y mod 4 = 0) andalso (y mod 100 > 0) orelse (y mod 400 = 0)
+                 val add_day = if leap_year andalso (m = 2) then 1 else 0
+             in
+                 d <= get_days (days, m) + add_day
+             end
+    end
+
