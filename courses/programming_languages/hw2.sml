@@ -18,12 +18,38 @@ fun all_except_option (y:string, ys:string list) =
     iterate_list([], ys)
   end
 
+(* 1-b *)
 fun get_substitutions1 (lst:string list list, s:string) =
   case lst of
        [] => []
      | x::xs => case all_except_option(s, x) of
                      NONE => get_substitutions1(xs, s)
                    | SOME(x) => x @ get_substitutions1(xs, s)
+
+(* 1-c *)
+fun get_substitutions2 (lst:string list list, s:string) =
+  let fun find_lst (xs:string list list, result:string list) =
+        case xs of
+             [] => result
+           | head::tail => case all_except_option(s, head) of
+                                NONE => find_lst(tail, result)
+                              | SOME(x) => find_lst(tail, x@result)
+  in
+    find_lst(lst, [])
+  end
+
+(* 1-d *)
+fun similar_names (lst:string list list, {first:string, middle:string,
+  last:string}) =
+  let val candidates = get_substitutions2(lst, first)
+      fun assemble_name (cand:string list) =
+        case cand of
+             [] => [{first=first, last=last, middle=middle}]
+           | x::xs => assemble_name(xs)@[{first=x, last=last, middle=middle}]
+  in
+    assemble_name(candidates)
+  end
+
 
 
 
