@@ -92,9 +92,9 @@ fun remove_card (cs, c, ex) =
 fun all_same_color cs =
   case cs of
        [] => true
-     | _::[] => true
+     | x::[] => true
      | head::(neck::tail) => card_color(head)=card_color(neck) andalso
-       all_same_color(tail)
+       all_same_color(neck::tail)
 
 (* 2-e *)
 fun sum_cards cs =
@@ -116,7 +116,23 @@ fun score (cs:card list, s:int) =
     else ~preliminary
   end
 
-
-
+(* 2-g *)
+fun officiate (cs:card list, mvs:move list, goal:int) =
+  let fun check_draw(cards, inhand, mv) =
+        case cards of
+             [] => ([], inhand, [])
+           | x::xs => if sum_cards(x::inhand) > goal
+                      then (xs, x::inhand, [])
+                      else (xs, x::inhand, mv)
+      fun rec_play(cards, inhand, mv) =
+        case mv of
+             [] => score(inhand, goal)
+           | x::xs => 
+               case x of
+                    Discard c =>rec_play(cards, remove_card(inhand, c,
+                    IllegalMove), xs)
+                  | Draw => rec_play(check_draw(cards, inhand, xs))
+  in rec_play(cs, [], mvs)
+  end
 
 

@@ -49,10 +49,16 @@ score([(Clubs, Jack),(Spades, Num 10),(Clubs, Ace),(Clubs, Num 3)], 30);
 score([(Clubs, Jack),(Hearts, Num 10),(Hearts, Ace),(Diamonds, Num 3)], 40);
 score([(Clubs, Jack),(Clubs, Num 10),(Clubs, Ace),(Clubs, Num 3)], 40);
 
+(* test move is empty *)
+officiate([(Clubs, Jack),(Hearts, Num 10),(Hearts, Ace),(Diamonds, Num 3),
+(Diamonds, Num 3)], [Draw, Draw, Draw, Draw], 40) = 6;
+(* test card is empty *)
+officiate([(Clubs, Jack),(Hearts, Num 10),(Hearts, Ace),(Diamonds, Num 3),
+(Diamonds, Num 3)], [Draw, Draw, Draw, Draw, Draw, Draw, Draw], 40) = 3;
 
-
-
-fun officiate xs = 1
+(* test over-draw *)
+officiate([(Clubs, Jack),(Hearts, Num 10),(Hearts, Ace),(Diamonds, Num 3)],
+[Draw, Draw, Draw, Draw], 30) = 3;
 
 fun provided_test1 () = (* correct behavior: raise IllegalMove *)
     let val cards = [(Clubs,Jack),(Spades,Num(8))]
