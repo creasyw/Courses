@@ -96,6 +96,27 @@ fun all_same_color cs =
      | head::(neck::tail) => card_color(head)=card_color(neck) andalso
        all_same_color(tail)
 
+(* 2-e *)
+fun sum_cards cs =
+  let fun adding (lst, result) =
+        case lst of
+             [] => result
+           | x::xs => adding(xs, result+card_value(x))
+  in adding(cs, 0)
+  end
+
+(* 2-f *)
+fun score (cs:card list, s:int) =
+  let fun same_color num =
+        if all_same_color(cs) then num div 2
+        else num
+      val preliminary = same_color(sum_cards(cs)-s)
+  in
+    if preliminary >= 0 then preliminary*3
+    else ~preliminary
+  end
+
+
 
 
 

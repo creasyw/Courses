@@ -42,6 +42,13 @@ all_same_color([(Clubs, Jack),(Clubs, Num 10),(Clubs, Ace),(Clubs, Num
 3)]);
 all_same_color([(Clubs, Jack),(Hearts, Num 10),(Hearts, Ace),(Diamonds, Num
 3)]);
+sum_cards([(Clubs, Jack),(Hearts, Num 10),(Hearts, Ace),(Diamonds, Num 3)]);
+sum_cards([(Clubs, Jack)]);
+score([(Clubs, Jack),(Hearts, Num 10),(Hearts, Ace),(Diamonds, Num 3)], 30);
+score([(Clubs, Jack),(Spades, Num 10),(Clubs, Ace),(Clubs, Num 3)], 30);
+score([(Clubs, Jack),(Hearts, Num 10),(Hearts, Ace),(Diamonds, Num 3)], 40);
+score([(Clubs, Jack),(Clubs, Num 10),(Clubs, Ace),(Clubs, Num 3)], 40);
+
 
 
 
