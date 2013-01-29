@@ -8,8 +8,8 @@ fun same_string(s1 : string, s2 : string) =
 
 (* put your solutions for problem 1 here *)
 (* 1-a *)
-fun all_except_option (y:string, ys:string list) =
-  let fun iterate_list (head:string list, tail:string list) =
+fun all_except_option (y, ys) =
+  let fun iterate_list (head, tail) =
         case tail of
              [] => NONE
            | x::xs' => if same_string(x, y) then SOME(head@xs')
@@ -51,8 +51,6 @@ fun similar_names (lst:string list list, {first:string, middle:string,
   end
 
 
-
-
 (* you may assume that Num is always used with values 2, 3, ..., 10
    though it will not really come up *)
 datatype suit = Clubs | Diamonds | Hearts | Spades
@@ -65,3 +63,39 @@ datatype move = Discard of card | Draw
 exception IllegalMove
 
 (* put your solutions for problem 2 here *)
+(* 2-a *)
+fun card_color c =
+  case c of
+       (Spades, _) => Black
+     | (Clubs, _) => Black
+     | _ => Red
+
+(* 2-b *)
+fun card_value c =
+  case c of
+       (_, Ace) => 11
+     | (_, Num i) => i
+     | _ => 10
+
+(* 2-c *)
+fun remove_card (cs, c, ex) =
+  let fun iterate_list (head, tail) =
+        case tail of
+             [] => raise ex
+           | x::xs' => if x = c then head@xs'
+                        else iterate_list(head@[x], xs')
+  in
+    iterate_list([], cs)
+  end
+
+(* 2-d *)
+fun all_same_color cs =
+  case cs of
+       [] => true
+     | _::[] => true
+     | head::(neck::tail) => card_color(head)=card_color(neck) andalso
+       all_same_color(tail)
+
+
+
+
