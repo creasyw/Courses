@@ -156,7 +156,6 @@ fun score_challenge (cs:card list, s:int) =
     itera_sub(cs, score(cs, s))
   end
 
-(* 3-b *)
 fun officiate_challenge (cs:card list, mvs:move list, goal:int) =
   let
     fun substitute_mv(head, tail) =
@@ -181,5 +180,4 @@ fun officiate_challenge (cs:card list, mvs:move list, goal:int) =
   in
     itera_sub(cs, mvs, officiate(cs, mvs, goal))
   end
-
 
