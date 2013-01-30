@@ -110,10 +110,10 @@ fun score (cs:card list, s:int) =
   let fun same_color num =
         if all_same_color(cs) then num div 2
         else num
-      val preliminary = same_color(sum_cards(cs)-s)
+      val preliminary = sum_cards(cs)-s
   in
-    if preliminary >= 0 then preliminary*3
-    else ~preliminary
+    if preliminary >= 0 then same_color(preliminary*3)
+    else same_color(~preliminary)
   end
 
 (* 2-g *)
