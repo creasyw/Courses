@@ -135,4 +135,51 @@ fun officiate (cs:card list, mvs:move list, goal:int) =
   in rec_play(cs, [], mvs)
   end
 
+(* 3-a *)
+fun substitute_ace (head, tail) =
+    case tail of
+         [] => NONE
+       | (tsuit,trank)::xs' => if trank=Ace then SOME(head@[(tsuit,
+       Num(1))]@xs')
+                    else substitute_ace(head@[(tsuit,trank)], xs')
+
+fun score_challenge (cs:card list, s:int) =
+  let
+      fun itera_sub (cards, acc) =
+        case substitute_ace([], cards) of
+             NONE => acc
+           | SOME(x) => let val temp = score(x, s)
+                        in if temp < acc then itera_sub(x,temp)
+                           else itera_sub(x, acc)
+                        end
+  in
+    itera_sub(cs, score(cs, s))
+  end
+
+(* 3-b *)
+fun officiate_challenge (cs:card list, mvs:move list, goal:int) =
+  let
+    fun substitute_mv(head, tail) =
+      case tail of
+           [] => NONE
+         | Discard (tsuit,trank)::xs' => if trank=Ace then SOME(head@[Discard(tsuit,
+         Num(1))]@xs')
+                      else substitute_mv(head@[Discard(tsuit,trank)], xs')
+         | Draw::xs' => substitute_mv(head@[Draw], xs')
+
+    fun itera_sub (cards, moves, acc) =
+      case substitute_ace([], cards) of
+           NONE => acc
+         | SOME(x) => let 
+                          val newmv = case substitute_mv([], moves) of
+                                           NONE => moves
+                                         | SOME(y) => y
+                          val temp = officiate(x, newmv, goal)
+                      in if temp < acc then itera_sub(x, newmv, temp)
+                         else itera_sub(x, newmv, acc)
+                      end
+  in
+    itera_sub(cs, mvs, officiate(cs, mvs, goal))
+  end
+
 
