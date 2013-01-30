@@ -123,6 +123,6 @@ fun oc_test4 () =
                                 end
 
 val officiate_challenge_test1 = oc_test1() = 4;
-val officiate_challenge_test2 = oc_test2() = 18;
+val officiate_challenge_test2 = oc_test2() = 9;
 val officiate_challenge_test3 = oc_test3() = 2;
 val officiate_challenge_test4 = oc_test4() = 3;
