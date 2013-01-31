@@ -10,8 +10,12 @@ def merge_sort (x):
             else:
                 acc.append(y.pop(0))
             return merge(x, y, acc)
-    
-
+    def split_conquer(y):
+        if len(y)==1:
+            return y
+        else:
+            return merge(split_conquer(y[:len(y)/2]), split_conquer(y[len(y)/2:]), [])
+    return split_conquer(x)
 
 def test (l):
     from random import shuffle
