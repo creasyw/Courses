@@ -37,4 +37,9 @@ fun all_even xs =filter(is_even, xs)
 fun all_even_snd xs = filter((fn(_,v)=>is_even v), xs)
 
 
+fun double_or_triple f =
+  if f 7
+  then fn x=>x*2
+  else fn x=>x*3
 
+val double = double_or_triple (fn x=>x-3=4)
