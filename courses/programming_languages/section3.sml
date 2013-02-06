@@ -12,7 +12,6 @@ fun double_n(n, x) = n_times((fn x=>x+x), n, x)
 
 (* test *)
 val x1 = n_times(double, 4, 7)
-val x2 = n_times(increment, 4, 7)
 val x3 = n_times(tl, 2, [1,2,3,4])
 
 
@@ -43,3 +42,33 @@ fun double_or_triple f =
   else fn x=>x*3
 
 val double = double_or_triple (fn x=>x-3=4)
+
+
+fun all_shorter_than_1 (xs, s) =
+  filter((fn x=> String.size x< (print "!\n"; String.size s)), xs)
+fun all_shorter_than_2 (xs, s) =
+  let val i = (print "!\n"; String.size s)
+  in
+    filter ((fn x => String.size x< i), xs)
+  end
+
+
+fun fold (f, acc, xs) =
+  case xs of
+       [] => acc
+     | x::xs' => fold(f, f(acc, x), xs')
+
+fun compose(f, g) = fn x => f(g x)
+
+infix |>
+fun x |> f = f x
+fun sqrt_of_abs i =  i |> abs |> Real.fromInt |> Math.sqrt 
+
+fun backup1 (f,g) = fn x => case f x of
+                                 NONE => g x
+                               | SOME y => y
+fun backup2 (f,g) = fn x => f x handle _ => g x
+
+
+
+
