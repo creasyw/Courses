@@ -35,7 +35,35 @@ val pat1 = TupleP([ConstP 12, Variable "var1", ConstructorP("constr1",
 Wildcard)]);
 val pat2 = TupleP([Variable "var", Wildcard, TupleP([Variable "var", Wildcard,
 TupleP([Variable "var", Wildcard])])]);
+val pat3 = TupleP([Variable "var1", Wildcard, TupleP([Variable "var2", Wildcard,
+TupleP([Variable "var3", Wildcard])])]);
 val a09c1 = count_some_var("var1", pat1) = 1;
 val a09c2 = count_some_var("whatever", UnitP) = 0;
 val a09c3 = count_some_var("var", pat2) = 3;
+
+(* 10 *)
+(* unit test for helper function 1 *)
+(*
+val pat3 = [Variable "var", Wildcard, TupleP([Variable "var", Wildcard,
+TupleP([Variable "var", Wildcard])])];
+disassemble (Variable "var");
+disassemble (TupleP([Variable "var", Wildcard,TupleP([Variable "var",
+Wildcard])]));
+disassemble (Wildcard);
+*)
+(* unit test for helper function 2 *)
+(*
+duplicated ["Acs", "aBc", "kaka", "Why me ", "so What"];
+duplicated ["Acs", "aBc", "kaka", "Why me ", "kaka", "so What"];
+*)
+val a1001 = check_pat UnitP;
+val a1002 = check_pat pat1;
+val a1003 = check_pat pat3;
+val a1004 = not (check_pat pat2);
+
+
+
+
+
+
 
