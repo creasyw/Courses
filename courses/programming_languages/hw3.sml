@@ -86,7 +86,8 @@ fun all_answers f xs =
       case ys of
            [] => acc
          | y::ys' => case f(y) of
-                          NONE => local_helper(acc,ys')
+                          (*NONE => local_helper(acc,ys')*)
+                          NONE => NONE
                         | SOME v => case acc of
                                          NONE => local_helper(SOME v, ys')
                                        | _ => local_helper(SOME(v@(valOf acc)), ys')
@@ -111,7 +112,6 @@ fun check_pat p =
          | ConstructorP(_, pl) => disassemble pl
          | TupleP ps => List.foldl (fn (x, y) => (disassemble x)@y) [] ps
          | _ => []
-            
     fun duplicated sl =
       case sl of
            [] => true
@@ -121,17 +121,25 @@ fun check_pat p =
   in duplicated(disassemble p)
   end
 
+(* 11 *)
+fun match (vl, pt) =
+  case (vl, pt) of
+       (_, Wildcard) => SOME []
+     | (_, Variable s) => SOME [(s, vl)]
+     | (Unit, UnitP) => SOME []
+     | (Const x, ConstP y) => if x=y then SOME [] else NONE
+     | (Constructor(s1,v), ConstructorP (s2,p)) => if s1=s2 then match (v,p) else NONE
+     | (Tuple vs, TupleP ps) => 
+         (all_answers (fn (x,y) => match(x, y)) (ListPair.zipEq(vs,ps))
+         handle UnequalLengths => NONE)
+     | _ => NONE
 
-
-
-
-
-
-
-
-
-
-
-
+(* 12 *)
+fun first_match vl ps =
+  case ps of
+       [] => NONE
+     | y::ys => let val temp = match(vl,y)
+                in if temp = NONE then first_match vl ys else temp
+                end
 
 

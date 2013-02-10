@@ -22,9 +22,12 @@ first_answer (fn x=>if x>5 then SOME([x]) else NONE) [1,2,3,4,5,6,7];
 (*first_answer (fn x=>if x>5 then SOME([x]) else NONE) [1,2,3,4];*)
 
 (* 8 *) 
-all_answers (fn x=>if x>5 then SOME([x]) else NONE) [1,2,3,4,5,6,7];
-all_answers (fn x=>if x>5 then SOME([x]) else NONE) [1,2,3,4];
-all_answers (fn x=>if x>5 then SOME([x]) else NONE) [];
+val a0801 = all_answers (fn x=>if x>5 then SOME([x]) else NONE) [1,2,3,4,5,6,7]
+= NONE;
+val a0802 = all_answers (fn x=>if x>5 then SOME([x]) else NONE) [8,7,3,4] = NONE;
+val a0803 = all_answers (fn x=>if x>5 then SOME([x]) else NONE) [8,7,9,10] =
+  SOME [10,9,7,8];
+val a0804 = all_answers (fn x=>if x>5 then SOME([x]) else NONE) [] = SOME [];
 
 (* 9 *)
 val a = TupleP [Wildcard, Wildcard, UnitP, Wildcard, Variable "qwerty",
@@ -61,8 +64,38 @@ val a1002 = check_pat pat1;
 val a1003 = check_pat pat3;
 val a1004 = not (check_pat pat2);
 
+val val1ok1 = Tuple([Const 12, Constructor("blah", Unit), Constructor("constr1",
+Tuple([]))]);
+val val1ok2 = Tuple([Const 12, Const 13, Constructor("constr1", Const 14)]);
+val val1ko1 = Tuple([Const 12, Constructor("blah", Unit), Constructor("constr2",
+Tuple([]))]);
+val val1ko2 = Tuple([Const 13, Constructor("blah", Unit), Constructor("constr1",
+Tuple([]))]);
+val val1ko3 = Tuple([Const 13, Constructor("blah", Unit), Unit]);
+val val3ok1 = Tuple([Const 1, Unit, Tuple([Const 2, Unit, Tuple([Const 3,
+Unit])])]);
+val val3ok2 = Tuple([Unit, Const 1, Tuple([Unit, Const 2, Tuple([Unit, Const
+3])])]);
+val val3ko1 = Tuple([Const 1, Unit, Tuple([Const 2, Unit, Tuple([Const 3])])]); 
+val a1101 = match(Unit, UnitP) = SOME [];
+val a1102 = match(val1ok1, pat1) = SOME [("var1", Constructor("blah", Unit))];
+val a1103 = match(val1ok2, pat1) = SOME [("var1", Const 13)];
+val a1104 = match(val1ko1, pat1) = NONE;
+val a1105 = match(val1ko2, pat1) = NONE;
+val a1106 = match(val1ko3, pat1) = NONE;
+val a1107 = match(val3ok1, pat3) = SOME [("var3",Const 3),("var2",Const
+2),("var1",Const 1)];
+val a1108 = match(val3ok2, pat3) = SOME
+[("var3",Unit),("var2",Unit),("var1",Unit)];
+val a1109 = match(val3ko1, pat3) = NONE;
 
 
+val a1201 = first_match val1ok1 [pat2, pat1] = SOME [("var1",
+Constructor("blah", Unit))];
+val a1202 = first_match val1ok1 [Wildcard, pat1] = SOME [];
+val a1203 = first_match val1ko1 [pat1, pat2, pat3, UnitP] = NONE; 
+val a1204 = first_match val3ok1 [pat1, UnitP, pat3] = SOME [("var3",Const
+3),("var2",Const 2),("var1",Const 1)]; 
 
 
 
