@@ -24,18 +24,15 @@ def quick_sort_count (arr, index, median=False):
         l[b] = temp
         return l
     def find_median(x):
-        candi = sorted([x[0],x[-1],x[int(ceil(len(x)/2.))]])[1]
+        candi = sorted([x[0],x[-1],x[int(ceil(len(x)/2.))-1]])[1]
         return swap(x, 0, x.index(candi))
 
     if len(arr)==0 or len(arr)==1:
         return arr, 0
-    
-    print arr
     if index != 0:
         arr = swap(arr, index, 0)
     if median:
         arr = find_median(arr)
-        print arr
     pivot = arr[0]
     i = 1
     for j in range(i,len(arr)):
@@ -50,15 +47,29 @@ def quick_sort_count (arr, index, median=False):
 def test (l):
     from random import shuffle
     x=range(l)
-    x = [0, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    a = [0, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    b = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    c = [1, 11, 5, 15, 2, 12, 9, 99, 77, 0]
+    d = [999, 3, 2, 98, 765, 8, 14, 15, 16, 88, 145, 100]
+    e = [1, 11, 5, 15, 2, 999, 3, 2, 98, 765, 8, 14, 15, 16, 88, 145, 100, 12, 9, 99, 77, 0]
     #shuffle(x)
     #print "The original data set is ", x
-    arr, result = quick_sort_count(x, 0, True)
-    #print "The sorted data set is ", arr
+    arr, result = quick_sort_count(x, -1)
+    print "The overall comparison # is ", result
+
+    arr, result = quick_sort_count(a, -1)
+    print "The overall comparison # is ", result
+    arr, result = quick_sort_count(b, -1)
+    print "The overall comparison # is ", result
+    arr, result = quick_sort_count(c, -1)
+    print "The overall comparison # is ", result
+    arr, result = quick_sort_count(d, -1)
+    print "The overall comparison # is ", result
+    arr, result = quick_sort_count(e, -1)
     print "The overall comparison # is ", result
 
 if __name__ == "__main__":
-    test(10)
+    test(100)
 
 
 
