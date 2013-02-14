@@ -37,11 +37,21 @@ fun no_zeros_or_empty_strings_t2_alternate x =
      | Quux y => no_zeros_or_empty_strings_t1_alternate
      (no_zeros_or_empty_strings_t2_alternate, y)
 
+(* signature *)
+signature RATIONAL =
+sig
+  type rational
+  val Whole: int->rational
+  exception BadFrac
+  val make_frac: int*int->rational
+  val add: rational*rational->rational
+  val toString: rational->string
+end
 
 (* Module *)
-structure Rational1 =
+structure Rational1 :> RATIONAL =
 struct
-  datatype rational1 = Whole of int | Frac of int*int
+  datatype rational = Whole of int | Frac of int*int
   exception BadFrac
 
   fun gcd (x,y) =
