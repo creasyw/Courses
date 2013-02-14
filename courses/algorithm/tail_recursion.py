@@ -6,6 +6,9 @@ def fac(n):
         t = t()
     return t
 
+def fac2(n):
+    return reduce(lambda x, y: x*y, xrange(1,num))
+
 def test(n):
     print fac(n)
 
