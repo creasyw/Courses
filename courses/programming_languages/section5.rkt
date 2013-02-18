@@ -21,6 +21,17 @@
               (+ (sum2 (car xs)) (sum2 (cdr xs)))
               (sum2 (cdr xs))))))
 
+(define (sum3 xs)
+  (cond [(null? xs) 0]
+        [(number? (car xs)) (+ (car xs) (sum3 (cdr xs)))]
+        [#t (+ (sum3 (car xs)) (sum3 (cdr xs)))]))
+
+(define (sum4 xs)
+  (cond [(null? xs) 0]
+        [(number? (car xs)) (+ (car xs) (sum4 (cdr xs)))]
+        [(list? (car xs)) (+ (sum4 (car xs)) (sum4 (cdr xs)))]
+        [#t (sum4 (cdr xs))]))
+
 (define (my-append xs ys)
   (if (null? xs)
       ys
@@ -37,3 +48,12 @@
         acc
         (fact-helper (- n 1) (* acc n))))
   (fact-helper n 1))
+
+(define (max-of-list xs)
+  (cond [(null? xs) (error "max-of-list given empty list")]
+        [(null? (cdr xs)) (car xs)]
+        [#t (let ([tlans (max-of-list (cdr xs))])
+              (if (> tlans (car xs))
+                  tlans
+                  (car xs)))]))
+
