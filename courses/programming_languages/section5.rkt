@@ -49,6 +49,14 @@
         (fact-helper (- n 1) (* acc n))))
   (fact-helper n 1))
 
+#! Delay evaluation
+(define (my-if x y z)
+  (if x (y) (z)))
+(define (fact1 n)
+  (my-if (= n 1)
+      (lambda () 1)
+      (lambda () (* n (fact1 (- n 1))))))
+  
 (define (max-of-list xs)
   (cond [(null? xs) (error "max-of-list given empty list")]
         [(null? (cdr xs)) (car xs)]
@@ -56,4 +64,3 @@
               (if (> tlans (car xs))
                   tlans
                   (car xs)))]))
-
