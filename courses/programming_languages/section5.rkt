@@ -115,3 +115,24 @@
   (syntax-rules (then else)
     [(my-if e1 then e2 else e3)
      (if e1 e2 e3)]))
+
+(define-syntax my-for
+  (syntax-rules (to do)
+    [(my-for lo to hi do body)
+     (let ([l lo]
+           [h hi])
+       (letrec ([loop (lambda (it)
+                        (if (> it h)
+                            #t
+                            (begin body (loop (+ it 1)))))])
+               (loop l)))]))
+(define-syntax my-let
+  (syntax-rules ()
+    [(my-let () body)
+     body]
+    [(my-let ([var val]
+              [var-rest val-rest] ...) 
+             body)
+     (let ([var val])
+       (my-let([var-rest val-rest] ...)
+              body))]))
