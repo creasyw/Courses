@@ -13,7 +13,8 @@
 (define (accumulator x) (lambda () (cons x (accumulator (+ x 1)))))
 (begin (print "q0402") (ormap eq? (stream-for-n-steps (accumulator 1) 10)
 			      '(1 2 3 4 5 6 7 8 9 10)))
-
+(begin (print "q0501") (ormap eq? (stream-for-n-steps funny-number-stream 10)
+			      '(1 2 3 4 -5 6 7 8 9 -10)))
 
 
 

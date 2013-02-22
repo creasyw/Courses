@@ -29,3 +29,10 @@
           (g (cdr pr) (cons (car pr) acc) (- count 1)))))
   (reverse (g s '() n)))
 
+; 5
+(define funny-number-stream
+  (letrec ([f (lambda (x) (cons
+                           (if (= (modulo x 5) 0) (- 0 x) x)
+                           (lambda () (f (+ x 1)))))])
+    (lambda () (f 1))))
+                           
