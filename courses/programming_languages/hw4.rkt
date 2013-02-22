@@ -19,3 +19,13 @@
   (cond [(< n 0) (error "list-nth-mod: negative number")]
         [(null? xs) (error "list-nth-mod: empty list")]
         [#t (car (list-tail xs (remainder n (length xs))))]))
+
+; 4
+(define (stream-for-n-steps s n)
+  (define (g st acc count)
+    (let ([pr (st)])
+      (if (<= count 0)
+          acc
+          (g (cdr pr) (cons (car pr) acc) (- count 1)))))
+  (reverse (g s '() n)))
+
