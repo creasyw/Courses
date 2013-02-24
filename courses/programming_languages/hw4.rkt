@@ -43,10 +43,9 @@
     (lambda () (f p))))
 
 ; 7
-(define stream-add-zero
-  (lambda (s)
-    (let ([pr (s)])
-      (lambda () (cons (cons 0 (car pr)) (lambda ()  (stream-add-zero (cdr pr))))))))
+(define (stream-add-zero s)
+  (letrec ([f (lambda (x) (cons (cons 0 (car (x))) (lambda () (f (cdr (x))))))])
+    (lambda () (f s))))
 
 ; 8
 (define (cycle-lists xs ys)
