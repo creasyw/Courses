@@ -54,3 +54,13 @@
           (lambda () (streaming-list lst1 (+ n1 1) lst2 (+ n2 1)))))
   (lambda () (streaming-list xs 0 ys 0)))
   
+; 9
+(define (vector-assoc v vc)
+  (define (vector-recursive ind)
+    (cond [(<= (vector-length vc) ind) #f]
+          [(and (pair? (vector-ref vc ind)) 
+                (equal? v (car (vector-ref vc ind)))) 
+           (vector-ref vc ind)]
+          [#t (vector-recursive (+ ind 1))]))
+  (vector-recursive 0))
+

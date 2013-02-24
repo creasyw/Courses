@@ -16,5 +16,12 @@
 (begin (print "q0501") (ormap eq? (stream-for-n-steps funny-number-stream 10)
 			      '(1 2 3 4 -5 6 7 8 9 -10)))
 
+(define vc1 (vector '(1 2) 10 '(3 4) '(5 6)))
+(begin (print "q0901") (ormap eq? (vector-assoc 3 vc1) '(3 4)))
+(define vc2 (vector '("a" 2) 10 '(3 4) '("b" 6)))
+(begin (print "q0902") (ormap eq? (vector-assoc "b" vc2) '("b" 6)))
+
+
+
 
 
