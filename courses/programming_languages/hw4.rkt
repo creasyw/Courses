@@ -46,13 +46,12 @@
 (define stream-add-zero
   (lambda (s)
     (let ([pr (s)])
-      (cons (cons 0 (car pr)) (lambda ()  (stream-add-zero (cdr pr)))))))
+      (lambda () (cons (cons 0 (car pr)) (lambda ()  (stream-add-zero (cdr pr))))))))
 
 ; 8
 (define (cycle-lists xs ys)
   (define (streaming-list lst1 n1 lst2 n2)
-    (cons (cons (list-ref lst1 (modulo n1 (length lst1)))
-                (list-ref lst2 (modulo n2 (length lst2))))
+    (cons (cons (list-ref lst1 (modulo n1 (length lst1))) (list-ref lst2 (modulo n2 (length lst2))))
           (lambda () (streaming-list lst1 (+ n1 1) lst2 (+ n2 1)))))
-  (streaming-list xs 0 ys 0))
+  (lambda () (streaming-list xs 0 ys 0)))
   
