@@ -64,3 +64,26 @@
           [#t (vector-recursive (+ ind 1))]))
   (vector-recursive 0))
 
+; 10
+(define (cached-assoc xs n)
+  (letrec ([memo (make-vector n #f)]
+           [count 0]
+           [f (lambda(x)
+                (let ([ans (vector-assoc x memo)])
+                  (if ans
+                      ans
+                      (let ([new-ans (assoc x xs)])
+                        (if new-ans
+                            (begin (vector-set! memo count new-ans)
+                                   (set! count (remainder (+ 1 count) n))
+                                   new-ans)
+                            new-ans)))))])
+          f))
+
+; 11
+(define-syntax while-less
+  (syntax-rules (do)
+    [(while-less e1 do e2)
+     (letrec ([v1 e1]
+              [f (lambda () (if (< e2 v1) (f) #t))])
+       (f))]))
