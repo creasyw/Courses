@@ -58,3 +58,19 @@
                                      (eval-exp (if-then-else-e3 e)))
                                  (error "if-then-else applied to non-boolean")))]
         [#t (error "eval-exp expected an exp")]))
+
+; macro
+(define (andalso e1 e2)
+  (if-then-else e1 e2 (bool #f)))
+(define (double e)
+  (multiply e (const 2)))
+(define (list-product es)
+  (if (null? es)
+      (const 1)
+      (multiply (car es) (list-product (cdr es)))))
+(define test3 (andalso (eq-num (double (const 4))
+                              (list-product (list (const 2)
+                                                  (const 2)
+                                                  (const 1)
+                                                  (const 2))))
+                      (bool #t)))
