@@ -74,3 +74,15 @@
                                                   (const 1)
                                                   (const 2))))
                       (bool #t)))
+
+; eval
+(define (make-some-code1 y)
+  (if y
+      (list 'begin (list 'print "hi") (list '+ 4 2))
+      (list '+ 5 3)))
+(define (test11) (eval (make-some-code1 #t)))
+(define (make-some-code2 y)
+  (if y
+      (quote (begin (print "Hi") (+ 4 2)))
+      (quote (+ 5 3))))
+(define (test12) (eval (make-some-code2 #t)))
