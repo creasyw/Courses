@@ -1,8 +1,6 @@
 #lang racket
 (provide (all-defined-out)) ;; so we can put tests in a second file
 
-(define debug #f)
-
 ;; definition of structures for MUPL programs - Do NOT change
 (struct var  (string) #:transparent)  ;; a variable, e.g., (var "foo")
 (struct int  (num)    #:transparent)  ;; a constant number, e.g., (int 17)
