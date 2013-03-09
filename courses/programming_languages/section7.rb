@@ -102,3 +102,45 @@ def use_rationals
   puts r2.to_s
 end
 
+# implicit loops
+a = Array.new(5){|i| 4*(i+1)}
+a.map{|x| x*2}
+a.any? {|x| x>7}
+# ruby talk for "reduce"
+a.inject(0) {|acc, elt| acc+elt}
+# "select" for "filter"
+a.select {|x| x>7 && x<18}
+
+# another way to avoid loop in ruby
+def t i
+  (0..i).each do |j|
+    print "  "*j
+    (j..i).each {|k| print k; print " "}
+    print "\n"
+  end
+end
+
+# Using the blocks that callee passes
+class Foo
+  def initialize(max)
+    @max = max
+  end
+  def silly
+    yield(4,5)+yield(@max, @max)
+  end
+
+  def count base
+    if base > @max
+      raise "reach max"
+    elsif yield base
+      1
+    else
+      1+ (count(base+1) {|i| yield i})
+    end
+  end
+end
+
+f = Foo.new(1000)
+f.silly {|a,b| 2*a-b}
+f.count(10) {|i| (i*i) == (34*i)}
+
