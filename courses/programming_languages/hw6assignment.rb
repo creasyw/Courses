@@ -23,18 +23,17 @@ end
 
 class MyPiece < Piece
   # The constant All_My_Pieces should be declared here
-  Cheat_Piece = [[[0,0]]]	# for cheating
-  Additional_Pieces = [rotations([[0,0],[1,0],[0,1]]), # tri
+  Cheat_Piece = [[[[0,0]]]]	# for cheating
+  All_My_Pieces = All_Pieces + [rotations([[0,0],[1,0],[0,1]]), # tri
   		[[[0, 0], [-1, 0], [1, 0], [2, 0], [3,0]], #longest
   		[[0, 0], [0, -1], [0, 1], [0, 2], [0,3]]],
   		rotations([[0, 0], [1, 0], [0, 1], [1, 1],[2,0]]),
   		rotations([[0, 0], [1, 0], [0, 1], [1, 1],[2,1]])] 
-  All_Pieces += Additional_Pieces
 
   # your enhancements here
   def self.next_piece (board)
     if !board.cheat_flag
-      MyPiece.new(All_Pieces.sample, board)
+      MyPiece.new(All_My_Pieces.sample, board)
     else
       MyPiece.new(Cheat_Piece.sample, board)
     end
