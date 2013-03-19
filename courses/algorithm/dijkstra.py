@@ -30,12 +30,17 @@ def gen_candidates(matrix):
 def end_criterion(ending, candidate):
     return candidate in ending
 
+# Note that the running time for Dijastra's algorithm is "almost" linear, which is equal to
+# O(mlogn), where m is the # of edges and n is the # of vertices.
+# The algorithm should be used for "weak link" graphs.
 # The basic algorithm comes from Wikipedia http://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 # But there are some critical aspects missing in that article:
 # 1. there should be a list keeping track of visited nodes, or it will visit the same node over and over again.
 # 2. there are two other datasets: original graph and a priority queue
 # 3. the algorithm tends to visit every node in the graph if possible. It is the"Traveling salesman problem".
-# 4. if the goal is to find shortest path with given starting and ending points, just like this question. Keeping track of shortest distance from begining and returning the 1st hit of the ending point with accumulated distance should be fine.
+# 4. if the goal is to find shortest path with given starting and ending points, just like this question. 
+#    Keeping track of shortest distance from begining and returning the 1st hit of the ending point with 
+#    accumulated distance should be fine.
 def dijkstra(graph, candidates):
     ending = set(k*100+79 for k in range(80))
     visited = {}
