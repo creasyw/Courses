@@ -1,5 +1,6 @@
 import numpy as np
 from math import cos, sin, pi, log
+import matplotlib.pyplot as plt
 
 def signal_generation(Es):
     """
@@ -54,17 +55,31 @@ def detection (receive, Es):
 def performance(tx, rx):
     """ Calculate the symbol error rate. """
     count = sum(1 for i in range(len(tx)) if tx[i]==rx[i])
-    return float(count)/len(tx)
+    return 1-float(count)/len(tx)
+
+def plotting(snr, ser):
+    snr = 10**(np.array(snr)/10.)
+    fig = plt.figure()
+    plt.semilogy(ser, snr)
+    plt.grid(True)
+    plt.ylabel("Signal-to-Noise Ratio")
+    plt.xlabel("Symbol Error Rate")
+    plt.title("8-PSK Communication System in AWGN")
+    plt.show()
 
 def main():
     Es = 1
     snr = range(0,19)
     tx, signal = signal_generation(Es)
+    result = []
     for i in snr:
+        # snr input to transfer_in_channel should be LINEAR.
         rx = transfer_in_channel(signal, Es, 10**(i/10.))
         decoded = detection(rx, Es)
         ser = performance(tx, decoded)
-        print "SNR=%s -- SER=%s."%(i, ser)
+        print "SNR = %s -- SER = %s."%(i, ser)
+        result.append(ser)
+    plotting(snr, result)
 
 if __name__=="__main__":
     main()
