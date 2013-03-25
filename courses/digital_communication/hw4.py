@@ -58,12 +58,11 @@ def performance(tx, rx):
     return 1-float(count)/len(tx)
 
 def plotting(snr, ser):
-    snr = 10**(np.array(snr)/10.)
     fig = plt.figure()
-    plt.semilogy(ser, snr)
+    plt.semilogy(snr, ser)
     plt.grid(True)
-    plt.ylabel("Signal-to-Noise Ratio")
-    plt.xlabel("Symbol Error Rate")
+    plt.xlabel("Signal-to-Noise Ratio")
+    plt.ylabel("Symbol Error Rate")
     plt.title("8-PSK Communication System in AWGN")
     plt.show()
 
