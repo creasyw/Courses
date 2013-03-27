@@ -76,7 +76,7 @@ def theoretical(Es, snr):
     noise = Es/(10**(np.array(snr)/10.))
     # choose the 3rd upper bound of Pe
     ser_max = 7*q_function(dmin/((2*noise)**0.5))
-    ser_min = 2/7*q_function(dmin/((2*noise)**0.5))
+    ser_min = 2/7.*q_function(dmin/((2*noise)**0.5))
     return ser_max, ser_min
 
 def main():
