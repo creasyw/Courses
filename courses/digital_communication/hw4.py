@@ -1,6 +1,10 @@
 import numpy as np
 from math import cos, sin, pi, log
 import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+# calculate the norm distance between points
+norm = lambda m: (reduce(lambda acc, itr: acc+itr**2, m, 0))**0.5
 
 def signal_generation(Es):
     """
@@ -35,8 +39,6 @@ def detection (receive, Es):
     # Mapping the codewords to modulation plane
     mapping = (np.vstack((map(lambda m: (Es)**0.5*cos(2*pi*m/8), cd), \
             map(lambda m: (Es)**0.5*sin(2*pi*m/8), cd)))).T
-    # calculate the norm distance between points
-    norm = lambda m: (reduce(lambda acc, itr: acc+itr**2, m, 0))**0.5
     
     decoded = []
     for i in receive:
@@ -57,14 +59,25 @@ def performance(tx, rx):
     count = sum(1 for i in range(len(tx)) if tx[i]==rx[i])
     return 1-float(count)/len(tx)
 
-def plotting(snr, ser):
+def plotting(snr, ser, ser_max, ser_min):
     fig = plt.figure()
     plt.semilogy(snr, ser)
+    plt.semilogy(snr, ser_max, ls='--')
+    plt.semilogy(snr, ser_min, ls="-.")
     plt.grid(True)
     plt.xlabel("Signal-to-Noise Ratio")
     plt.ylabel("Symbol Error Rate")
     plt.title("8-PSK Communication System in AWGN")
     plt.show()
+
+def theoretical(Es, snr):
+    q_function = lambda x: 1-norm.cdf(x)
+    dmin = norm(np.array([(Es)**0.5*cos(2*pi/8), (Es)**0.5*sin(2*pi/8)]) - np.array([(Es)**0.5, 0]))
+    noise = Es/(10**(np.array(snr)/10.))
+    # choose the 3rd upper bound of Pe
+    ser_max = 7*q_function(dmin/((2*noise)**0.5))
+    ser_min = 2/7*q_function(dmin/((2*noise)**0.5))
+    return ser_max, ser_min
 
 def main():
     Es = 1
@@ -78,7 +91,8 @@ def main():
         ser = performance(tx, decoded)
         print "SNR = %s -- SER = %s."%(i, ser)
         result.append(ser)
-    plotting(snr, result)
+    ser_max, ser_min = theoretical(Es, snr)
+    plotting(snr, result, ser_max, ser_min)
 
 if __name__=="__main__":
     main()
