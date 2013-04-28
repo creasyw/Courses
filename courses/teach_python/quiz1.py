@@ -7,6 +7,9 @@ f = lambda x: -5*x**5+69*x**2-47
 # Q6
 g = lambda x, y, z, w: x*(1+y/z)**(z*w)
 
+# Q7
+size = lambda n, s: 0.25*n*s**2/tan(pi/n)
+
 # Q9
 def project_to_distance(point_x, point_y, distance):
     dist_to_origin = math.sqrt(point_x ** 2 + point_y ** 2)
