@@ -10,17 +10,40 @@ def awgn(nsample, nvar):
 def binary_pam(nsample):
     return np.array(map(lambda x: -1 if x==0 else x, np.random.randint(2, size=nsample)))
 
-def channel(signal, tap):
+def channel(signal, tap, snr):
     L = len(signal)
-    noise = awgn(L)
-    output = np.zeros(L)
+    output = awgn(L, 10**(-snr/10.))
     for n in range(L):
-        output[n] += noise[n]
         for k in range(len(tap)):
             if n-k >= 0: output[n] += tap[k]*signal[n-k]
     return output
 
-def zero_forcing(nchannel, nsample, nzf, snr):
+#def zero_forcing_coeff(tap, nzf):
+#    index = np.zeros((nzf+len(tap), nzf), dtype=float)
+#    q = np.zeros(nzf+len(tap), dtype=float)
+#    q[nzf/2] = 1
+#
+#    for n in range(len(index)):
+#        for j in range(n, n-3, -1):
+#            if j<0 or j>=nzf: continue
+#            index[n, j] = tap[n-j]
+#    #index = np.vstack((index[:nzf/2], index[nzf/2+1:]))
+#    return np.linalg.lstsq(index, q)
+def zero_forcing_coeff(tap, nzf):
+    index = np.zeros((nzf+len(tap), nzf), dtype=float)
+    q = np.zeros(nzf+len(tap), dtype=float)
+    q[nzf/2] = 1
+    fz = np.fft.fft(tap)
+
+    for n in range(len(index)):
+        for j in range(n, n-3, -1):
+            if j<0 or j>=nzf: continue
+            index[n, j] = fz[n-j]
+    #index = np.vstack((index[:nzf/2], index[nzf/2+1:]))
+    coeff,_,_,_ =  np.linalg.lstsq(index, q)
+    return np.fft.ifft(coeff)
+
+def zero_forcing_eq(nchannel, nzf, snrlst, nsample):
     if nchannel == 1:
         tap = tap1
     elif nchannel == 2:
@@ -28,14 +51,16 @@ def zero_forcing(nchannel, nsample, nzf, snr):
     else:
         raise ValueError("The channel shoudl be either 1 or 2!")
     
-    index = np.zeros((nzf, nzf), dtype=float)
-    q = np.zeros(nzf, dtype=float)
-    q[nzf/2+1] = 1
+    ser = []
+    for snr in snrlst:
+        samples = binary_pam(nsample)
+        vn = channel(samples, tap, snr)
+        coeff = zero_forcing_coeff(tap, nzf)
+        estimate = np.array(map(lambda x: -1 if x<0 else 1, np.convolve(vn, coeff)[:nsample]))
+        ser = append(sum(1 for i in range(nsample) if samples[i]!=estimate[i])/float(nsample))
+    return ser
 
-    for n in range(len(index)):
-        for j in range(n, n-3, -1):
-            if j<0 or j>=nzf: continue
-            index[n, j] = tap[n-j]
-    print np.linalg.solve(index, q)
+
+
 
 
