@@ -18,17 +18,6 @@ def channel(signal, tap, snr):
             if n-k >= 0: output[n] += tap[k]*signal[n-k]
     return output
 
-#def zero_forcing_coeff(tap, nzf):
-#    index = np.zeros((nzf+len(tap), nzf), dtype=float)
-#    q = np.zeros(nzf+len(tap), dtype=float)
-#    q[nzf/2] = 1
-#
-#    for n in range(len(index)):
-#        for j in range(n, n-3, -1):
-#            if j<0 or j>=nzf: continue
-#            index[n, j] = tap[n-j]
-#    #index = np.vstack((index[:nzf/2], index[nzf/2+1:]))
-#    return np.linalg.lstsq(index, q)
 def zero_forcing_coeff(tap, nzf):
     index = np.zeros((nzf+len(tap), nzf), dtype=float)
     q = np.zeros(nzf+len(tap), dtype=float)
@@ -62,5 +51,20 @@ def zero_forcing_eq(nchannel, nzf, snrlst, nsample):
 
 
 
+def lmmse_coeff(tap, nzf, snr):
+    fz = np.fft.fft(tap)
+
+    r = np.ones((nzf, nzf), dtype=float)*10**(-snr/10.)
+    for l in range(nzf):
+        for j in range(nzf):
+            for n in range(len(tap)):
+                if 0<n+l-j<len(tap): r[l,j] += np.conjugate(fz[n])*fz[n+l-j]
+    
+    upsilon = np.zeros(nzf, dtype=complex)
+    zero = nzf/2+1
+    upsilon[zero-len(tap)+1:zero+1] = np.conjugate(fz)[::-1]
+
+    c = np.fft.ifft(np.linalg.inv(r)*upsilon)
+    print abs(c)
 
 
