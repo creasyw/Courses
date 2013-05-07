@@ -18,21 +18,36 @@ def channel(signal, tap, snr):
             if n-k >= 0: output[n] += tap[k]*signal[n-k]
     return output
 
+def zero_forcing_theory(tap):
+    return np.fft.ifft(1./np.fft.fft(tap))
+
 def zero_forcing_coeff(tap, nzf):
-    index = np.zeros((nzf+len(tap), nzf), dtype=float)
-    q = np.zeros(nzf+len(tap), dtype=float)
+    index = np.zeros((nzf+len(tap)-1, nzf), dtype=float)
+    q = np.zeros(nzf+len(tap)-1, dtype=float)
     q[nzf/2] = 1
-    fz = np.fft.fft(tap)
+    fz = tap
 
     for n in range(len(index)):
         for j in range(n, n-3, -1):
             if j<0 or j>=nzf: continue
             index[n, j] = fz[n-j]
-    #index = np.vstack((index[:nzf/2], index[nzf/2+1:]))
     coeff,_,_,_ =  np.linalg.lstsq(index, q)
-    return np.fft.ifft(coeff)
+    return coeff
 
-def zero_forcing_eq(nchannel, nzf, snrlst, nsample):
+def lmmse_coeff(fz, nzf, snr):
+    r = np.zeros((nzf, nzf), dtype=float)
+    for l in range(nzf):
+        r[l, l] = 10**(-snr/10.)
+        for j in range(nzf):
+            for n in range(len(fz)):
+                if 0<n+l-j<len(fz): r[l,j] += np.conjugate(fz[n])*fz[n+l-j]
+    
+    upsilon = np.zeros(nzf, dtype=float)
+    zero = nzf/2
+    upsilon[zero-len(fz)+1:zero+1] = np.conjugate(fz)[::-1]
+    return [sum(k) for k in np.linalg.inv(r)*upsilon]
+
+def zero_forcing_eq(nchannel, nzf, snrlst, nsample, eqtype):
     if nchannel == 1:
         tap = tap1
     elif nchannel == 2:
@@ -44,27 +59,21 @@ def zero_forcing_eq(nchannel, nzf, snrlst, nsample):
     for snr in snrlst:
         samples = binary_pam(nsample)
         vn = channel(samples, tap, snr)
-        coeff = zero_forcing_coeff(tap, nzf)
-        estimate = np.array(map(lambda x: -1 if x<0 else 1, np.convolve(vn, coeff)[:nsample]))
-        ser = append(sum(1 for i in range(nsample) if samples[i]!=estimate[i])/float(nsample))
+        if eqtype == "zfir":
+            coeff = zero_forcing_coeff(tap, nzf)
+        elif eqtype == "zfthoery":
+            coeff = [float(k) for k in zero_forcing_theory(tap)]
+            print coeff
+        elif eqtype == "lmmse":
+            coeff = lmmse_coeff(tap, nzf, snr)
+        else:
+            raise ValueError("The type of equalizer should be 'zf' (zero-forcing) or\
+                    lmmse (Linear Minimumu MSE)!")
+        estimate = np.array(map(lambda x: -1 if x<0 else 1, np.convolve(vn, coeff, mode='same')))
+        ser.append(sum(1 for i in range(nsample) if samples[i]!=estimate[i])/float(nsample))
     return ser
 
 
 
-def lmmse_coeff(tap, nzf, snr):
-    fz = np.fft.fft(tap)
-
-    r = np.ones((nzf, nzf), dtype=float)*10**(-snr/10.)
-    for l in range(nzf):
-        for j in range(nzf):
-            for n in range(len(tap)):
-                if 0<n+l-j<len(tap): r[l,j] += np.conjugate(fz[n])*fz[n+l-j]
-    
-    upsilon = np.zeros(nzf, dtype=complex)
-    zero = nzf/2+1
-    upsilon[zero-len(tap)+1:zero+1] = np.conjugate(fz)[::-1]
-
-    c = np.fft.ifft(np.linalg.inv(r)*upsilon)
-    print abs(c)
 
 
