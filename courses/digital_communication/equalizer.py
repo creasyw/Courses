@@ -44,7 +44,7 @@ def lmmse_coeff(fz, nzf, snr):
     upsilon = np.zeros(nzf, dtype=float)
     zero = nzf/2
     upsilon[zero-len(fz)+1:zero+1] = np.conjugate(fz)[::-1]
-    return [sum(k) for k in np.linalg.inv(r)*upsilon]
+    return np.array([sum(k) for k in np.linalg.inv(r)*upsilon])
 
 def dfe_coeff(tap, k1, k2, snr):
     # For feed-forward loop
@@ -149,8 +149,8 @@ def plotlmmse():
     
     plt.subplot(211)
     pe = []
-    coeff = zero_forcing_coeff(tap1, 41)
     for snr in snrlst:
+        coeff = lmmse_coeff(tap1, 41, snr)
         delta_square = 10**(-snr/10.)*sum(coeff**2)
         pe.append(1-norm.cdf(sqrt((1-0.7)**2/delta_square)))
     plt.semilogy(snrlst,pe,snrlst, equalizer(2, 41, snrlst, nsample, 'lmmse'), "-.")
@@ -162,8 +162,8 @@ def plotlmmse():
 
     plt.subplot(212)
     pe = []
-    coeff = zero_forcing_coeff(tap2, 41)
     for snr in snrlst:
+        coeff = lmmse_coeff(tap2, 41, snr)
         delta_square = 10**(-snr/10.)*sum(coeff**2)
         pe.append(1-norm.cdf(sqrt((1-0.41)**2/delta_square)))
     plt.semilogy(snrlst,pe,snrlst, equalizer(2, 41, snrlst, nsample, 'lmmse'), "-.")
@@ -174,10 +174,46 @@ def plotlmmse():
     plt.grid(True, which='both')
     plt.show()
 
+def plotdfe1():
+    nsample = 10**5
+    snrlst = range(0,19)
+    nzf = 41
+    tap = tap2
+    
+    plt.semilogy(snrlst, equalizer(2, 41, snrlst, nsample, 'dfe'), \
+            snrlst, equalizer(2, 61, snrlst, nsample, 'zfir'), "-.",\
+            snrlst, equalizer(2, 41, snrlst, nsample, 'zfir'), "--")
+    plt.legend(("MMSE-DF", "Zero-Forcing", "LMMSE"), loc='lower left')
+    plt.title("Corss comparison of three equalizers")
+    plt.xlabel("SNR (dB)")
+    plt.ylabel("SER (dB)")
+    plt.grid(True, which='both')
+    plt.show()
 
-
+def plotdfe2():
+    nsample = 10**5
+    snrlst = range(0,19)
+    nzf = 41
+    tap = tap2
+    
+    pe = []
+    for snr in snrlst:
+        cj,_ = dfe_coeff(tap, nzf, 41, snr)
+        f = [0]*(len(cj)-len(tap)) + list(tap)[::-1]
+        jmin = 1-sum(np.array(f)*cj)
+        gamma = (1-jmin)/jmin
+        pe.append(1-norm.cdf(sqrt(gamma)))
+    plt.semilogy(snrlst,pe,snrlst, equalizer(2, 41, snrlst, nsample, 'dfe'), "-.")
+    plt.legend(("Theoretical curve", "Simulated curve"), loc='lower left')
+    plt.title("Theoretical vs. Simulated performances for Channel 1")
+    plt.xlabel("SNR (dB)")
+    plt.ylabel("SER (dB)")
+    plt.grid(True, which='both')
+    plt.show()
 
 if __name__=="__main__":
-    #plotzf()
-    #plotzfe()
-    #plotlmmse()
+    plotzf()
+    plotzfe()
+    plotlmmse()
+    plotdfe1()
+    plotdfe2()
