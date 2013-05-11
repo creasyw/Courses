@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from math import sqrt
 from scipy.stats.distributions import norm
+# for viterbi enumerating possible combinations
+from itertools import product
 
 tap1 = np.array([0.227, 0.45, 0.7, 0.45, 0.227])
 tap2 = np.array([0.41, 0.815, 0.41])
@@ -87,6 +89,56 @@ def dfe_estimate(vn, cj, ck):
     backward = np.convolve(fdec, ck, mode='same')
     return np.array(map(lambda x: -1 if x<0 else 1, backward+forward))
 
+
+def viterbi_function(signal, taps, k, values, known):
+    """
+    Perform Viterbi decoding.
+    taps:   the channel taps. (numpy.ndarray)
+    k:      the index that needs to decode. (int)
+    values: the possible decoded values. (list)
+    known:  the constellations that have already been settled down. (list)
+    """
+    L = len(taps)
+    result = 0
+    minimum = float("inf")
+    for unknown in product(values, repeat=len(taps)):
+        current = known+list(unknown)
+        unknown  = np.array(unknown)
+        temp = unknown[0]
+        if k+L > len(signal):
+            # im not sure if the unknow*tap should be added here, though it doesnt matter...
+            summation = 0
+        else:
+            summation = (signal[k+L-1] - sum(unknown*(taps[::-1])))**2
+        for i in range(L+k-1):
+            # won't look beyond the scope of signal
+            if i >= len(signal): continue
+            current_in_loop = current[:i]
+            # extend zeros before the unknow values
+            if len(current_in_loop) < L:
+                current_in_loop = np.array([0]*(L-len(current_in_loop))+current_in_loop)
+            else:
+                current_in_loop = np.array(current_in_loop[-L:])
+            summation += (signal[i] - sum(current_in_loop*(taps[::-1])))**2
+        if summation < minimum:
+            result = temp
+            minimum = summation
+
+    return result
+
+
+
+def viterbi(signal, taps):
+    result = []
+    values = [-1,1]
+    for i in range(len(signal)):
+        print "now processing ", i
+        result.append(viterbi_function(signal, taps, i, values, result))
+
+    return result
+
+
+
 def equalizer(nchannel, nzf, snrlst, nsample, eqtype):
     """
     Generate SER for given channel and snr.
@@ -113,11 +165,13 @@ def equalizer(nchannel, nzf, snrlst, nsample, eqtype):
             coeff = lmmse_coeff(tap, nzf, snr)
         elif eqtype == "dfe":
             cj, ck = dfe_coeff(tap, nzf, 41, snr)
+        elif eqtype == "viterbi":
+            estimate = viterbi(vn, tap)
         else:
             raise ValueError("The type of equalizer should be 'zf' (zero-forcing) or\
                     lmmse (Linear Minimumu MSE)!")
         
-        if eqtype != "dfe":
+        if eqtype != "dfe" and eqtype != "viterbi":
             estimate = np.array(map(lambda x: -1 if x<0 else 1, np.convolve(vn, coeff, mode='same')))
         elif eqtype == "dfe":
             estimate = dfe_estimate(vn, cj, ck)
