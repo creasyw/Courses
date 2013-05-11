@@ -20,13 +20,27 @@ def binary_pam(nsample):
     """ Generate PAM symbols with equal probability. """
     return np.array(map(lambda x: -1 if x==0 else x, np.random.randint(2, size=nsample)))
 
+# 1st version of signal generation
+#def channel(signal, tap, snr):
+#    """ Construct the effect of ISI and AWGN. """
+#    L = len(signal)
+#    output = awgn(L, 10**(-snr/10.))
+#    output = np.zeros(L, dtype=float)
+#    for n in range(L):
+#        for k in range(len(tap)):
+#            if n-k >= 0: output[n] += tap[k]*signal[n-k]
+#    return output
+
 def channel(signal, tap, snr):
     """ Construct the effect of ISI and AWGN. """
-    L = len(signal)
-    output = awgn(L, 10**(-snr/10.))
-    for n in range(L):
-        for k in range(len(tap)):
-            if n-k >= 0: output[n] += tap[k]*signal[n-k]
+    L = len(tap)
+    output = awgn(len(signal), 10**(-snr/10.))
+    for n in range(len(signal)):
+        if n < L-1:
+            current_in_loop = np.array([0]*(L-n-1)+list(signal[:(n+1)]))
+        else:
+            current_in_loop = (signal[:(n+1)])[-L:]
+        output[n] += sum(current_in_loop*(tap[::-1]))
     return output
 
 def zero_forcing_coeff(tap, nzf):
@@ -89,7 +103,6 @@ def dfe_estimate(vn, cj, ck):
     backward = np.convolve(fdec, ck, mode='same')
     return np.array(map(lambda x: -1 if x<0 else 1, backward+forward))
 
-
 def viterbi_function(signal, taps, k, values, known):
     """
     Perform Viterbi decoding.
@@ -113,7 +126,7 @@ def viterbi_function(signal, taps, k, values, known):
         for i in range(L+k-1):
             # won't look beyond the scope of signal
             if i >= len(signal): continue
-            current_in_loop = current[:i]
+            current_in_loop = current[:(i+1)]
             # extend zeros before the unknow values
             if len(current_in_loop) < L:
                 current_in_loop = np.array([0]*(L-len(current_in_loop))+current_in_loop)
@@ -126,18 +139,13 @@ def viterbi_function(signal, taps, k, values, known):
 
     return result
 
-
-
 def viterbi(signal, taps):
     result = []
     values = [-1,1]
     for i in range(len(signal)):
-        print "now processing ", i
         result.append(viterbi_function(signal, taps, i, values, result))
 
     return result
-
-
 
 def equalizer(nchannel, nzf, snrlst, nsample, eqtype):
     """
@@ -155,8 +163,9 @@ def equalizer(nchannel, nzf, snrlst, nsample, eqtype):
     else:
         raise ValueError("The channel shoudl be either 1 or 2!")
     
-    ser = []
-    for snr in snrlst:
+    ser = np.zeros(len(snrlst), dtype=float)
+    for i in range(len(snrlst)):
+        snr = snrlst[i]
         samples = binary_pam(nsample)
         vn = channel(samples, tap, snr)
         if eqtype == "zfir":
@@ -177,7 +186,7 @@ def equalizer(nchannel, nzf, snrlst, nsample, eqtype):
             estimate = dfe_estimate(vn, cj, ck)
         
         # Compare teh estimates with the original sequence
-        ser.append(sum(1 for i in range(nsample) if samples[i]!=estimate[i])/float(nsample))
+        ser[i] = sum(1 for i in range(nsample) if samples[i]!=estimate[i])/float(nsample)
     return ser
 
 def plotzf():
