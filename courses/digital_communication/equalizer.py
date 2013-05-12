@@ -192,7 +192,7 @@ def equalizer(nchannel, nzf, snrlst, nsample, eqtype):
 def plotzf():
     """ Test Simulation 1-1 
         Plot simulatied zero forcing equalizer with different taps"""
-    nsample = 10**5
+    nsample = 10**8
     snr = range(0,19)
     taps = [13,23,33]
     
@@ -210,7 +210,7 @@ def plotzf():
 def plotzfe():
     """ Test Simulation 1-2
         Plot theoretical vs. simulated results for zero forcing equalizer."""
-    nsample = 10**5
+    nsample = 10**8
     snrlst = range(0,19)
 
     # Calculate the theoretical values
@@ -229,7 +229,7 @@ def plotzfe():
     plt.show()
 
 def plotlmmse():
-    nsample = 10**5
+    nsample = 10**8
     snrlst = range(0,19)
     
     plt.subplot(211)
@@ -260,7 +260,7 @@ def plotlmmse():
     plt.show()
 
 def plotdfe1():
-    nsample = 10**5
+    nsample = 10**8
     snrlst = range(0,19)
     nzf = 41
     tap = tap2
@@ -276,7 +276,7 @@ def plotdfe1():
     plt.show()
 
 def plotdfe2():
-    nsample = 10**5
+    nsample = 10**8
     snrlst = range(0,19)
     nzf = 41
     tap = tap2
@@ -296,9 +296,26 @@ def plotdfe2():
     plt.grid(True, which='both')
     plt.show()
 
+def plotviterbi_1():
+    nsample = 10**8
+    snrlst = range(0,19)
+    nzf = 41
+    tap = tap2
+    
+    plt.semilogy(snrlst,equalizer(2, 10, snrlst, nsample, 'viterbi'),\
+            snrlst, equalizer(2, 41, snrlst, nsample, 'dfe'), "-.")
+    plt.legend(("ML viterbi", "MLSE-MF"), loc='lower left')
+    plt.title("ML Viterbi vs. MLSE-MF performances comparison")
+    plt.xlabel("SNR (dB)")
+    plt.ylabel("SER (dB)")
+    plt.grid(True, which='both')
+    plt.show()
+
+
 if __name__=="__main__":
     plotzf()
     plotzfe()
     plotlmmse()
     plotdfe1()
     plotdfe2()
+    plotviterbi_1()
