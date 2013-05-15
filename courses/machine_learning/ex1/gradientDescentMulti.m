@@ -18,12 +18,10 @@ for iter = 1:num_iters
     %
 
 
-
-
-
-
-
-
+    temp = X*theta-y;
+    for i = 1:size(X, 2)
+      theta(i) = theta(i)-alpha*sum(temp.*X(i))'/m;
+    end
 
 
 
