@@ -35,6 +35,21 @@ def jakes_model (fd, N):
         r[i] = (r_i**2+r_q**2)**0.5
     return r
 
+def wideband():
+    fd = 5
+    nsub = 256
+    Ts = 1./1000
+    Sample = np.arange(0,3000,1)
+    T = Sample*Ts
+    
+    r = jakes_model(fd,T)
+    plt.plot(T, 10*log(r))
+    plt.title("Doppler Frequency fd=%sHz"%fd)
+    plt.xlabel("Time (second)")
+    plt.ylabel("Amplitude (dB)")
+    plt.show()
+
+
 def main():
     # prerequisite of the question
     fd = [1,10,100]
@@ -54,5 +69,6 @@ def main():
     plt.show()
 
 if __name__ == "__main__":
-    main()
+    #main()
+    wideband()
 
