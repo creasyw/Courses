@@ -24,7 +24,15 @@ grad = zeros(size(theta));
 J = sum(-y.*log(sigmoid(X*theta))-(1-y).*log(1-sigmoid(X*theta)))/m;
 grad = sum((sigmoid(X*theta)-y).*X)/m;
 
-
+% testing command:
+% octave:189> [J grad] = costFunction([1;0;0;-1], [1 1 1 1; 1 0 1 0; 1 1 0 0; 1 1 1 1], [0;1;1;0])
+% J =  0.50320
+%grad =
+%
+%   0.11553
+%   0.18276
+%   0.18276
+%   0.25000
 
 % =============================================================
 

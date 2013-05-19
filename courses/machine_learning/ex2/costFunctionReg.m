@@ -23,6 +23,15 @@ grad(1) = sum((sigmoid(X*theta)-y).*X(:,1))/m;
 grad(2:length(grad)) = sum((sigmoid(X*theta)-y).*X(:,2:size(X,2)))/m;
 grad(2:length(grad)) += lambda*theta(2:length(theta))/m;
 
+%octave:77> [J grad] = costFunctionReg([1;0;0;-1], [1 1 1 1; 1 0 1 0; 1 1 0 0; 1 1 1 1], [0;1;1;0], .5)
+%J =  0.56570
+%grad =
+%
+%   0.11553
+%   0.18276
+%   0.18276
+%   0.12500
+
 % =============================================================
 
 end
