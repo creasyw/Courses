@@ -2,12 +2,21 @@
 
 " syntax highlighting
 syntax on
-" automatic indentation
-"set autoindent
-" specifically c/c++ indentation
-"set cindent
 " to show the line number for each line
 set nu
+" Attempt to determine the type of a file based on its name and possibly its
+" contents. Use this to allow intelligent auto-indenting for each filetype,
+" and for plugins that are filetype specific.
+filetype indent plugin on
+
+" Better command-line completion
+set wildmenu
+set wildmode=longest:full,full
+
+" Highlight searches (use <C-L> to temporarily turn off highlighting; see the
+" mapping of <C-L> below)
+set hlsearch
+
 
 set showmatch
 filetype plugin on
@@ -36,12 +45,6 @@ let java_highlight_all=1
 let java_highlight_functions="style"
 let java_allow_cpp_keywords=1
 
-
-" add for python
-"set smartindent
-"set tabstop=4
-"set shiftwidth=4
-"set expandtab
 
 "For screen.vim send block
 "to SendScreen function
