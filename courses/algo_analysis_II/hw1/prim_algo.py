@@ -31,7 +31,7 @@ def pop_task():
         priority, count, task = heapq.heappop(pq)
         if task is not REMOVED:
             del entry_finder[task]
-            return task
+            return [task, priority]
     raise KeyError('pop from an empty priority queue')
 
 def update(task, priority):
@@ -41,6 +41,21 @@ def update(task, priority):
         add_task(task, priority)
     except KeyError:
         add_task(task,priority)
+
+def prim(graph):
+    count = 0
+    length = len(graph)
+    result = np.zeros((length, 3))
+    result[0,0] = 1
+    [update(k[0],k[1]) for k in graph[result[0,0]]]
+    while count<length-1:
+        result[count,1:] = pop_task()
+        result[count+1,0] = result[count, 1]
+        [update(k[0],k[1]) for k in graph[result[count,1]]]
+        print result[count]
+        count += 1
+    return sum(result[:,2])
+
 
 def main():
     candidates = defaultdict(list)
@@ -55,8 +70,8 @@ def main():
             if temp[1] in candidates:
                 candidates[temp[1]].append([temp[0], temp[2]])
             else:
-                candidates[temp[1]] = [temp[0], temp[2]]
-    return candidates
+                candidates[temp[1]] = [[temp[0], temp[2]]]
+    print prim(candidates)
 
 if __name__ == "__main__":
     main()
