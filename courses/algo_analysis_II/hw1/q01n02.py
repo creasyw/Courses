@@ -2,9 +2,10 @@ import os, re
 import numpy as np
 finder = re.compile("\d+")
 
-def q1(data):
+def q1(v, dt):
+    data = np.array([(k[0],k[1],k[0]-k[1]) for k in v], dtype = dt)
     data = np.sort(data, order=['diff', 'weight'])[::-1]
-    print weighted_completion(np.array([list(k) for k in data]))
+    return weighted_completion(np.array([list(k) for k in data]))
 
 def weighted_completion(lst):
     lst[0,2] = lst[0,1]
@@ -19,9 +20,8 @@ def main():
     with open(os.path.join(os.path.dirname(__file__), "jobs.txt")) as datafile:
         datafile.readline()
         for row in datafile:
-            temp = [int(k) for k in finder.findall(row)]
-            values.append((temp[0], temp[1], temp[0]-temp[1]))
-    q1(np.array(values, dtype=dt))
+            values.append([int(k) for k in finder.findall(row)])
+    print q1(values, dt)
 
 
 if __name__ == "__main__":
