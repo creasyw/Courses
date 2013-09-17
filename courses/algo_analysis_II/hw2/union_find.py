@@ -20,19 +20,21 @@ class union_find:
             self.alldata[i] = c1
     
     def union(self, c1, c2):
-        l1 = len(self.cluster(c1))
-        l2 = len(self.cluster(c2))
+        l1 = len(self.cluster[c1])
+        l2 = len(self.cluster[c2])
         if l1 > l2:
             self.merge(c1, c2)
         else:
             self.merge(c2, c1)
+    
+    def is_circle(v1, v2):
+        return self.alldata[v1] and self.alldata[v2] \
+                and self.alldata[v1]==self.alldata[v2]
 
     def put(self, edge):
         """ the edge is [v1, v2, edge_cost] """
         f0 = self.find(edge[0])
         f1 = self.find(edge[1])
-        print "f0: ", f0
-        print "f1: ", f1
         if f0 and f1:
             if f1==f0:
                 return
@@ -47,10 +49,13 @@ class union_find:
         else:
             self.alldata[edge[1]] = edge[0]
             self.alldata[edge[0]] = edge[0]
-            self.cluster[edge[0]] = [edge[1]]
+            self.cluster[edge[0]] = list(edge[:2])
 
     def length(self):
         return len(self.cluster)
 
     def display(self):
         return self.cluster
+
+    def num_of_nodes(self):
+        return len(self.alldata)
