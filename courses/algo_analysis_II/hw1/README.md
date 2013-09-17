@@ -1,5 +1,4 @@
 ## Question 1
-=====
 
 In this programming problem and the next you'll code up the greedy algorithms from lecture for minimizing the weighted sum of completion times.. Use the text file "jobs.txt". This file describes a set of jobs with positive and integral weights and lengths. It has the format
 
