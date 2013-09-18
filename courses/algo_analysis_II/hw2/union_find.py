@@ -66,3 +66,6 @@ class union_find:
 
     def num_of_nodes(self):
         return len(self.alldata)
+    
+    def all_keys(self):
+        return [k for k in self.alldata]
