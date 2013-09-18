@@ -7,6 +7,13 @@ class union_find:
         self.alldata = defaultdict()
         self.cluster = defaultdict(list)
 
+    def init_dataset(self, npar):
+        """ initialize the dataset with ndarray """
+        vertex = set(list(npar[:,0])+list(npar[:,1]))
+        for i in vertex:
+            self.cluster[i] = [i]
+            self.alldata[i] = i
+
     def find(self, k):
         if k in self.alldata:
             return self.alldata[k]
@@ -27,7 +34,7 @@ class union_find:
         else:
             self.merge(c2, c1)
     
-    def is_circle(v1, v2):
+    def is_circle(self, v1, v2):
         return self.alldata[v1] and self.alldata[v2] \
                 and self.alldata[v1]==self.alldata[v2]
 
