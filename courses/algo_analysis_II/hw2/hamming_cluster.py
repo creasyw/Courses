@@ -10,13 +10,15 @@ def diff(a, b):
 
 def put_point(x, p, threshold):
     found = False
-    keys = x.all_keys()
-    for i in keys:
-        if not found and diff(i, p) < threshold:
+    keys = set(x.all_keys())
+    while len(keys) > 0:
+        i = keys.pop()
+        if diff(i, p) < threshold:
             x.alldata[p] = x.alldata[i]
+            keys.difference(set(x.cluster[x.alldata[i]]))
             x.cluster[x.alldata[i]].append(p)
             found = True
-        if found and x.alldata[i] != x.alldata[p] and diff(i,p)<threshold:
+        if found and diff(i,p)<threshold:
             x.union(x.alldata[i], x.alldata[p])
     if not found:
         x.alldata[p] = p
