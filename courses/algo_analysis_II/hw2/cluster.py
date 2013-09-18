@@ -9,18 +9,22 @@ def cluster(npar, all, target):
     x = union_find()
     count = 0
     length = len(npar)
-    while x.num_of_nodes() < all:
-        x.put(npar[count])
-        count += 1
+    x.init_dataset(npar)
     while x.length() > target and count<length:
         x.put(npar[count])
         count += 1
-    return x.cluster
+    # calculate max-spacing and get rid of circles
+    while count < length:
+        if x.is_circle(npar[count,0], npar[count,1]):
+            count += 1
+        else:
+            return npar[count, -1]
+    return 0
 
 def main():
     dt = [('n1', int), ('n2', int), ('cost', int)]
     temp = []
-    with open(os.path.join(os.path.dirname(__file__), "q01_toy1.txt")) as datafile:
+    with open(os.path.join(os.path.dirname(__file__), "clustering1.txt")) as datafile:
             num_of_nodes = int(datafile.readline())
             for row in datafile:
                 temp.append([int(k) for k in finder.findall(row)])
