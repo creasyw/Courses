@@ -4,7 +4,10 @@ from union_find import union_find
 
 finder = re.compile("-?\d+")
 
-def diff(a, b, thres):
+def diff (a, b):
+    return sum(1 for k in range(len(a)) if a[k]!=b[k])
+
+def diff_less(a, b, thres):
     count = 0
     for k in range(len(a)):
         if a[k]!=b[k]:
@@ -18,12 +21,12 @@ def put_point(x, already, p, threshold):
     keys = set(already)
     while len(keys) > 0:
         i = keys.pop()
-        if not found and diff(i, p, threshold):
+        if not found and diff_less(i, p, threshold):
             x.alldata[p] = x.alldata[i]
             keys.difference(set(x.cluster[x.alldata[i]]))
             x.cluster[x.alldata[i]].append(p)
             found = True
-        if found and diff(i,p, threshold):
+        if found and diff_less(i,p, threshold):
             keys.difference(set(x.cluster[x.alldata[i]]))
             x.union(x.alldata[i], x.alldata[p])
     if not found:
