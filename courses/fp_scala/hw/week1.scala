@@ -23,7 +23,7 @@ object Main {
   def balance(chars: List[Char]): Boolean = {
     def helper(left: Int, right: Int, rest: List[Char]): Boolean =
       if (left < right) false
-      else if (rest.length == 0) (left == right)
+      else if (rest.isEmpty) (left == right)
       else if (rest.head == '(') helper(left + 1, right, rest.tail)
       else if (rest.head == ')') helper(left, right + 1, rest.tail)
       else helper(left, right, rest.tail)
