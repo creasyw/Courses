@@ -1,0 +1,8 @@
+INDEX VERSION 1.126+/Users/creasywuqiong/workplace/github/learning/courses/fp_scala/fun_coding/.metadata/.plugins/org.eclipse.jdt.core
+1822478550.index
+676533104.index
+1525719707.index
+2169658122.index
+3126397693.index
+2418834148.index
+2687044429.index

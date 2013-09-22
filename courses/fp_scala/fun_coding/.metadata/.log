@@ -1,0 +1,26 @@
+!SESSION 2013-09-20 14:51:26.626 -----------------------------------------------
+eclipse.buildId=3.0.1-vfinal-20130718-1727-Typesafe
+java.version=1.6.0_51
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -keyring /Users/creasywuqiong/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -keyring /Users/creasywuqiong/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2013-09-20 14:51:50.395
+!MESSAGE System property http.nonProxyHosts has been set to localhost|*.localhost|127.0.0.1 by an external source. This value will be overwritten using the values from the preferences
+
+!ENTRY org.eclipse.ui 4 4 2013-09-20 15:11:11.883
+!MESSAGE Invalid preference page path: XML Syntax
+!SESSION 2013-09-21 22:50:06.169 -----------------------------------------------
+eclipse.buildId=3.0.1-vfinal-20130718-1727-Typesafe
+java.version=1.6.0_51
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -keyring /Users/creasywuqiong/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -keyring /Users/creasywuqiong/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2013-09-21 22:51:37.484
+!MESSAGE System property http.nonProxyHosts has been set to localhost|*.localhost|127.0.0.1 by an external source. This value will be overwritten using the values from the preferences
+
+!ENTRY org.eclipse.ui 4 4 2013-09-21 22:53:26.362
+!MESSAGE Invalid preference page path: XML Syntax
