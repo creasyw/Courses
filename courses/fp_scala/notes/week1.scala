@@ -1,6 +1,6 @@
 package week1
 
-object session {
+object week1 {
   1 + 2                                           //> res0: Int(3) = 3
   def and(x: Boolean, y: => Boolean) = if (x) y else false
                                                   //> and: (x: Boolean, y: => Boolean)Boolean
