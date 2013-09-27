@@ -36,6 +36,7 @@ def bellman_ford (arr, start, size):
     
     # check cycle with negative sum
     previous = count ^ 1
+    data[count] = data[previous]
     for j in bucket:
         data[count, j[1]] = min( data[previous, j[1]], data[previous, j[0]]+j[2])
     if (data[count]== data[previous]).all():
