@@ -49,9 +49,9 @@ def dijkstras(graph, start):
         # store the node into known graph
         distance[node] = cost
         # update the knowledge according to existing node
-        for (node, cost) in graph[node].items():
+        for (node, localcost) in graph[node].items():
             if node not in distance:
-                heap_update(heap, index, node, cost)
+                heap_update(heap, index, node, localcost+cost)
     return distance
 
 distance = dijkstras(graph, 1)
