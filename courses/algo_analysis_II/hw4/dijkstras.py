@@ -29,9 +29,12 @@ def dijkstras(graph, start):
     heap = []
     heapq.heapify(heap)
     #will be used to trace the path of the sjortest distance to each node
-    for (node, cost) in graph[start].items():
-        heap_update(heap, index, node, cost)
     distance[start] = 0
+    if start in graph:
+        for (node, cost) in graph[start].items():
+            heap_update(heap, index, node, cost)
+    else:
+        return distance
     #initially all nodes are yet to be explored
     while len(index) > 0:
         # need to extract the node with the minimum path
@@ -39,8 +42,22 @@ def dijkstras(graph, start):
         # store the node into known graph
         distance[node] = cost
         # update the knowledge according to existing node
-        for (node, localcost) in graph[node].items():
-            if node not in distance:
-                heap_update(heap, index, node, localcost+cost)
+        if node in graph:
+            for (node, localcost) in graph[node].items():
+                if node not in distance:
+                    heap_update(heap, index, node, localcost+cost)
     return distance
+
+def buildgraph (data):
+    """ data is a dictionary { st1: [[st1, end1, cost1]... [st1, endn, costn]] ....
+                               stn: [[stn, end1, costn]... [stn, endn, costn]]}
+        the output is a matrix which can be the input of dijkstras algo.
+    """
+    for i in data:
+        temp = data[i]
+        data[i] = {}
+        for j in temp:
+            data[i][j[1]] = j[2]
+    return data
+
 
