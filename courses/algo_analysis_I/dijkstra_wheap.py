@@ -13,53 +13,47 @@ for line in file_handle:
         graph[node][edge] = weight
 
 
-def heap_update (heap, index, item):
-    if item[0] in index and item[1] < index[item[0]]:
-        heap.remove(index[item[0]])
-        heapq.heappush(heap, item)
-        index[item[0]] = item[1]
-    elif item[0] not in index:
-        heapq.heappush(heap, item)
-        index[item[0]] = item[1]
+def heap_update (heap, index, node, cost):
+    """ The data in the heap is [cost, node]
+    so that the heap is aranged according to the cost"""
+    if node in index and cost < index[node]:
+        heap.remove([index[node], node])
+        heapq.heappush(heap, [cost, node])
+        index[node] = cost
+    elif node not in index:
+        heapq.heappush(heap, [cost, node])
+        index[node] = cost
+
+def heap_pop(heap, index):
+    cost, node = heapq.heappop(heap)
+    index.pop(node)
+    return node, cost
+
 
 def dijkstras(graph, start):
-    #will keep a record of the distance of the nodes from the start vertex
-    parent = {}
-    distance = {}
+    # keep a record of the distance of the nodes from the start vertex
+    distance = defaultdict()
+    # keep track of the candidates for the next move
+    index = defaultdict()
+    # store the cost and node into heap using cost as the key
+    heap = []
+    heapq.heapify(heap)
     #will be used to trace the path of the sjortest distance to each node
-    for node in graph:
-        distance[node] = float('inf')
-        parent[node] = ""
+    for (node, cost) in graph[start].items():
+        heap_update(heap, index, node, cost)
     distance[start] = 0
-    #origin point no need to travel
-    unseen_nodes = graph.keys()
     #initially all nodes are yet to be explored
-    while len(unseen_nodes) > 0:
-        #need to extract the node with the minimum path
-        shortest = None
-        node = ""
-        for temp in unseen_nodes:
-            if shortest == None:
-                shortest = distance[temp]
-                node = temp
-            #used to initialise the loop with a random value
-            elif distance[temp] < shortest:
-                shortest = distance[temp]
-                node = temp
-#  the first iteration of the while loop the start vertex will be 
-#  discovered which will then be eventually removed after exploration 
-#  of its neighbors
-        unseen_nodes.remove(node)
-        #removing the node with the lowest weight
-        for (child, value) in graph[node].items():
-            #will give the edge and weight of the path in the form of tupple 
-#here for each of the neighbors of the node we are relaxing the 
-#edges and giving the distance dict their respective weight value
-            if (distance[child] > distance[node] + value):
-                distance[child] = distance[node] + value
-                parent[child] = node
-                #relaxing the neighbors
+    while len(index) > 0:
+        # need to extract the node with the minimum path
+        node, cost = heap_pop(heap, index)
+        # store the node into known graph
+        distance[node] = cost
+        # update the knowledge according to existing node
+        for (node, cost) in graph[node].items():
+            if node not in distance:
+                heap_update(heap, index, node, cost)
     return distance
+
 distance = dijkstras(graph, 1)
 
 answer = []
