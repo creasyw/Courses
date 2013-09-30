@@ -8,7 +8,8 @@ def heap_update (heap, index, node, cost):
     so that the heap is aranged according to the cost"""
     if node in index and cost < index[node]:
         heap.remove([index[node], node])
-        heapq.heappush(heap, [cost, node])
+        heap.append([cost, node])
+        heapq.heapify(heap)
         index[node] = cost
     elif node not in index:
         heapq.heappush(heap, [cost, node])
