@@ -15,7 +15,16 @@ def knapsack(arr, weight, size):
                 result[i,j] = max( result[i-1, j], result[i-1, j-arr[i,1]]+arr[i,0] )
             else:
                 result[i,j] = result[i-1, j]
-    return result[-1,-1]
+    return result
+
+def reverse_find_route(arr, result):
+    point = len(result[0])-1
+    route = []
+    for i in range(len(result)-1, 1, -1):
+        if result[i][point] != result[i-1][point]:
+            route.append(i+1)
+            point -= arr[i,1]
+    return route[::-1]
 
 def main():
     import sys
@@ -27,7 +36,10 @@ def main():
             for row in datafile:
                 temp.append([int(k) for k in finder.findall(row)])
     temp = np.array(temp)
-    print knapsack(temp, weight, size)
+    optimal_value = knapsack(temp, weight, size)
+    items = reverse_find_route(temp, optimal_value)
+    print "The optimal value is: ", int(optimal_value[-1, -1])
+    print "The items are: ", items
 
 if __name__ == "__main__":
     main()
