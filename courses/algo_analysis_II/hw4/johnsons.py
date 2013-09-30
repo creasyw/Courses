@@ -17,20 +17,26 @@ def reconvert(reweight, vertex, dij, start):
 
 
 def johonsons(data, vertex):
-    new = vertex+1
     d1 = data.copy()
-    d1[new] = [[new, k, 0] for k in range(1, new)]
-    reweight = bellman_ford(d1, new, new)
+    # make psedu node pointing to all other nodes with zero cost
+    plus1 = vertex+1
+    d1[plus1] = {}
+    for i in range(1, plus1):
+        d1[plus1][i] = 0
+    # calculate the reweight vector
+    reweight = bellman_ford(d1, plus1, plus1)
+    # reweight all cost to make it nonnegative
     if type(reweight) == float:
+        # stop if there is any negative cycle in the graph
         return None
     else:
         for i in data:
-            data[i] = [[i, data[i][k][1], data[i][k][2]+reweight[i]-reweight[data[i][k][1]]]\
-                    for k in range(len(data[i]))]
-    graph = buildgraph(data)
+            for k in data[i]:
+                data[i][k] = data[i][k]+reweight[i]-reweight[k]
     result = []
+    
     for i in range(1, vertex+1):
-        result.append(min(reconvert(reweight, vertex, dijkstras(graph, i), i)))
+        result.append(min(reconvert(reweight, vertex, dijkstras(data, i), i)))
     return min(result)
 
 
@@ -44,7 +50,7 @@ def main():
             for row in datafile:
                 temp = [int(k) for k in finder.findall(row)]
                 data[temp[0]].append(temp)
-    print johonsons(data, vertex)
+    print johonsons(buildgraph(data), vertex)
 
 if __name__ == "__main__":
     main()
