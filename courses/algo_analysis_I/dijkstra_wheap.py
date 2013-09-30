@@ -2,23 +2,14 @@
 from collections import defaultdict
 import heapq
 
-graph = defaultdict(dict)
-file_handle = open("hw5_test_case2.txt", "r")
-for line in file_handle:
-    node = int(line.split()[0])
-    graph[node] = {}
-    for i in line.split()[1:]:
-        edge = int(i.split(",")[0])
-        weight = int(i.split(",")[1])
-        graph[node][edge] = weight
-
 
 def heap_update (heap, index, node, cost):
     """ The data in the heap is [cost, node]
     so that the heap is aranged according to the cost"""
     if node in index and cost < index[node]:
         heap.remove([index[node], node])
-        heapq.heappush(heap, [cost, node])
+        heap.append([cost, node])
+        heapq.heapify(heap)
         index[node] = cost
     elif node not in index:
         heapq.heappush(heap, [cost, node])
@@ -28,6 +19,7 @@ def heap_pop(heap, index):
     cost, node = heapq.heappop(heap)
     index.pop(node)
     return node, cost
+
 
 def dijkstras(graph, start):
     # keep a record of the distance of the nodes from the start vertex
@@ -39,7 +31,7 @@ def dijkstras(graph, start):
     heapq.heapify(heap)
     #will be used to trace the path of the sjortest distance to each node
     distance[start] = 0
-    if start in graph:
+    if start in graph and type(graph[start])==dict:
         for (node, cost) in graph[start].items():
             heap_update(heap, index, node, cost)
     else:
@@ -51,16 +43,25 @@ def dijkstras(graph, start):
         # store the node into known graph
         distance[node] = cost
         # update the knowledge according to existing node
-        if node in graph:
+        if node in graph and type(graph[node])==dict:
             for (node, localcost) in graph[node].items():
                 if node not in distance:
                     heap_update(heap, index, node, localcost+cost)
     return distance
-distance = dijkstras(graph, 1)
-print distance
 
-#answer = []
-#question = [7,37,59,82,99,115,133,165,188,197]
-#for value in question:
-#    answer.append(distance[value])
-#print answer    
+def buildgraph (data):
+    """ data is a dictionary { st1: [[st1, end1, cost1]... [st1, endn, costn]] ....
+                               stn: [[stn, end1, costn]... [stn, endn, costn]]}
+        the output is a matrix represented as 2-levels dictionary
+                             { st1: {end1:cost1, end2:cost2 ... endn:costn} ...
+                               stn: {end1:cost1, end2:cost2 ... endn:costn}}
+        which can be the input of dijkstras algo.
+    """
+    for i in data:
+        temp = data[i]
+        data[i] = {}
+        for j in temp:
+            data[i][j[1]] = j[2]
+    return data
+
+
