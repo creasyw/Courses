@@ -51,7 +51,10 @@ def dijkstras(graph, start):
 def buildgraph (data):
     """ data is a dictionary { st1: [[st1, end1, cost1]... [st1, endn, costn]] ....
                                stn: [[stn, end1, costn]... [stn, endn, costn]]}
-        the output is a matrix which can be the input of dijkstras algo.
+        the output is a matrix represented as 2-levels dictionary
+                             { st1: {end1:cost1, end2:cost2 ... endn:costn} ...
+                               stn: {end1:cost1, end2:cost2 ... endn:costn}}
+        which can be the input of dijkstras algo.
     """
     for i in data:
         temp = data[i]
