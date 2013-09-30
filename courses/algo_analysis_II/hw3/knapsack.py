@@ -5,7 +5,7 @@ import numpy as np
 finder = re.compile("-?\d+")
 
 def knapsack(arr, weight, size):
-    assert size = len(arr), "ERROR: The size is not equal to input array!!"
+    assert size == len(arr), "ERROR: The size is not equal to input array!!"
     result = np.zeros((size, weight+1))
     for k in range(arr[0,1],weight+1):
         result[0,k] = arr[0,0]
