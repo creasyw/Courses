@@ -20,11 +20,14 @@ def knapsack(arr, weight, size):
     return int(data[count ^ 1, -1])
 
 def main():
+    import sys
+    assert len(sys.argv)==2, "The proper input format is: ~$ python SCRIPT.py data_file"
+    filename = sys.argv[1]
     temp = []
-    with open(os.path.join(os.path.dirname(__file__), "knapsack_big.txt")) as datafile:
-            weight, size = [int(k) for k in finder.findall(datafile.readline())]
-            for row in datafile:
-                temp.append([int(k) for k in finder.findall(row)])
+    with open(os.path.join(os.path.dirname(__file__), filename)) as datafile:
+        weight, size = [int(k) for k in finder.findall(datafile.readline())]
+        for row in datafile:
+            temp.append([int(k) for k in finder.findall(row)])
     temp = np.array(temp)
     print knapsack(temp, weight, size)
 
