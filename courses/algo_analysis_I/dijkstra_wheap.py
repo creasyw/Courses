@@ -3,7 +3,7 @@ from collections import defaultdict
 import heapq
 
 graph = defaultdict(dict)
-file_handle = open("dijkstraData.txt", "r")
+file_handle = open("hw5_test_case2.txt", "r")
 for line in file_handle:
     node = int(line.split()[0])
     graph[node] = {}
@@ -29,7 +29,6 @@ def heap_pop(heap, index):
     index.pop(node)
     return node, cost
 
-
 def dijkstras(graph, start):
     # keep a record of the distance of the nodes from the start vertex
     distance = defaultdict()
@@ -39,9 +38,12 @@ def dijkstras(graph, start):
     heap = []
     heapq.heapify(heap)
     #will be used to trace the path of the sjortest distance to each node
-    for (node, cost) in graph[start].items():
-        heap_update(heap, index, node, cost)
     distance[start] = 0
+    if start in graph:
+        for (node, cost) in graph[start].items():
+            heap_update(heap, index, node, cost)
+    else:
+        return distance
     #initially all nodes are yet to be explored
     while len(index) > 0:
         # need to extract the node with the minimum path
@@ -49,15 +51,16 @@ def dijkstras(graph, start):
         # store the node into known graph
         distance[node] = cost
         # update the knowledge according to existing node
-        for (node, localcost) in graph[node].items():
-            if node not in distance:
-                heap_update(heap, index, node, localcost+cost)
+        if node in graph:
+            for (node, localcost) in graph[node].items():
+                if node not in distance:
+                    heap_update(heap, index, node, localcost+cost)
     return distance
-
 distance = dijkstras(graph, 1)
+print distance
 
-answer = []
-question = [7,37,59,82,99,115,133,165,188,197]
-for value in question:
-    answer.append(distance[value])
-print answer    
+#answer = []
+#question = [7,37,59,82,99,115,133,165,188,197]
+#for value in question:
+#    answer.append(distance[value])
+#print answer    
