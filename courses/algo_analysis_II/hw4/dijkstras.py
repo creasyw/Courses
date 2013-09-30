@@ -30,7 +30,7 @@ def dijkstras(graph, start):
     heapq.heapify(heap)
     #will be used to trace the path of the sjortest distance to each node
     distance[start] = 0
-    if start in graph:
+    if start in graph and type(graph[start])==dict:
         for (node, cost) in graph[start].items():
             heap_update(heap, index, node, cost)
     else:
@@ -42,7 +42,7 @@ def dijkstras(graph, start):
         # store the node into known graph
         distance[node] = cost
         # update the knowledge according to existing node
-        if node in graph:
+        if node in graph and type(graph[node])==dict:
             for (node, localcost) in graph[node].items():
                 if node not in distance:
                     heap_update(heap, index, node, localcost+cost)
