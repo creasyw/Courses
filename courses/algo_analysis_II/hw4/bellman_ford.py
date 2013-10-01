@@ -1,13 +1,14 @@
 import os, re
 import numpy as np
 from collections import defaultdict
+from dijkstras import buildgraph
 
 finder = re.compile("-?\d+")
 
 def bellman_ford (arr, start, size):
     """ The input arr stores all info of the graph in a dictionary.
-        The key of the dict is vertex and values are two columns list,
-        storing the destination and the cost"""
+        The basic element in the arr are three-columns data -- 
+        [start_point, end_point, cost]"""
     count = 1
     data = np.zeros((2, size+1))
     # initialization
@@ -15,30 +16,43 @@ def bellman_ford (arr, start, size):
     data[0, start] = 0
     
     # major algo
-    bucket = arr[start]
+    # bucket for the nodes about to expolre
+    # for every "about-to" end point, it only records the smallest cost rount
+    # the structure is {... end: [start, cost] ...}
+    bucket = {}
+    for i in arr[start]:
+        bucket[i] = {start:arr[start][i]}
+    
     for i in range(1, size):
+        # use set() to make sure the start points in the next round are unique
         candidate = set()
         previous = count ^ 1
         data[count] = data[previous]
-        for j in bucket:
-            data[count, j[1]] = min( data[previous, j[1]], data[previous, j[0]]+j[2])
-            candidate.add(j[1])
+        for v in bucket:
+            data[count, v] = min(data[previous, v], data[previous, bucket[v].keys()[0]]\
+                    + bucket[v].values()[0])
+            candidate.add(v)
         # stop early
         if (data[count]==data[previous]).all():
             break
-        new_bucket = []
+        # update the nodes that are about to explore
+        bucket = {}
         for j in candidate:
-            new_bucket += arr[j]
-        bucket = new_bucket
+            for k in arr[j]:
+                if (k in bucket and data[count,j]+arr[j][k] < data[count, \
+                        bucket[k].keys()[0]]+bucket[k].values()[0]) or k not in bucket:
+                    bucket[k] = {}
+                    bucket[k][j] = arr[j][k]
+        # halt if there is no link between the known cut and the unknown
         if not bucket:
             break
         count = previous
-    
     # check cycle with negative sum
     previous = count ^ 1
     data[count] = data[previous]
-    for j in bucket:
-        data[count, j[1]] = min( data[previous, j[1]], data[previous, j[0]]+j[2])
+    for v in bucket:
+        data[count, v] = min(data[previous, v], data[previous, bucket[v].keys()[0]]\
+                + bucket[v].values()[0])
     if (data[count]== data[previous]).all():
         return data[count]
     else:
@@ -61,6 +75,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-        
 
