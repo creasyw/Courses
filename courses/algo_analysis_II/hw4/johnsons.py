@@ -34,11 +34,8 @@ def johonsons(data, vertex):
             for k in data[i]:
                 data[i][k] = data[i][k]+reweight[i]-reweight[k]
     result = []
-    
-    for i in range(1, vertex+1):
-        result.append(min(reconvert(reweight, vertex, dijkstras(data, i), i)))
-    return min(result)
-
+    return [min(reconvert(reweight,vertex,dijkstras(data,i),i))\
+                        for i in range(1,vertex+1)]
 
 def main():
     import sys
@@ -50,10 +47,11 @@ def main():
             for row in datafile:
                 temp = [int(k) for k in finder.findall(row)]
                 data[temp[0]].append(temp)
-    print johonsons(buildgraph(data), vertex)
+    print min(johonsons(buildgraph(data), vertex))
 
 if __name__ == "__main__":
     main()
 
-
+# The comprehensive test case is from ../hw1/edges.txt
+# -435795
 
