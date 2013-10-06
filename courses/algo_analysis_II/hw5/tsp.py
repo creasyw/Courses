@@ -1,7 +1,12 @@
 import os, re
 import numpy as np
 
-finder = re.compile("-?\d+.?\d*")
+finder = re.compile("-?\d+\.?\d*")
+
+def gen_name(lst):
+    return reduce(lambda i, j: i+str(j), sorted(lst), '')
+
+
 
 
 def main():
