@@ -27,14 +27,22 @@ def tsp(graph):
         current_dict = {}
         for s in current:
             cur_name = gen_name(s)
+            current_dict[cur_name] = {}
             for j in s:
                 if j == 0: continue
                 temp = list(s)
                 temp.remove(j)
                 old_name = gen_name(temp)
-                current_dict[cur_name] = {j : min(old[old_name][k]+length(graph,dict,k,j) for k in temp)}
+#                print old
+#                print j
+#                print temp
+#                print old_name
+                current_dict[cur_name][j] = min(old[old_name][k]+length(graph,dict,k,j) for k in temp if k!=j)
+            current_dict[cur_name][0] = float('inf')
         old = current_dict
     # go back to the start point and return the smallest result
+#    print cur_name
+#    print current_dict
     return min(current_dict[cur_name][j]+length(graph, dict, j, 0) for j in range(1, len(graph)))
 
 def main():
