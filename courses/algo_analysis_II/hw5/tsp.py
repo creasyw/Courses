@@ -22,7 +22,7 @@ def tsp(graph):
     old['0'] = {0:0}
 
     for m in range(2, len(graph)+1):
-        print "\n\n Now it is the %s iteration"%(m)
+#        print "\n\n Now it is the %s iteration"%(m)
         current = filter(lambda x: 0 in x, combinations(range(len(graph)), m))
         current_dict = {}
         for s in current:
@@ -33,16 +33,14 @@ def tsp(graph):
                 temp = list(s)
                 temp.remove(j)
                 old_name = gen_name(temp)
-                print old
-                print j
-                print temp
-                print old_name
+#                print old
+#                print j
+#                print temp
+#                print old_name
                 current_dict[cur_name][j] = min(old[old_name][k]+dict[k,j] for k in temp if k!=j)
             current_dict[cur_name][0] = float('inf')
         old = current_dict
     # go back to the start point and return the smallest result
-#    print cur_name
-#    print current_dict
     return min(current_dict[cur_name][j]+dict[j,0] for j in range(1, len(graph)))
 
 def main():
