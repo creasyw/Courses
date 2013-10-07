@@ -9,15 +9,14 @@ finder = re.compile("-?\d+\.?\d*")
 def gen_name(lst):
     return reduce(lambda i, j: i+str(j), sorted(lst), '')
 
-def length(graph, dict, a, b):
-    if dict[a][b] == 0:
-        dict[a][b] = sqrt((graph[a][0]-graph[b][0])**2+ \
-                (graph[a][1]-graph[b][1])**2)
-    return dict[a][b]
-
 def tsp(graph):
-    # store the distance between two points
+    # precompute the distance between nodes
     dict = np.zeros((len(graph), len(graph)))
+    for i in range(len(graph)):
+        for j in range(i+1):
+            dict[i][j] = dict[j][i] = \
+                    sqrt((graph[i][0]-graph[j][0])**2 + \
+                    (graph[i][1]-graph[j][1])**2)
     # initialize the starting array
     old = {}
     old['0'] = {0:0}
@@ -37,7 +36,7 @@ def tsp(graph):
 #                print j
 #                print temp
 #                print old_name
-                current_dict[cur_name][j] = min(old[old_name][k]+length(graph,dict,k,j) for k in temp if k!=j)
+                current_dict[cur_name][j] = min(old[old_name][k]+dict[k,j] for k in temp if k!=j)
             current_dict[cur_name][0] = float('inf')
         old = current_dict
     # go back to the start point and return the smallest result
