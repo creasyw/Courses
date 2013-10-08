@@ -9,20 +9,18 @@ finder = re.compile("-?\d+\.?\d*")
 def gen_name(lst):
     return reduce(lambda i, j: i+str(j), sorted(lst), '')
 
-def post_processing (half_way, graph, dict):
+def post_processing (half_way, old, graph, dict):
     candidates = half_way.copy()
-    full_name = gen_name(range(len(graph)))
     bucket = {}
     for i in candidates:
-        candidates[i] = sorted(candidates[i].iteritems(), key=operator.itemgetter(1))
-    for i in candidates:
-        if len(graph)%2 == 1:
-            this = [0]
-        else:
-            this = [0, candidates[i][0][0]]
+        this = [0]
         match = gen_name(list( (set(range(len(graph))) - set(half_way[i].keys())) | set(this)))
-        distance = candidates[i][0][1] + candidates[match][0][1] + \
-                dict[candidates[i][0][0], candidates[match][0][0]]
+        if len(graph)%2 == 1:
+            distance = min(candidates[i][m] + candidates[match][n] + \
+                    dict[m, n] for m in candidates[i] for n in candidates[match])
+        else:
+            distance = min(candidates[i][m] + old[match][n] + \
+                    dict[m, n] for m in candidates[i] for n in old[match])
         bucket[distance] = [i, match]
     # return the two unoverlapped rountes with mininum summation
     return min(bucket)
@@ -40,10 +38,9 @@ def tsp(graph):
     # initialize the starting array
     old = {}
     old['0'] = {0:0}
+    m = 2
 
-    #for m in range(2, len(graph)+1):
-    for m in range(2, len(graph)/2+2):
-#        print "\n\n Now it is the %s iteration"%(m)
+    while True:
         current = filter(lambda x: 0 in x, combinations(range(len(graph)), m))
         current_dict = {}
         for s in current:
@@ -56,11 +53,13 @@ def tsp(graph):
                 old_name = gen_name(temp)
                 current_dict[cur_name][j] = min(old[old_name][k]+dict[k,j] for k in temp if k!=j)
             current_dict[cur_name][0] = float('inf')
+        m += 1
+        if m >= len(graph)/2+2: break
         old = current_dict
-    return post_processing(current_dict, graph, dict)
-
-    # go back to the start point and return the smallest result
-    #return min(current_dict[cur_name][j]+dict[j,0] for j in range(1, len(graph)))
+    # To use dynamic programming exploring TSP, as it calculate smallest distance for N/2 vertex,
+    # actually, the problem has already be solved. Because the other half also has already in the
+    # dataset.
+    return post_processing(current_dict, old, graph, dict)
 
 def main():
     import sys
