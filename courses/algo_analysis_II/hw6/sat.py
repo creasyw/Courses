@@ -17,24 +17,34 @@ def preprocess(clause, num):
             l2 = np.where(benchmark==abs(item[1]))[0][0]
             c1 = list(new_clause[l1])
             c2 = list(new_clause[l2])
-            if item[0] in c1:
-                c1.remove(item[0])
-                e1 = c1[0]
+            #print c1, c2
+            # the same variables have been in the same clause
+            if l1 == l2:
+                # two clauses are contradict
+                if (c1 != item).all() and (c1 != -1*item).all():
+                    return np.array([]), num
+                # if equal, do nothing
             else:
-                c1.remove(-item[0])
-                e1 = -1*c1[0]
-            if item[1] in c2:
-                c2.remove(item[1])
-                e2 = c2[0]
-            else:
-                c2.remove(-item[1])
-                e2 = -1*c2[0]
-            new_clause[count] = [e1,e2]
-            new_clause[l1] = new_clause[l2] = [0,0]
+                if item[0] in c1:
+                    c1.remove(item[0])
+                    e1 = c1[0]
+                else:
+                    c1.remove(-item[0])
+                    e1 = -1*c1[0]
+                if item[1] in c2:
+                    c2.remove(item[1])
+                    e2 = c2[0]
+                else:
+                    c2.remove(-item[1])
+                    e2 = -1*c2[0]
+                new_clause[count] = [e1,e2]
+                new_clause[l1] = new_clause[l2] = [0,0]
+            #print "Two:", c1, c2, item, " ==> ", new_clause[count]
         # only one of the items in the existing clauses
         elif abs(item[0]) in benchmark:
             l1 = np.where(benchmark==abs(item[0]))[0][0]
             c1 = list(new_clause[l1])
+            #print c1
             if item[0] in c1:
                 c1.remove(item[0])
                 e1 = c1[0]
@@ -43,9 +53,11 @@ def preprocess(clause, num):
                 e1 = -1*c1[0]
             new_clause[count] = [e1,item[1]]
             new_clause[l1] = [0,0]
+            #print "First: ", c1, item, " ==> ", new_clause[count]
         elif abs(item[1]) in benchmark:
             l2 = np.where(benchmark==abs(item[1]))[0][0]
             c2 = list(new_clause[l2])
+            #print c2
             if item[1] in c2:
                 c2.remove(item[1])
                 e2 = c2[0]
@@ -54,6 +66,7 @@ def preprocess(clause, num):
                 e2 = -1*c2[0]
             new_clause[count] = [item[0],e2]
             new_clause[l2] = [0,0]
+            #print "Second: ", c2, item, " ==> ", new_clause[count]
         # add new clauses with new items
         else:
             new_clause[count] = item
@@ -66,6 +79,9 @@ def preprocess(clause, num):
 
 
 def sat(clause, num, new_num):
+    # catch the failed case from preprocessing
+    if len(clause) == 0:
+        return False
     for i in xrange(int(log(new_num, 2))):
         # random initial assignment
         # using length num+1 so that the index in clause can be directly mapping to
@@ -103,6 +119,7 @@ def main():
                  count += 1
 
     clause, new_num =  preprocess(clause, num)
+    print len(clause), new_num
     print sat(clause, num, new_num)
 
 if __name__ == "__main__":
