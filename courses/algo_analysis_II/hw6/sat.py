@@ -6,11 +6,11 @@ from math import log
 finder = re.compile("-?\d+")
 
 def sat(clause, num):
-    for i in range(int(log(num, 2))):
+    for i in xrange(int(log(num, 2))):
         # random initial assignment
         # using length num+1 so that the index in clause can be directly mapping to
         var = [False]+[bool(random.getrandbits(1)) for k in range(num)]
-        for j in range(2*num**2):
+        for j in xrange(2*num**2):
             index = []
             for item in clause:
                 if item[0] > 0:
