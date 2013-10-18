@@ -6,16 +6,13 @@ square x = x * x
 cubic :: Floating a => a -> a
 cubic a = a * a* a
 
-factorial :: (Integral a) => a -> a
-factorial x
-  | x <= 1 = 1
-  | otherwise = x * factorial(x - 1)             
+factorial x = product [1..x]
 
 sayMe :: (Integral a) => a -> String
-sayMe 1 = "One!"
-sayMe 2 = "Two!"
-sayMe 3 = "Three!"
-sayMe 4 = "Four!"
-sayMe 5 = "Five!"
+sayMe 1 = "One-1!"
+sayMe 2 = "Two-2!"
+sayMe 3 = "Three-3!"
+sayMe 4 = "Four-4!"
+sayMe 5 = "Five-5!"
 sayMe x = "Not between 1 and 5"
 
