@@ -16,3 +16,8 @@ sayMe 4 = "Four-4!"
 sayMe 5 = "Five-5!"
 sayMe x = "Not between 1 and 5"
 
+max' a b
+  | a > b = a
+  | otherwise = b
+                
+
