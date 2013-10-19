@@ -21,3 +21,10 @@ max' a b
   | otherwise = b
                 
 
+quicksort lst =
+  case lst of
+    [] -> []
+    (x:xs) -> let smaller = quicksort [a | a <- xs, a <= x]
+                  bigger = quicksort[a | a <- xs, a > x]
+              in smaller ++ [x] ++ bigger
+       
