@@ -104,8 +104,8 @@ object Huffman {
    * If `trees` is a list of less than two elements, that list should be returned
    * unchanged.
    */
-  def combine(trees: List[CodeTree]): List[CodeTree] = trees match{
-    case x::y::others => 
+  def combine(trees: List[CodeTree]): List[CodeTree] = trees match {
+    case x :: y :: others =>
       val fork = makeCodeTree(x, y)
       val newTree = fork :: others
       newTree.sortBy(x => weight(x))
@@ -129,9 +129,9 @@ object Huffman {
    *    the example invocation. Also define the return type of the `until` function.
    *  - try to find sensible parameter names for `xxx`, `yyy` and `zzz`.
    */
-  def until(done: List[CodeTree] => Boolean, reduce: List[CodeTree] => List[CodeTree])(trees: List[CodeTree]): List[CodeTree] = {
-    if (trees.isEmpty || singleton(trees)) trees
-    else until(done, reduce)(reduce(trees))
+  def until(single: List[CodeTree] => Boolean, comb: List[CodeTree] => List[CodeTree])(trees: List[CodeTree]): List[CodeTree] = {
+    if (trees.isEmpty || single(trees)) trees
+    else until(single, comb)(comb(trees))
   }
 
   /**
@@ -202,34 +202,29 @@ object Huffman {
    * This function encodes `text` using the code tree `tree`
    * into a sequence of bits.
    */
-  def smartContains(m: Char, charList: List[Char]): Boolean = {
+  def Contains(m: Char, charList: List[Char]): Boolean = {
     var contains = false
     charList.foreach(e => if (e == m) contains = true);
     contains
   }
+
   def encode(tree: CodeTree)(text: List[Char]): List[Bit] = {
     var bits: List[Bit] = Nil
 
-    def _encode(t: CodeTree, char: Char, textList: List[Char]): List[Bit] = {
-      t match {
-        case Fork(l, r, chars, w) => {
-          if (smartContains(char, chars)) {
-            bits = bits ++ List(0)
-            _encode(l, char, textList)
-          } else {
-            bits = bits ++ List(1)
-            _encode(r, char, textList)
-          }
-        }
-        case Leaf(char, w) => {
-          if (textList != Nil) _encode(tree, textList.head, textList.tail)
-          else bits
-        }
+    def helper(t: CodeTree, coding: List[Bit], target: Char, rest: List[Char]): List[Bit] = t match {
+      case Fork(l, r, cs, w) => {
+        if (chars(l).contains(target))
+          helper(l, coding ++ List(0), target, rest)
+        else
+          helper(r, coding ++ List(1), target, rest)
       }
-
+      case Leaf(c, w) =>{
+          if (rest != Nil) helper(tree, coding, rest.head, rest.tail)
+          else coding
+      }
     }
 
-    _encode(tree, text.head, text.tail)
+    helper(tree, List(), text.head, text.tail)
   }
 
   // Part 4b: Encoding using code table
