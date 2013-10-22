@@ -28,3 +28,9 @@ quicksort lst =
                   bigger = quicksort[a | a <- xs, a > x]
               in smaller ++ [x] ++ bigger
        
+replicate' n x
+  | n <= 0 =[]
+  | otherwise = x:replicate' (n-1) x
+
+applyt f x =
+  f (f x)
