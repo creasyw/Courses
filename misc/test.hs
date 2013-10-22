@@ -34,3 +34,22 @@ replicate' n x
 
 applyt f x =
   f (f x)
+
+largeDivide = head (filter p [100000, 99999..])
+  where p x = x `mod` 3829 == 0
+
+-- Collatz sequences
+chain n
+  | n == 1 = [1]
+  | even n = n:chain (n `div` 2)
+  | odd n = n:chain (n*3+1)
+
+longerThan n upperbound
+  | upperbound <= 0 = 0
+  | otherwise = length (filter pred (map chain [1..upperbound]))
+                where pred xs = length xs > n
+
+-- use "scanl" to monitor the progress of accumulating
+sqrtSum1 = length (takeWhile (<1000) (scanl1 (+) (map sqrt [1..]))) +1
+
+
