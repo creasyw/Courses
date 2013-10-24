@@ -51,5 +51,3 @@ longerThan n upperbound
 
 -- use "scanl" to monitor the progress of accumulating
 sqrtSum1 = length (takeWhile (<1000) (scanl1 (+) (map sqrt [1..]))) +1
-
-
