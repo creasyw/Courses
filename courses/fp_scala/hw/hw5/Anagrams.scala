@@ -177,16 +177,17 @@ object Anagrams {
    */
   def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
 
-    def helper(sc: Occurrences): List[Sentence] = sc match {
-      case List() => List(List())
-      case s :: ss => {
+    def helper(sc: Occurrences): List[Sentence] =
+      if (sc.isEmpty) List(List())
+      else {
         val cmb = combinations(sc)
-        for {choice <- cmb} yield (dictionaryByOccurrences get choice) match {
-          case Some(lst) => (lst :: helper(subtract(choice, sc))).flatten
-          case None => List()
-        }
+        for (
+          choice: Occurrences <- cmb.filterNot(x => x == List());
+          current <- dictionaryByOccurrences.getOrElse(choice, List());
+          rest <- helper(subtract(sc, choice))
+        ) yield current :: rest
       }
-    }
+
     helper(sentenceOccurrences(sentence))
   }
 }
