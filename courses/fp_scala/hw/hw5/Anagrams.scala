@@ -175,6 +175,18 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
 
+    def helper(sc: Occurrences): List[Sentence] = sc match {
+      case List() => List(List())
+      case s :: ss => {
+        val cmb = combinations(sc)
+        for {choice <- cmb} yield (dictionaryByOccurrences get choice) match {
+          case Some(lst) => (lst :: helper(subtract(choice, sc))).flatten
+          case None => List()
+        }
+      }
+    }
+    helper(sentenceOccurrences(sentence))
+  }
 }
