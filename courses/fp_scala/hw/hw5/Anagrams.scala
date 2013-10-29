@@ -41,7 +41,11 @@ object Anagrams {
       map { case (v, vs) => (v, vs.length) }.toList.sortBy { case (c, i) => c }
 
   /** Converts a sentence into its character occurrence list. */
-  def sentenceOccurrences(s: Sentence): Occurrences = ???
+  def sentenceOccurrences(s: Sentence): Occurrences = {
+    val temp = (s filter (word => word forall (chr => chr.isLetter))).mkString("")
+    temp.toLowerCase.toList.groupBy((e: Char) => e).
+      map { case (v, vs) => (v, vs.length) }.toList.sortBy { case (c, i) => c }
+  }
 
   /**
    * The `dictionaryByOccurrences` is a `Map` from different occurrences to a sequence of all
