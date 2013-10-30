@@ -36,18 +36,21 @@ One important consideration for the Graph class is how to represent the graph as
 The value of the PriorityQueue is to always have access to the vertex with the next shortest link in the shortest path calculation at the top of the queue. A typically implementation is a minHeap:
 
 **Class PriorityQueue**
-chgPrioirity(PQ, priority): changes the priority (node value) of queue element.
-minPrioirty(PQ): removes the top element of the queue.
-contains(PQ, queue_element): does the queue contain queue_element.
-Insert(PQ, queue_element): insert queue_element into queue
-top(PQ):returns the top element of the queue.
-size(PQ): return the number of queue_elements.
+
+* chgPrioirity(PQ, priority): changes the priority (node value) of queue element.
+* minPrioirty(PQ): removes the top element of the queue.
+* contains(PQ, queue_element): does the queue contain queue_element.
+* Insert(PQ, queue_element): insert queue_element into queue
+* top(PQ):returns the top element of the queue.
+* size(PQ): return the number of queue_elements.
+
 Finally, the class: ShortestPathAlgo - implements the mechanics of Dijkstra’s algorithm. Besides having member fields (has a relationship) of Graph and Priority Queue, an additional ADT maybe required to maintain the parent relationship of the shortest path.
 
 Class ShortestPath
-vertices(List): list of vertices in G(V,E).
-path(u, w): find shortest path between u-w and returns the sequence of vertices representing shorest path u-v1-v2-…-vn-w.
-path_size(u, w): return the path cost associated with the shortest path.
+* vertices(List): list of vertices in G(V,E).
+* path(u, w): find shortest path between u-w and returns the sequence of vertices representing shorest path u-v1-v2-…-vn-w.
+* path_size(u, w): return the path cost associated with the shortest path.
+
 The class implementing your Monte Carlo simulation is the workflow manager for this assignment, butother helper classes may be necessary depending on your particular implementation
 
 **Notes and Reminders**:
