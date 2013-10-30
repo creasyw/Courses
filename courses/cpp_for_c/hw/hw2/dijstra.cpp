@@ -14,6 +14,19 @@ class graph{
             arr[i] = new float[num];
     }
 
+    int num_of_vertices() {
+        return num;
+    }
+
+    // This is specific for the undirected graph
+    int num_of_edges() {
+        int count = 0;
+        for (int i=0; i < num-1; ++i)
+            for (int j = i+1; j < num; ++j)
+                if (arr[i][j] > 0) count++;
+        return count;
+    }
+
     void display_matrix(){
         for (int i=0; i < num; ++i) {
             for (int j=0; j < num; ++j)
@@ -33,10 +46,10 @@ class graph{
             return;
         }
 
-        int num_of_edges = static_cast<int>(num*(num-1)*density);
+        int nedge = static_cast<int>(num*(num-1)*density);
         int count = 0;
-        cout << num_of_edges << endl;
-        while (count < num_of_edges) {
+        cout << nedge << endl;
+        while (count < nedge) {
             srand(clock());
             int col = rand() % num;
             int row = rand() % num;
@@ -62,9 +75,11 @@ class graph{
             return;
         }
 
-        int num_of_edges = static_cast<int>(num*(num-1)/2*density);
+        int nedge = static_cast<int>(num*(num-1)/2*density);
+        cout << num*(num-1)/2 << endl;
+        cout << nedge << endl;
         int count = 0;
-        while (count < num_of_edges) {
+        while (count < nedge) {
             srand(clock());
             int row = rand() % num;
             int col = rand() % (num-row);
@@ -92,6 +107,8 @@ int main()
     cout << "\nAfter generate:" << endl;
     test.undirected_matrix(0.5, 5, 10);
     test.display_matrix();
+    cout << test.num_of_vertices() << endl;
+    cout << test.num_of_edges() << endl;
 
 }
 
