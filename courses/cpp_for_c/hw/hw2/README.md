@@ -19,16 +19,18 @@ Turn in:  Printout of program, 200 words on what you learned, and output showing
 A potential partial interface definition for a Graph could be:
 
 **Class Graph**:
-V (G): returns the number of vertices in the graph
-E (G): returns the number of edges in the graph
-adjacent (G, x, y): tests whether there is an edge from node x to node y.
-neighbors (G, x): lists all nodes y such that there is an edge from x to y.
-add (G, x, y): adds to G the edge from x to y, if it is not there.
-delete (G, x, y): removes the edge from x to y, if it is there.
-get_node_value (G, x): returns the value associated with the node x.
-set_node_value( G, x, a): sets the value associated with the node x to a.
-get_edge_value( G, x, y): returns the value associated to the edge (x,y).
-set_edge_value (G, x, y, v): sets the value associated to the edge (x,y) to v.
+
+* V (G): returns the number of vertices in the graph
+* E (G): returns the number of edges in the graph
+* adjacent (G, x, y): tests whether there is an edge from node x to node y.
+* neighbors (G, x): lists all nodes y such that there is an edge from x to y.
+* add (G, x, y): adds to G the edge from x to y, if it is not there.
+* delete (G, x, y): removes the edge from x to y, if it is there.
+* get_node_value (G, x): returns the value associated with the node x.
+* set_node_value( G, x, a): sets the value associated with the node x to a.
+* get_edge_value( G, x, y): returns the value associated to the edge (x,y).
+* set_edge_value (G, x, y, v): sets the value associated to the edge (x,y) to v.
+
 One important consideration for the Graph class is how to represent the graph as a member ADT. Two basic implementations are generally considered: adjacency list and adjacency matrix depending on the relative edge density. For sparse graphs, the list approach is typically more efficient, but for dense graphs, the matrix approach can be more efficient (reference an Algorithm’s source for space and time analysis). Note in some cases such as add(G, x, y) you may also want to have the edge carry along its cost. Another approach could be to use (x, y) to index a cost stored in an associated array or map.
 
 The value of the PriorityQueue is to always have access to the vertex with the next shortest link in the shortest path calculation at the top of the queue. A typically implementation is a minHeap:
