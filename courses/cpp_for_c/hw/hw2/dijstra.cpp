@@ -32,7 +32,7 @@ class graph{
             return;
         }
 
-        int num_of_edges = static_cast<int>(num*num*density);
+        int num_of_edges = static_cast<int>(num*(num-1)*density);
         int count = 0;
         cout << num_of_edges << endl;
         while (count < num_of_edges) {
