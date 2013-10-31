@@ -34,11 +34,6 @@ class graph{
             check(x, -1, num-1, "index of vertex is out of range");
             check(y, -1, num-1, "index of vertex is out of range");
             return arr[x][y]>0;
-
-            /*if (arr[x][y] > 0)
-                return true;
-            else
-                return false;*/
         }
         
         // lists all nodes y such that there is an edge from x to y
@@ -66,6 +61,7 @@ class graph{
             arr[x][y]=0;
         }
 
+        // display matrix in a row/col format
         void display_matrix(){
             for (int i=0; i < num; ++i) {
                 for (int j=0; j < num; ++j)
