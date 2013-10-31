@@ -66,6 +66,26 @@ class graph{
         return result;
     }
 
+    // adds to G the edge from x to y with value val, if it does not exist
+    void add (int x, int y, int val) {
+        // sanity check for arguments
+        try {
+            if (x >= num || y >= num || x <0 || y < 0)
+                throw invalid_argument("index of vertex is out of range");
+        }
+        catch (const invalid_argument& ia) {
+            cerr << "Invalid argument: " << ia.what() << endl;
+            exit (EXIT_FAILURE);
+        }
+
+        if (arr[x][y] > 0 || x == y) return;
+        arr[x][y] = arr[y][x] = val;
+    }
+
+    // removes the edge from x to y, if it is there
+    void remove (int x, int y) {
+        arr[x][y]=0;
+    }
 
     void display_matrix(){
         for (int i=0; i < num; ++i) {
@@ -141,7 +161,8 @@ class graph{
 
 int main()
 {
-    graph test(10);
+    int n = 10;
+    graph test(n);
     cout << "After initialization:" << endl;
     test.display_matrix();
     cout << "\nAfter generate:" << endl;
@@ -155,6 +176,18 @@ int main()
     for( vector<int>::const_iterator i = hit.begin(); i != hit.end(); ++i)
             cout << *i << ' ';
     cout << "\n" << endl;
+
+    cout << "Test add all edges connected node 2" << endl;
+    for (int i=0; i<n; ++i) {
+        test.add(2,i, 20);
+    }
+    test.display_matrix();
+
+    cout << "Test delete all edges connected node 2" << endl;
+    for (int i=0; i<n; ++i) {
+        test.remove(2,i);
+    }
+    test.display_matrix();
 
 }
 
