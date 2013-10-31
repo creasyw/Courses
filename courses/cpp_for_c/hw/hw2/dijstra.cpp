@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <stdlib.h>
 
 using namespace std;
@@ -9,11 +10,12 @@ class graph{
     // The graph is stored in a matrix
     graph(int n) {
         num = n;
-        arr = new float*[num];
+        arr = new int*[num];
         for (int i=0; i<num; ++i)
-            arr[i] = new float[num];
+            arr[i] = new int[num];
     }
 
+    // return number of vertices
     int num_of_vertices() {
         return num;
     }
@@ -27,6 +29,44 @@ class graph{
         return count;
     }
 
+    // tests whether there is an edge from node x to node y.
+    bool adjancent(int x, int y) {
+        // sanity check for arguments
+        try {
+            if (x >= num || y >= num || x <0 || y < 0)
+                throw invalid_argument("index of vertex is out of range");
+        }
+        catch (const invalid_argument& ia) {
+            cerr << "Invalid argument: " << ia.what() << endl;
+            exit (EXIT_FAILURE);
+        }
+
+        if (arr[x][y] > 0)
+            return true;
+        else
+            return false;
+    }
+    
+    // lists all nodes y such that there is an edge from x to y
+    vector<int> neighbors(int x) {
+        // sanity check for arguments
+        try {
+            if (x >= num || x <0)
+                throw invalid_argument("index of vertex is out of range");
+        }
+        catch (const invalid_argument& ia) {
+            cerr << "Invalid argument: " << ia.what() << endl;
+            exit (EXIT_FAILURE);
+        }
+
+        vector<int> result;
+        for (int i=0; i<num; ++i) {
+            if (arr[x][i] > 0) result.push_back(i);
+        }
+        return result;
+    }
+
+
     void display_matrix(){
         for (int i=0; i < num; ++i) {
             for (int j=0; j < num; ++j)
@@ -38,7 +78,7 @@ class graph{
     void directed_matrix(float density, int lrange, int urange) {
         // sanity check for arguments
         try {
-            if (density > 1 || density <= 0 || lrange <=0 or urange < lrange)
+            if (density > 1 || density <= 0 || lrange <=0 || urange < lrange)
                 throw invalid_argument("Density should be in (0,1] and 0 < lrange < urange");
         }
         catch (const invalid_argument& ia) {
@@ -95,7 +135,7 @@ class graph{
 
     private:
         int num;
-        float**  arr;
+        int**  arr;
     
 };
 
@@ -109,6 +149,12 @@ int main()
     test.display_matrix();
     cout << test.num_of_vertices() << endl;
     cout << test.num_of_edges() << endl;
+
+    cout << "Test function neighbor(5): " << endl;
+    vector<int> hit = test.neighbors(5);
+    for( vector<int>::const_iterator i = hit.begin(); i != hit.end(); ++i)
+            cout << *i << ' ';
+    cout << "\n" << endl;
 
 }
 
