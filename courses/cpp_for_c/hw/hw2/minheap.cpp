@@ -63,13 +63,14 @@ class minheap {
                     throw length_error("There is no element in the heap!");
             }
             catch (const length_error& e) {
-                cerr << "Heap Empty" << e.what() << endl;
+                cerr << "Heap Empty: " << e.what() << endl;
                 exit (EXIT_FAILURE);
             }
 
             heapitem result(elem[0].get_key(), elem[0].get_node);
             int current = 0;
             int child = 2;
+            // bubble-down for extraction
             while (child<num) {
                 if (elem[child-1].get_key() < elem[child].get_key()) {
                     heap_swap(elem[current], elem[child-1]);
@@ -90,7 +91,35 @@ class minheap {
         // update the key value of the element in the heap
 
         // push new element into the heap
-                
+        void push(float k, int n) {
+            // if the heap is full, the element cannot be pushed in.
+            try {
+                if (num >= length)
+                    throw length_error("There is no space in the heap!");
+            }
+            catch (const length_error& e) {
+                cerr << "Heap Full: " << e.what() << endl;
+                // no error comes out, but no operation performs
+                return;
+            }
+
+            elem[num].set_key(k);
+            elem[num].set_node(n);
+            int current = num;
+            int parent = floor((current/2.-1));
+            // bubble-up for insertion
+            while (parent >= 0) {
+                if (elem[current].get_key() < elem[parent].get_key())
+                    break;
+                heap_swap(elem[current], elem[parent]);
+                current = parent;
+                parent = floor((current/2.-1));
+            }
+
+            num += 1
+            return;
+        }
+
     private:
         float *elem;
         int num;            // the num of element
