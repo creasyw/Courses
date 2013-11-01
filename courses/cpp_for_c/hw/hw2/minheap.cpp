@@ -2,6 +2,29 @@
 
 using namespace std;
 
+// class for a node in heap
+class heapitem {
+    public:
+        // initial func
+        void heapitem(float k, int x, int y) {
+            key = k;
+            node1 = x;
+            node2 = y;
+        }
+
+        float getter() {
+            return key;
+        }
+        void setter(float k) {
+            key = k;
+        }
+    
+    private:
+        float key; // key is the up-to-date distance
+        int node1;
+        int node2
+};
+
 // class for the operations of entire heap
 class minheap {
     public:
