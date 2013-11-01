@@ -34,12 +34,13 @@ class minheap {
     public:
         void heap(int size) {
             elem = new heapitem[size];
+            num = 0
             length = size;
         }
 
         // test if the heap contains certain element
         bool contains(float k) {
-            for(int i=0; i<length; i++) {
+            for(int i=0; i<num; i++) {
                 if (elem[i]==key) return true;
             }
             return false;
@@ -56,19 +57,20 @@ class minheap {
         }
 
         // main func: pop the minimum element out of the heap
-        float pop() {
+        heapitem pop() {
             try {
-                if (length==0)
+                if (num==0)
                     throw length_error("There is no element in the heap!");
             }
             catch (const length_error& e) {
                 cerr << "Heap Empty" << e.what() << endl;
+                exit (EXIT_FAILURE);
             }
 
-            heapitem result = elem[0];
+            heapitem result(elem[0].get_key(), elem[0].get_node);
             int current = 0;
             int child = 2;
-            while (child<length) {
+            while (child<num) {
                 if (elem[child-1].get_key() < elem[child].get_key()) {
                     heap_swap(elem[current], elem[child-1]);
                     current = child-1;
@@ -79,18 +81,19 @@ class minheap {
                     child = child*2;
                 }
             }
-            if (length%2==0)
-                swap(elem[current], elem[length-1]);
-            length -= 1;
+            if (num%2==0)
+                swap(elem[current], elem[num-1]);
+            num -= 1;
+            return result
         }
 
         // update the key value of the element in the heap
 
         // push new element into the heap
-
                 
     private:
         float *elem;
-        int length;       // size of the array
+        int num;            // the num of element
+        int length;         // size of the array
 };
 
