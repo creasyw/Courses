@@ -51,9 +51,9 @@ class minheap {
         }
 
         // test if the heap contains certain element
-        bool contains(float k) {
+        bool contains(int n) {
             for(int i=0; i<num; i++) {
-                if (elem[i].get_key()==k) return true;
+                if (elem[i].get_node()==n) return true;
             }
             return false;
         }
@@ -97,7 +97,7 @@ class minheap {
             if (current != num-1) {
                 int parent = floor((current+1)/2.)-1;
                 swap(elem[current], elem[num-1]);
-                // the swap break the heap property
+                // the swapping breaks the heap property
                 // the smaller node has to bubble-up
                 if (elem[parent].get_key() > elem[current].get_key()) {
                     while (parent>=0 && elem[current].get_key()<elem[parent].get_key()) {
@@ -111,7 +111,33 @@ class minheap {
             return result;
         }
 
+        // helper function for the update
+        // find the index of the node, otherwise return -1
+        int find(int n) {
+            for(int i=0; i<num; i++) {
+                if (elem[i].get_node()==n) return i;
+            }
+            return -1;
+        }
         // update the key value of the element in the heap
+        void update(float k, int n) {
+            int current = find(n);
+            if (current==-1)
+                push(k, n);
+            else if (elem[current].get_key() > k) {
+                elem[current].set_key(k);
+                int parent = floor((current+1)/2.)-1;
+                // if the update breaks the heap property
+                // the smaller node has to bubble-up
+                if (elem[parent].get_key() > elem[current].get_key()) {
+                    while (parent>=0 && elem[current].get_key()<elem[parent].get_key()) {
+                        heap_swap(elem[current], elem[parent]);
+                        current = parent;
+                        parent = floor((current+1)/2.)-1;
+                    }
+                }
+            }
+        }
 
         // push new element into the heap
         void push(float k, int n) {
@@ -162,6 +188,11 @@ int main() {
     test.push(8, 22);
     test.push(4, 21);
 
+    test.display();
+
+    // test for update heap
+    cout << "change node 7 to 3" << endl;
+    test.update(3, 7);
     test.display();
 
     // test for popping 5 times
