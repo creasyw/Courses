@@ -2,6 +2,7 @@
 #include <vector>
 #include <stdlib.h>
 #include "dijstra.h"
+#include "minheap.h"
 
 using namespace std;
 
@@ -24,6 +25,10 @@ int graph::num_of_edges() {
         for (int j = i+1; j < num; ++j)
             if (arr[i][j] > 0) count++;
     return count;
+}
+
+float graph::cost(int u, int v) {
+    return arr[u][v];
 }
 
 // tests whether there is an edge from node x to node y.
@@ -124,10 +129,47 @@ void graph::check(float target, int lower, int upper, string e) {
     }
 }
 
+class dijstra {
+    public:
+        dijstra(int n) {
+            path_cost = -1;
+        }
+        vector<int> path(minheap candidates, graph g, int u, int v) {
+            vector<int> result;
+            path_cost = 0;
+            int begin = u;
+            int next = -1;
+            while (candidates.size()!=0) {
+                heapitem t = candidates.pop();
+                int node = t.get_node();
+                result.push_back(node);
+                path_cost += t.get_key();
+                if (node == v)
+                    return result;
+                vector<int> n = g.neighbors(node);
 
+                for(vector<int>::iterator i=n.begin(); i!=n.end(); ++i) {
+                    candidates.update(g.cost(node,*i), *i);
+                }
+            }
+            // after iteration, the v is not found
+            vector<int> r;
+            return r;
+        }
 
-int main()
-{
+        float path_size(minheap c, graph g, int u, int v) {
+            vector<int> p = path(c, g, u, v);
+            if (p.size()!=0)
+                return path_cost;
+            else
+                return -1;
+        }
+
+    private:
+        float path_cost;
+};
+
+void test_graph() {
     int n = 10;
     graph test(n);
     cout << "After initialization:" << endl;
@@ -162,6 +204,10 @@ int main()
         test.remove(2,i);
     }
     test.display_matrix();
+}
+
+int main()
+{
 
 }
 
