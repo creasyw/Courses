@@ -22,7 +22,7 @@ class heapitem {
         void set_key(float k) {
             key = k;
         }
-        float get_node() {
+        int get_node() {
             return node;
         }
         void set_node(int x) {
@@ -117,17 +117,18 @@ class minheap {
 
             elem[num].set_key(k);
             elem[num].set_node(n);
-            int current = num;
-            int parent = floor((current/2.-1));
-            // bubble-up for insertion
-            while (parent >= 0) {
-                if (elem[current].get_key() < elem[parent].get_key())
-                    break;
-                heap_swap(elem[current], elem[parent]);
-                current = parent;
-                parent = floor((current/2.-1));
+            if (num!=0) {
+                int current = num;
+                int parent = floor((current+1)/2.)-1;
+                // bubble-up for insertion
+                while (parent >= 0) {
+                    if (elem[current].get_key() > elem[parent].get_key())
+                        break;
+                    heap_swap(elem[current], elem[parent]);
+                    current = parent;
+                    parent = floor((current+1)/2.)-1;
+                }
             }
-
             num += 1;
             return;
         }
