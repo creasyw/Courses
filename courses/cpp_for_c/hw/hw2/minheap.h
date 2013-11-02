@@ -1,5 +1,5 @@
-#ifndef HEAP_H
-#define HEAP_H
+#ifndef MINHEAP_H
+#define MINHEAP_H
 
 #include "minheap.h"
 
