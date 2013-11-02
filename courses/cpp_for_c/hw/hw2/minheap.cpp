@@ -37,10 +37,10 @@ class heapitem {
 // class for the operations of entire heap
 class minheap {
     public:
-        minheap(int size) {
-            elem = new heapitem[size];
+        minheap(int n) {
+            elem = new heapitem[n];
             num = 0;
-            length = size;
+            length = n;
         }
 
         void display() {
@@ -58,14 +58,9 @@ class minheap {
             return false;
         }
 
-        void heap_swap(heapitem &h1, heapitem &h2) {
-            heapitem temp(0,0);
-            temp.set_key(h1.get_key());
-            temp.set_node(h1.get_node());
-            h1.set_key(h2.get_key());
-            h1.set_node(h2.get_node());
-            h2.set_key(temp.get_key());
-            h2.set_node(temp.get_node());
+        // return the number of elements in the heap
+        int size() {
+            return num;
         }
 
         // main func: pop the minimum element out of the heap
@@ -111,14 +106,6 @@ class minheap {
             return result;
         }
 
-        // helper function for the update
-        // find the index of the node, otherwise return -1
-        int find(int n) {
-            for(int i=0; i<num; i++) {
-                if (elem[i].get_node()==n) return i;
-            }
-            return -1;
-        }
         // update the key value of the element in the heap
         void update(float k, int n) {
             int current = find(n);
@@ -174,6 +161,25 @@ class minheap {
         heapitem *elem;
         int num;            // the num of element
         int length;         // size of the array
+
+        void heap_swap(heapitem &h1, heapitem &h2) {
+            heapitem temp(0,0);
+            temp.set_key(h1.get_key());
+            temp.set_node(h1.get_node());
+            h1.set_key(h2.get_key());
+            h1.set_node(h2.get_node());
+            h2.set_key(temp.get_key());
+            h2.set_node(temp.get_node());
+        }
+
+        // helper function for the update
+        // find the index of the node, otherwise return -1
+        int find(int n) {
+            for(int i=0; i<num; i++) {
+                if (elem[i].get_node()==n) return i;
+            }
+            return -1;
+        }
 };
 
 int main() {
