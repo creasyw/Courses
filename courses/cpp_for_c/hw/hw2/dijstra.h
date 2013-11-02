@@ -8,6 +8,7 @@ class graph{
         // return number of vertices
         int num_of_vertices();
         int num_of_edges();
+        float cost(int x, int y);
         bool adjancent(int x, int y);
         std::vector<int> neighbors(int x);
         void add (int x, int y, int val);
