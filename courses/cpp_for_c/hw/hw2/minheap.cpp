@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 
@@ -6,7 +7,11 @@ using namespace std;
 class heapitem {
     public:
         // initial func
-        void heapitem(float k, int x) {
+        heapitem() {
+            key = -1;
+            node = -1;
+        }
+        heapitem(float k, int x) {
             key = k;
             node = x;
         }
@@ -32,28 +37,35 @@ class heapitem {
 // class for the operations of entire heap
 class minheap {
     public:
-        void heap(int size) {
+        minheap(int size) {
             elem = new heapitem[size];
-            num = 0
+            num = 0;
             length = size;
+        }
+
+        void display() {
+            for (int i=0; i<num; ++i) {
+                cout<< "Node: " << elem[i].get_node()
+                << " with Key: " << elem[i].get_key() << endl;
+            }
         }
 
         // test if the heap contains certain element
         bool contains(float k) {
             for(int i=0; i<num; i++) {
-                if (elem[i]==key) return true;
+                if (elem[i].get_key()==k) return true;
             }
             return false;
         }
 
-        void heap_swap(const heapitem &h1, const heapitem &h2) {
+        void heap_swap(heapitem &h1, heapitem &h2) {
             heapitem temp(0,0);
             temp.set_key(h1.get_key());
             temp.set_node(h1.get_node());
             h1.set_key(h2.get_key());
             h1.set_node(h2.get_node());
             h2.set_key(temp.get_key());
-            h2.set_node(temp.set_node());
+            h2.set_node(temp.get_node());
         }
 
         // main func: pop the minimum element out of the heap
@@ -67,7 +79,7 @@ class minheap {
                 exit (EXIT_FAILURE);
             }
 
-            heapitem result(elem[0].get_key(), elem[0].get_node);
+            heapitem result(elem[0].get_key(), elem[0].get_node());
             int current = 0;
             int child = 2;
             // bubble-down for extraction
@@ -85,7 +97,7 @@ class minheap {
             if (num%2==0)
                 swap(elem[current], elem[num-1]);
             num -= 1;
-            return result
+            return result;
         }
 
         // update the key value of the element in the heap
@@ -116,13 +128,23 @@ class minheap {
                 parent = floor((current/2.-1));
             }
 
-            num += 1
+            num += 1;
             return;
         }
 
     private:
-        float *elem;
+        heapitem *elem;
         int num;            // the num of element
         int length;         // size of the array
 };
+
+int main() {
+    minheap test(100);
+    test.push(10.5, 2);
+    test.push(3.14, 10);
+    test.push(3.55, 7);
+
+    test.display();
+    return 0;
+}
 
