@@ -84,18 +84,29 @@ class minheap {
             int child = 2;
             // bubble-down for extraction
             while (child<num) {
-                if (elem[child-1].get_key() < elem[child].get_key()) {
+                if (elem[child-1].get_key() <= elem[child].get_key()) {
                     heap_swap(elem[current], elem[child-1]);
                     current = child-1;
-                    child = (child-1)*2;
+                    child = child*2;
                 } else {
                     swap(elem[current], elem[child]);
                     current = child;
-                    child = child*2;
+                    child = (child+1)*2;
                 }
             }
-            if (num%2==0)
+            if (current != num-1) {
+                int parent = floor((current+1)/2.)-1;
                 swap(elem[current], elem[num-1]);
+                // the swap break the heap property
+                // the smaller node has to bubble-up
+                if (elem[parent].get_key() > elem[current].get_key()) {
+                    while (parent>=0 && elem[current].get_key()<elem[parent].get_key()) {
+                        heap_swap(elem[current], elem[parent]);
+                        current = parent;
+                        parent = floor((current+1)/2.)-1;
+                    }
+                }
+            }
             num -= 1;
             return result;
         }
@@ -141,11 +152,27 @@ class minheap {
 
 int main() {
     minheap test(100);
-    test.push(10.5, 2);
-    test.push(3.14, 10);
-    test.push(3.55, 7);
+    test.push(15, 2);
+    test.push(9, 10);
+    test.push(12, 7);
+    test.push(11, 3);
+    test.push(9, 15);
+    test.push(4, 17);
+    test.push(4, 12);
+    test.push(8, 22);
+    test.push(4, 21);
 
     test.display();
+
+    // test for popping 5 times
+    for (int i=0; i<5; ++ i) {
+        cout << " " << endl;
+        cout << "Test popping round " << i << endl;
+        heapitem temp1 = test.pop();
+        cout << "Popped up: " << temp1.get_node() << ": " << temp1.get_key() << endl;
+        test.display();
+    }
+
     return 0;
 }
 
