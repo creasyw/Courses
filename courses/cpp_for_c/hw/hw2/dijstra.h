@@ -2,6 +2,8 @@
 #define DIJSTRA_H
 
 #include "dijstra.h"
+#include "minheap.h"
+
 class graph{
     public:
         graph(int n);
@@ -23,5 +25,14 @@ class graph{
         void check(float target, int lower, int upper, std::string e);
 };
 
+class dijstra {
+    public:
+        dijstra();
+        std::vector<int> path(minheap* candidates, graph g, int u, int v);
+        float path_size(minheap* c, graph g, int u, int v);
+
+    private:
+        float path_cost;
+};
 
 #endif
