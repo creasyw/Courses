@@ -11,15 +11,15 @@ class graph{
         float cost(int x, int y);
         bool adjancent(int x, int y);
         std::vector<int> neighbors(int x);
-        void add (int x, int y, int val);
+        void add (int x, int y, float val);
         void remove (int x, int y);
         void display_matrix();
-        void directed_matrix(float density, int lrange, int urange);
-        void undirected_matrix(float density, int lrange, int urange);
+        void directed_matrix(float density, float lrange, float urange);
+        void undirected_matrix(float density, float lrange, float urange);
 
     private:
         int num;
-        int**  arr;
+        float**  arr;
         void check(float target, int lower, int upper, std::string e);
 };
 
