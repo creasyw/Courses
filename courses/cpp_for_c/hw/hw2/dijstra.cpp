@@ -8,9 +8,9 @@ using namespace std;
 
 graph::graph(int n) {
     num = n;
-    arr = new int*[num];
+    arr = new float*[num];
     for (int i=0; i<num; ++i)
-        arr[i] = new int[num];
+        arr[i] = new float[num];
 }
 
 // return number of vertices
@@ -50,7 +50,7 @@ vector<int> graph::neighbors(int x) {
 }
 
 // adds to G the edge from x to y with value val, if it does not exist
-void graph::add (int x, int y, int val) {
+void graph::add (int x, int y, float val) {
     check(x, -1, num-1, "index of vertex is out of range");
     check(y, -1, num-1, "index of vertex is out of range");
 
@@ -67,12 +67,12 @@ void graph::remove (int x, int y) {
 void graph::display_matrix(){
     for (int i=0; i < num; ++i) {
         for (int j=0; j < num; ++j)
-        cout<< arr[i][j] << " ";
+        cout<< arr[i][j] << "\t";
         cout << endl;
     }
 }
 
-void graph::directed_matrix(float density, int lrange, int urange) {
+void graph::directed_matrix(float density, float lrange, float urange) {
     check(density, 0, 1, "Density should be in (0,1]");
     check(lrange, 0, urange, "The ranges is 0 < lrange< urange");
 
@@ -87,20 +87,18 @@ void graph::directed_matrix(float density, int lrange, int urange) {
         // Or, there is no sense to set diagonal elements
         if (arr[row][col] > 0 || row == col)
             continue;
-        int val = rand() % (urange - lrange + 1) + lrange;
+        float val = (float)rand()/((float)RAND_MAX/(urange-lrange)) + lrange;
         arr[row][col] = val;
         count++;
     }
 }
 
 // The undirected matrix has the same value for both [i,j] and [j,i]
-void graph::undirected_matrix(float density, int lrange, int urange) {
+void graph::undirected_matrix(float density, float lrange, float urange) {
     check(density, 0, 1, "Density should be in (0,1]");
     check(lrange, 0, urange, "The ranges is 0 < lrange< urange");
 
     int nedge = static_cast<int>(num*(num-1)/2*density);
-    cout << num*(num-1)/2 << endl;
-    cout << nedge << endl;
     int count = 0;
     while (count < nedge) {
         srand(clock());
@@ -110,7 +108,7 @@ void graph::undirected_matrix(float density, int lrange, int urange) {
         // Or, there is no sense to set diagonal elements
         if (arr[row][col] > 0 || row == col)
             continue;
-        int val = rand() % (urange - lrange + 1) + lrange;
+        float val = (float)rand()/((float)RAND_MAX/(urange-lrange)) + lrange;
         arr[row][col] = arr[col][row] = val;
         count++;
     }
@@ -213,7 +211,7 @@ int main()
     cout << "After initialization:" << endl;
     test.display_matrix();
     cout << "\nAfter generate:" << endl;
-    test.undirected_matrix(0.5, 5, 10);
+    test.undirected_matrix(0.5, 5.0, 10.0);
     test.display_matrix();
 }
 
