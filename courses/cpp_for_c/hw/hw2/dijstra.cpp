@@ -130,22 +130,40 @@ void graph::check(float target, int lower, int upper, string e) {
 dijstra::dijstra() {
     path_cost = -1;
 }
-vector<int> dijstra::path(minheap* candidates, graph g, int u, int v) {
+
+vector<int> dijstra::path(graph g, int u, int v) {
+    int num = g.num_of_vertices();
+    minheap* candidates = new minheap(num);
     vector<int> result;
     path_cost = 0;
     int begin = u;
     int next = -1;
+    
+    //cout << "The num is: " << num << endl;
+
+    for (int i=0; i<num; ++i) {
+        float c = g.cost(u, i);
+        if (c!=0)
+            candidates->update(c, i);
+    }
+    //cout << "The initial candidates are:" << endl;
+    //candidates->display();
+
     while (candidates->size()!=0) {
+
+        //candidates->display();
+        //cout << "" << endl;
+
         heapitem t = candidates->pop();
         int node = t.get_node();
         result.push_back(node);
-        path_cost += t.get_key();
+        path_cost = t.get_key();
         if (node == v)
             return result;
         vector<int> n = g.neighbors(node);
 
         for(vector<int>::iterator i=n.begin(); i!=n.end(); ++i) {
-            candidates->update(g.cost(node,*i), *i);
+            candidates->update(path_cost+g.cost(node,*i), *i);
         }
     }
     // after iteration, the v is not found
@@ -153,8 +171,8 @@ vector<int> dijstra::path(minheap* candidates, graph g, int u, int v) {
     return r;
 }
 
-float dijstra::path_size(minheap* c, graph g, int u, int v) {
-    vector<int> p = path(c, g, u, v);
+float dijstra::path_size(graph g, int u, int v) {
+    vector<int> p = path(g, u, v);
     if (p.size()!=0)
         return path_cost;
     else
@@ -201,13 +219,15 @@ void test_graph() {
 
 int main()
 {
-    int n = 10;
+    int n = 50;
     graph g(n);
-    minheap* h = new minheap(n);
     dijstra d;
+    float result = 0;
     cout << "\nGenerate matrix with 20\% density:" << endl;
-    g.undirected_matrix(0.6, 1.0, 10.0);
-    g.display_matrix();
-    cout << d.path_size(h, g, 1, 10) << endl;
+    g.undirected_matrix(0.2, 1.0, 10.0);
+    for (int i=1; i<n; ++ i) {
+        cout << "Now calculating path " << " 0 to "<< i << " -- ";
+        cout << d.path_size(g, 0, i) << endl;
+    }
 }
 
