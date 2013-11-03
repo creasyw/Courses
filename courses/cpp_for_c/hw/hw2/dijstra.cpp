@@ -104,8 +104,8 @@ void graph::undirected_matrix(float density, int lrange, int urange) {
     int count = 0;
     while (count < nedge) {
         srand(clock());
-        int row = rand() % num;
-        int col = rand() % (num-row);
+        int row = rand()%(num-1);
+        int col = (rand()%(num-1-row)) + row+1;
         // if the route has been set, it doesn't need to set again.
         // Or, there is no sense to set diagonal elements
         if (arr[row][col] > 0 || row == col)
@@ -208,6 +208,12 @@ void test_graph() {
 
 int main()
 {
-
+    int n = 10;
+    graph test(n);
+    cout << "After initialization:" << endl;
+    test.display_matrix();
+    cout << "\nAfter generate:" << endl;
+    test.undirected_matrix(0.5, 5, 10);
+    test.display_matrix();
 }
 
