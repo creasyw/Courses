@@ -1,7 +1,7 @@
-#ifndef DIJSTRA_H
-#define DIJSTRA_H
+#ifndef DIJKSTRA_H
+#define DIJKSTRA_H
 
-#include "dijstra.h"
+#include "dijkstra.h"
 #include "minheap.h"
 
 class graph{
@@ -25,9 +25,9 @@ class graph{
         void check(float target, int lower, int upper, std::string e);
 };
 
-class dijstra {
+class dijkstra {
     public:
-        dijstra();
+        dijkstra();
         std::vector<int> path(graph g, int u, int v);
         float path_size(graph g, int u, int v);
 
