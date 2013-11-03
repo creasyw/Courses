@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
-#include "dijstra.h"
+#include "dijkstra.h"
 #include "minheap.h"
 
 using namespace std;
@@ -127,12 +127,12 @@ void graph::check(float target, int lower, int upper, string e) {
     }
 }
 
-dijstra::dijstra() {
+dijkstra::dijkstra() {
     path_cost = -1;
 }
 
-// calculate the path using dijstra's algo.
-vector<int> dijstra::path(graph g, int u, int v) {
+// calculate the path using dijkstra's algo.
+vector<int> dijkstra::path(graph g, int u, int v) {
     int num = g.num_of_vertices();
     minheap* candidates = new minheap(num);
     vector<int> result;
@@ -167,7 +167,7 @@ vector<int> dijstra::path(graph g, int u, int v) {
 }
 
 // calculate the path length with the help of path
-float dijstra::path_size(graph g, int u, int v) {
+float dijkstra::path_size(graph g, int u, int v) {
     vector<int> p = path(g, u, v);
     if (p.size()!=0)
         return path_cost;
@@ -217,7 +217,7 @@ int main()
 {
     int n = 50;
     graph g(n);
-    dijstra d;
+    dijkstra d;
     float result = 0.;
     int count = 0;
     cout << "\nGenerate matrix with 20\% density:" << endl;
