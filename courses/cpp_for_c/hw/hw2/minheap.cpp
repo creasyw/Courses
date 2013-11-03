@@ -146,6 +146,7 @@ void minheap::push(float k, int n) {
     return;
 }
 
+// helper function to swap two nodes in the heap
 void minheap::heap_swap(heapitem &h1, heapitem &h2) {
     heapitem temp(0,0);
     temp.set_key(h1.get_key());
@@ -156,8 +157,8 @@ void minheap::heap_swap(heapitem &h1, heapitem &h2) {
     h2.set_node(temp.get_node());
 }
 
-        // helper function for the update
-        // find the index of the node, otherwise return -1
+// helper function for the update
+// find the index of the node, otherwise return -1
 int minheap::find(int n) {
     for(int i=0; i<num; i++) {
         if (elem[i].get_node()==n) return i;
