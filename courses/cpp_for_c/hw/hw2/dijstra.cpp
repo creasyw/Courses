@@ -131,6 +131,7 @@ dijstra::dijstra() {
     path_cost = -1;
 }
 
+// calculate the path using dijstra's algo.
 vector<int> dijstra::path(graph g, int u, int v) {
     int num = g.num_of_vertices();
     minheap* candidates = new minheap(num);
@@ -138,30 +139,24 @@ vector<int> dijstra::path(graph g, int u, int v) {
     path_cost = 0;
     int begin = u;
     int next = -1;
-    
-    //cout << "The num is: " << num << endl;
 
+    // initialize the heap
     for (int i=0; i<num; ++i) {
         float c = g.cost(u, i);
         if (c!=0)
             candidates->update(c, i);
     }
-    //cout << "The initial candidates are:" << endl;
-    //candidates->display();
 
     while (candidates->size()!=0) {
-
-        //candidates->display();
-        //cout << "" << endl;
-
         heapitem t = candidates->pop();
         int node = t.get_node();
         result.push_back(node);
         path_cost = t.get_key();
+        // terminated if arrives at the destination
         if (node == v)
             return result;
         vector<int> n = g.neighbors(node);
-
+        // update the heap with newly found nodes
         for(vector<int>::iterator i=n.begin(); i!=n.end(); ++i) {
             candidates->update(path_cost+g.cost(node,*i), *i);
         }
@@ -171,6 +166,7 @@ vector<int> dijstra::path(graph g, int u, int v) {
     return r;
 }
 
+// calculate the path length with the help of path
 float dijstra::path_size(graph g, int u, int v) {
     vector<int> p = path(g, u, v);
     if (p.size()!=0)
@@ -222,12 +218,26 @@ int main()
     int n = 50;
     graph g(n);
     dijstra d;
-    float result = 0;
+    float result = 0.;
+    int count = 0;
     cout << "\nGenerate matrix with 20\% density:" << endl;
     g.undirected_matrix(0.2, 1.0, 10.0);
     for (int i=1; i<n; ++ i) {
-        cout << "Now calculating path " << " 0 to "<< i << " -- ";
-        cout << d.path_size(g, 0, i) << endl;
+        float temp = d.path_size(g, 0, i);
+        if (temp==-1) continue;
+        result += temp;
+        count++;
     }
+    cout << "Average length is " << result/count << endl;
+
+    cout << "\nGenerate matrix with 40\% density:" << endl;
+    g.undirected_matrix(0.4, 1.0, 10.0);
+    for (int i=1; i<n; ++ i) {
+        float temp = d.path_size(g, 0, i);
+        if (temp==-1) continue;
+        result += temp;
+        count++;
+    }
+    cout << "Average length is " << result/count << endl;
 }
 
