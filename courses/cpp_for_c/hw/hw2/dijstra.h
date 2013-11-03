@@ -28,8 +28,8 @@ class graph{
 class dijstra {
     public:
         dijstra();
-        std::vector<int> path(minheap* candidates, graph g, int u, int v);
-        float path_size(minheap* c, graph g, int u, int v);
+        std::vector<int> path(graph g, int u, int v);
+        float path_size(graph g, int u, int v);
 
     private:
         float path_cost;
