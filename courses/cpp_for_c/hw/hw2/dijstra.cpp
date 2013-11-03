@@ -127,45 +127,40 @@ void graph::check(float target, int lower, int upper, string e) {
     }
 }
 
-class dijstra {
-    public:
-        dijstra(int n) {
-            path_cost = -1;
-        }
-        vector<int> path(minheap candidates, graph g, int u, int v) {
-            vector<int> result;
-            path_cost = 0;
-            int begin = u;
-            int next = -1;
-            while (candidates.size()!=0) {
-                heapitem t = candidates.pop();
-                int node = t.get_node();
-                result.push_back(node);
-                path_cost += t.get_key();
-                if (node == v)
-                    return result;
-                vector<int> n = g.neighbors(node);
+dijstra::dijstra() {
+    path_cost = -1;
+}
+vector<int> dijstra::path(minheap* candidates, graph g, int u, int v) {
+    vector<int> result;
+    path_cost = 0;
+    int begin = u;
+    int next = -1;
+    while (candidates->size()!=0) {
+        heapitem t = candidates->pop();
+        int node = t.get_node();
+        result.push_back(node);
+        path_cost += t.get_key();
+        if (node == v)
+            return result;
+        vector<int> n = g.neighbors(node);
 
-                for(vector<int>::iterator i=n.begin(); i!=n.end(); ++i) {
-                    candidates.update(g.cost(node,*i), *i);
-                }
-            }
-            // after iteration, the v is not found
-            vector<int> r;
-            return r;
+        for(vector<int>::iterator i=n.begin(); i!=n.end(); ++i) {
+            candidates->update(g.cost(node,*i), *i);
         }
+    }
+    // after iteration, the v is not found
+    vector<int> r;
+    return r;
+}
 
-        float path_size(minheap c, graph g, int u, int v) {
-            vector<int> p = path(c, g, u, v);
-            if (p.size()!=0)
-                return path_cost;
-            else
-                return -1;
-        }
+float dijstra::path_size(minheap* c, graph g, int u, int v) {
+    vector<int> p = path(c, g, u, v);
+    if (p.size()!=0)
+        return path_cost;
+    else
+        return -1;
+}
 
-    private:
-        float path_cost;
-};
 
 void test_graph() {
     int n = 10;
@@ -207,11 +202,12 @@ void test_graph() {
 int main()
 {
     int n = 10;
-    graph test(n);
-    cout << "After initialization:" << endl;
-    test.display_matrix();
-    cout << "\nAfter generate:" << endl;
-    test.undirected_matrix(0.5, 5.0, 10.0);
-    test.display_matrix();
+    graph g(n);
+    minheap* h = new minheap(n);
+    dijstra d;
+    cout << "\nGenerate matrix with 20\% density:" << endl;
+    g.undirected_matrix(0.6, 1.0, 10.0);
+    g.display_matrix();
+    cout << d.path_size(h, g, 1, 10) << endl;
 }
 
