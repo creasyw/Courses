@@ -165,7 +165,7 @@ int minheap::find(int n) {
     return -1;
 }
 
-int main() {
+int test_heap() {
     minheap test(100);
     test.push(15, 2);
     test.push(9, 10);
