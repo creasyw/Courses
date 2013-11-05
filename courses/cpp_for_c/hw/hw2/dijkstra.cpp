@@ -231,6 +231,8 @@ int main()
     cout << "Average length is " << result/count << endl;
 
     cout << "\nGenerate matrix with 40\% density:" << endl;
+    result = 0;
+    count = 0;
     g.undirected_matrix(0.4, 1.0, 10.0);
     for (int i=1; i<n; ++ i) {
         float temp = d.path_size(g, 0, i);
