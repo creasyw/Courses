@@ -13,11 +13,6 @@ graph::graph(int n) {
         arr[i] = new float[num];
 }
 
-// return number of vertices
-int graph::num_of_vertices() {
-    return num;
-}
-
 // This is specific for the undirected graph
 int graph::num_of_edges() {
     int count = 0;
@@ -28,6 +23,8 @@ int graph::num_of_edges() {
 }
 
 float graph::cost(int u, int v) {
+    check(u, -1, num-1, "index of vertex is out of range");
+    check(v, -1, num-1, "index of vertex is out of range");
     return arr[u][v];
 }
 
@@ -41,7 +38,6 @@ bool graph::adjancent(int x, int y) {
 // lists all nodes y such that there is an edge from x to y
 vector<int> graph::neighbors(int x) {
     check(x, -1, num-1, "index of vertex is out of range");
-
     vector<int> result;
     for (int i=0; i<num; ++i) {
         if (arr[x][i] > 0) result.push_back(i);
@@ -60,6 +56,8 @@ void graph::add (int x, int y, float val) {
 
 // removes the edge from x to y, if it is there
 void graph::remove (int x, int y) {
+    check(x, -1, num-1, "index of vertex is out of range");
+    check(y, -1, num-1, "index of vertex is out of range");
     arr[x][y]=0;
 }
 
@@ -125,10 +123,6 @@ void graph::check(float target, int lower, int upper, string e) {
         cerr << "Invalid argument: " << ia.what() << endl;
         exit (EXIT_FAILURE);
     }
-}
-
-dijkstra::dijkstra() {
-    path_cost = -1;
 }
 
 // calculate the path using dijkstra's algo.
