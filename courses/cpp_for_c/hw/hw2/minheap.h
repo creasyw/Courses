@@ -8,10 +8,10 @@ class heapitem {
     public:
         heapitem();
         heapitem(float k, int x);
-        float get_key();
-        void set_key(float k);
-        int get_node();
-        void set_node(int x);
+        inline float get_key() {return key;}
+        inline int get_node() {return node;}
+        inline void set_key(float k) {key = k;}
+        inline void set_node(int x) {node = x;}
     private:
         float key;
         int node;
@@ -21,9 +21,9 @@ class heapitem {
 class minheap {
     public:
         minheap(int n);
+        inline int size() {return num;}
         void display();
         bool contains(int n);
-        int size();
         heapitem pop();
         void update(float k, int n);
         void push(float k, int n);
