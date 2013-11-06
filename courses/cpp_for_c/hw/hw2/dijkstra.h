@@ -7,8 +7,7 @@
 class graph{
     public:
         graph(int n);
-        // return number of vertices
-        int num_of_vertices();
+        inline int num_of_vertices() {return num;}
         int num_of_edges();
         float cost(int x, int y);
         bool adjancent(int x, int y);
@@ -27,7 +26,7 @@ class graph{
 
 class dijkstra {
     public:
-        dijkstra();
+        inline dijkstra() {path_cost = -1;}
         std::vector<int> path(graph g, int u, int v);
         float path_size(graph g, int u, int v);
 
