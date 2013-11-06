@@ -13,19 +13,6 @@ heapitem::heapitem(float k, int x) {
     node = x;
 }
 
-float heapitem::get_key() {
-    return key;
-}
-void heapitem::set_key(float k) {
-    key = k;
-}
-int heapitem::get_node() {
-    return node;
-}
-void heapitem::set_node(int x) {
-    node = x;
-}
-
 minheap::minheap(int n) {
     elem = new heapitem[n];
     num = 0;
@@ -45,11 +32,6 @@ bool minheap::contains(int n) {
         if (elem[i].get_node()==n) return true;
     }
     return false;
-}
-
-// return the number of elements in the heap
-int minheap::size() {
-    return num;
 }
 
 // main func: pop the minimum element out of the heap
