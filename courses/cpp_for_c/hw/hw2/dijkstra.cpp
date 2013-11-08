@@ -126,15 +126,14 @@ void graph::check(float target, int lower, int upper, string e) {
 }
 
 // calculate the path using dijkstra's algo.
-vector<int> dijkstra::path(graph g, int u, int v) {
+void dijkstra::path(graph g, int u, int v) {
     int num = g.num_of_vertices();
     minheap* candidates = new minheap(num);
-    vector<int> result;
-    path_cost = 0;
-    int begin = u;
-    int next = -1;
+    // reset the path_cost and clear the closed_set
+    reset();
 
     // initialize the heap
+    // the nodes in the heap are those of "open set"
     for (int i=0; i<num; ++i) {
         float c = g.cost(u, i);
         if (c!=0)
@@ -144,11 +143,14 @@ vector<int> dijkstra::path(graph g, int u, int v) {
     while (candidates->size()!=0) {
         heapitem t = candidates->pop();
         int node = t.get_node();
-        result.push_back(node);
+        // not record the duplicated probed nodes
+        if (closed_set.find(node)!=closed_set.end())
+            continue;
+        closed_set.insert(node);
         path_cost = t.get_key();
         // terminated if arrives at the destination
         if (node == v)
-            return result;
+            return;
         vector<int> n = g.neighbors(node);
         // update the heap with newly found nodes
         for(vector<int>::iterator i=n.begin(); i!=n.end(); ++i) {
@@ -156,17 +158,13 @@ vector<int> dijkstra::path(graph g, int u, int v) {
         }
     }
     // after iteration, the v is not found
-    vector<int> r;
-    return r;
+    path_cost = -1;
 }
 
 // calculate the path length with the help of path
 float dijkstra::path_size(graph g, int u, int v) {
-    vector<int> p = path(g, u, v);
-    if (p.size()!=0)
-        return path_cost;
-    else
-        return -1;
+    path(g, u, v);
+    return path_cost;
 }
 
 
