@@ -3,6 +3,7 @@
 
 #include "dijkstra.h"
 #include "minheap.h"
+#include <set>
 
 using namespace std;
 
@@ -29,11 +30,16 @@ class graph{
 class dijkstra {
     public:
         inline dijkstra() {path_cost = -1;}
-        vector<int> path(graph g, int u, int v);
+        inline void reset() {
+            path_cost = -1;
+            closed_set.clear();
+        }
+        void path(graph g, int u, int v);
         float path_size(graph g, int u, int v);
 
     private:
         float path_cost;
+        set<int> closed_set;
 };
 
 #endif
