@@ -4,6 +4,8 @@
 #include "dijkstra.h"
 #include "minheap.h"
 
+using namespace std;
+
 class graph{
     public:
         graph(int n);
@@ -11,7 +13,7 @@ class graph{
         int num_of_edges();
         float cost(int x, int y);
         bool adjancent(int x, int y);
-        std::vector<int> neighbors(int x);
+        vector<int> neighbors(int x);
         void add (int x, int y, float val);
         void remove (int x, int y);
         void display_matrix();
@@ -21,13 +23,13 @@ class graph{
     private:
         int num;
         float**  arr;
-        void check(float target, int lower, int upper, std::string e);
+        void check(float target, int lower, int upper, string e);
 };
 
 class dijkstra {
     public:
         inline dijkstra() {path_cost = -1;}
-        std::vector<int> path(graph g, int u, int v);
+        vector<int> path(graph g, int u, int v);
         float path_size(graph g, int u, int v);
 
     private:
