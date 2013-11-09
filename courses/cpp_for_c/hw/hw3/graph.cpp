@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <stdlib.h>
 #include "graph.h"
@@ -11,6 +12,34 @@ graph::graph(int n) {
     arr = new float*[num];
     for (int i=0; i<num; ++i)
         arr[i] = new float[num];
+}
+
+graph::graph(string filename) {
+    ifstream data(filename);
+    if (!data) {
+        cerr << "Cannot open file: " << filename << endl;
+        exit (EXIT_FAILURE);
+    }
+    int num_of_nodes;
+    data >> num_of_nodes;
+    cout << num_of_nodes << endl;
+    new (this) graph(num_of_nodes);
+    vector<float> matrix;
+    std::copy(std::istream_iterator<float>(data), 
+        std::istream_iterator<float>(), std::back_inserter(matrix));
+    for (vector<float>::iterator i=matrix.begin();
+        i!=matrix.end(); i+=3) {
+        int row = static_cast<int>(*i);
+        int col = static_cast<int>(*(i+1));
+        arr[row][col] = arr[col][row] = *(i+2);
+    }
+    /*
+    istream_iterator<float> in(data);
+    istream_iterator<float> eos;
+    while (in!=eos) {
+        cout << *in << endl;
+        in++;
+    }*/
 }
 
 // This is specific for the undirected graph
@@ -104,13 +133,13 @@ void graph::check(float target, int lower, int upper, string e) {
     }
 }
 
-int main()
-{
-    int n = 10;
-    graph g(n);
-    g.display_matrix();
-    g.undirected_matrix(0.5, 1.0, 10.0);
-    cout << "" << endl;
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        cerr << "Usage: " << argv[0] << " File_Name" << endl;
+        return 1;
+    }
+    
+    graph g(argv[1]);
     g.display_matrix();
 }
 
