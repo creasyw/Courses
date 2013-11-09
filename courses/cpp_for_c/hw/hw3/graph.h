@@ -10,6 +10,7 @@ using namespace std;
 class graph{
     public:
         graph(int n);
+        graph(string filename);
         inline int num_of_vertices() {return num;}
         int num_of_edges();
         float cost(int x, int y);
