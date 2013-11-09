@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include<algorithm>
+#include <map>
 
 #include <stdlib.h>
 #include "graph.h"
@@ -131,6 +132,57 @@ void graph::check(float target, int lower, int upper, string e) {
     }
 }
 
+
+class union_find {
+    public:
+        inline int num_of_unions() {
+          return leader.size();
+        }
+        // check if one node has already been explored
+        // if it is, return the leader element
+        int find(int i) {
+            map<int, int>::iterator it = nodes.find(i);
+            if (it == nodes.end())
+                return -1;
+            return it->second;
+        }
+        void unions(int l1, int l2) {
+            vector<int> temp = leader[l2];
+            for(vector<int>::iterator it=temp.begin(); it!=temp.end(); ++it)
+                nodes[*it] = l1;
+            leader[l1].insert(leader[l1].begin(),leader[l2].begin(),leader[l2].end());
+            leader.erase(l2);
+        }
+        // the input two nodes i and j are presumed having different leaders
+        void insert(int i, int j) {
+            int l1 = find(i);
+            int l2 = find(j);
+            if (l1!=-1 && l2!=-1)
+                unions(min(l1, l2) ,max(l1, l2));
+            else if(l1!=-1) {
+                nodes[j] = l1;
+                leader[l1].push_back(j);
+            } else if(l2!=-1) {
+                nodes[i] = l2;
+                leader[l2].push_back(i);
+            } else {
+                int l = min(i,j);
+                nodes[i] = l;
+                nodes[j] = l;
+                leader[l] = vector<int>();
+                leader[l].push_back(i);
+                leader[l].push_back(j);
+            }
+        }
+    private:
+        // the 1st element is the node, and the 2nd is the leader of cluster
+        map<int, int> nodes;
+        // the 1st element is the leader, and the 2nd are the nodes
+        map<int, vector<int> > leader;
+};
+
+
+
 class mst{
     public:
         inline mst() {path_cost=0;}
@@ -179,6 +231,7 @@ class mst{
         void kruskal(graph g) {
             int num = g.num_of_vertices();
             vector< vector<float> > edges;
+            union_find explored;
             reset();
 
             // put all connected vertices in "edges"
@@ -199,17 +252,15 @@ class mst{
             for(vector<vector<float> >::iterator  p=edges.begin(); p!=edges.end(); ++p) {
                 // both nodes in the closed set ==> detecting a cycle
                 vector<float> temp = *p;
-                if (closed_set.find(temp[0])!=closed_set.end() &&
-                    closed_set.find(temp[1])!=closed_set.end())
-                    continue;
+                int f1 = explored.find(temp[0]);
+                int f2 = explored.find(temp[1]);
+                if(f1!=-1 && f2!=-1 && f1==f2) continue;
                 path_cost += temp[2];
-                closed_set.insert(temp[0]);
-                closed_set.insert(temp[1]);
-                cout <<"From "<<temp[0]<<" To "<<temp[1]<<" -- Cost "<<temp[2]<<endl;
+                explored.insert(temp[0], temp[1]);
+                //cout <<"From "<<temp[0]<<" To "<<temp[1]<<" -- Cost "<<temp[2]<<endl;
             }
-
             // ckeck if there are isolated nodes
-            if (closed_set.size() < num-1) path_cost=-1;
+            if (explored.num_of_unions() != 1) path_cost=-1;
         }
 
 
@@ -224,7 +275,7 @@ class mst{
         }
 
     private:
-        // storing the sum of cost
+      // storing the sum of cost
       float path_cost;
       // storing nodes that have been explored
       set<int> closed_set;
