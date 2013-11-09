@@ -22,24 +22,20 @@ graph::graph(string filename) {
     }
     int num_of_nodes;
     data >> num_of_nodes;
-    cout << num_of_nodes << endl;
     new (this) graph(num_of_nodes);
     vector<float> matrix;
     std::copy(std::istream_iterator<float>(data), 
         std::istream_iterator<float>(), std::back_inserter(matrix));
-    for (vector<float>::iterator i=matrix.begin();
+    // get rid of other redundant info at the beginning of data
+    int offset = matrix.size() % 3;
+    for (vector<float>::iterator i=matrix.begin()+offset;
         i!=matrix.end(); i+=3) {
         int row = static_cast<int>(*i);
         int col = static_cast<int>(*(i+1));
+        check(row, -1, num-1, "index of vertex is out of range");
+        check(col, -1, num-1, "index of vertex is out of range");
         arr[row][col] = arr[col][row] = *(i+2);
     }
-    /*
-    istream_iterator<float> in(data);
-    istream_iterator<float> eos;
-    while (in!=eos) {
-        cout << *in << endl;
-        in++;
-    }*/
 }
 
 // This is specific for the undirected graph
@@ -133,6 +129,60 @@ void graph::check(float target, int lower, int upper, string e) {
     }
 }
 
+class mst{
+    public:
+        inline mst() {path_cost=0;}
+        inline void reset() {
+            path_cost = 0;
+            closed_set.clear();
+        }
+        void prim(graph g) {
+            int num = g.num_of_vertices();
+            minheap* candidates = new minheap(num);
+            reset();
+
+            // find the starting point and initialize the heap
+            int start_node = 0;
+            while(candidates->size() == 0) {
+                for(int i=0; i<num; ++i) {
+                    float c = g.cost(start_node, i);
+                    if (c != 0) candidates->update(c, i);
+                }
+                ++start_node;
+            }
+            closed_set.insert(start_node-1);
+
+            while (candidates->size()!=0) {
+                heapitem t = candidates->pop();
+                int node = t.get_node();
+                // not record the duplicated probed nodes
+                if (closed_set.find(node)!=closed_set.end())
+                    continue;
+                closed_set.insert(node);
+                path_cost += t.get_key();
+                vector<int> n = g.neighbors(node);
+                // update the heap with newly found nodes and edges
+                for(vector<int>::iterator i=n.begin(); i!=n.end(); ++i) {
+                    candidates->update(g.cost(node,*i), *i);
+                }
+            }
+            // after iteration, the v is not found
+            //path_cost = -1;
+        }
+
+        float path_size(graph g) {
+            prim(g);
+            return path_cost;
+        }
+
+    private:
+        // storing the sum of cost
+      float path_cost;
+      // storing nodes that have been explored
+      set<int> closed_set;
+};
+
+
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         cerr << "Usage: " << argv[0] << " File_Name" << endl;
@@ -140,6 +190,8 @@ int main(int argc, char* argv[]) {
     }
     
     graph g(argv[1]);
-    g.display_matrix();
+    mst m;
+    cout << m.path_size(g) << endl;
+
 }
 
