@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include<algorithm>
+
 #include <stdlib.h>
 #include "graph.h"
 #include "minheap.h"
@@ -170,8 +172,54 @@ class mst{
             if (closed_set.size() < num-1) path_cost=-1;
         }
 
-        float path_size(graph g) {
+        static bool kruskal_compare(vector<float>& v1, vector<float>& v2) {
+            return v1.back() < v2.back();
+        }
+
+        void kruskal(graph g) {
+            int num = g.num_of_vertices();
+            vector< vector<float> > edges;
+            reset();
+
+            // put all connected vertices in "edges"
+            for(int i=0; i<num; ++i) {
+                for(int j=0; j<num; ++j) {
+                    float c = g.cost(i, j);
+                    if (c!=0) {
+                        vector<float> temp;
+                        temp.push_back(i);
+                        temp.push_back(j);
+                        temp.push_back(c);
+                        edges.push_back(temp);
+                    }
+                }
+            }
+            sort(edges.begin(), edges.end(), kruskal_compare);
+
+            for(vector<vector<float> >::iterator  p=edges.begin(); p!=edges.end(); ++p) {
+                // both nodes in the closed set ==> detecting a cycle
+                vector<float> temp = *p;
+                if (closed_set.find(temp[0])!=closed_set.end() &&
+                    closed_set.find(temp[1])!=closed_set.end())
+                    continue;
+                path_cost += temp[2];
+                closed_set.insert(temp[0]);
+                closed_set.insert(temp[1]);
+                cout <<"From "<<temp[0]<<" To "<<temp[1]<<" -- Cost "<<temp[2]<<endl;
+            }
+
+            // ckeck if there are isolated nodes
+            if (closed_set.size() < num-1) path_cost=-1;
+        }
+
+
+        float path_via_prime(graph g) {
             prim(g);
+            return path_cost;
+        }
+
+        float path_via_kruskal(graph g) {
+            kruskal(g);
             return path_cost;
         }
 
@@ -191,7 +239,8 @@ int main(int argc, char* argv[]) {
     
     graph g(argv[1]);
     mst m;
-    cout << m.path_size(g) << endl;
+    cout << m.path_via_prime(g) << endl;
+    cout << m.path_via_kruskal(g) << endl;
 
 }
 
