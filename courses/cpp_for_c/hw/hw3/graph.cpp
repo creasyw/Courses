@@ -166,8 +166,8 @@ class mst{
                     candidates->update(g.cost(node,*i), *i);
                 }
             }
-            // after iteration, the v is not found
-            //path_cost = -1;
+            // ckeck if there are isolated nodes
+            if (closed_set.size() < num-1) path_cost=-1;
         }
 
         float path_size(graph g) {
