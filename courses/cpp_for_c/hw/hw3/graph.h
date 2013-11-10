@@ -1,5 +1,5 @@
-#ifndef DIJKSTRA_H
-#define DIJKSTRA_H
+#ifndef GRAPH_H
+#define GRAPH_H
 
 #include "graph.h"
 #include "minheap.h"
