@@ -1,23 +1,30 @@
-#include<iostream>
+#include <iostream>
+#include <vector>
 
 using namespace std;
 
 class hex_game {
     public:
-        inline hex_game(int n): num(n) {}
-        void print_board() {
-            string space = "  ";
+        inline hex_game(int n): num(n) {
             string dots = ".   ";
-            string line, spaces;
+            string line;
             for(int i=0; i<num; ++i)
                 line += dots;
             for(int i=0; i<num; ++i) {
-                cout<<spaces<<line<<endl;
+                board.push_back(line);
+            }
+        }
+        void print_board() {
+            string space = "  ";
+            string spaces;
+            for(int i=0; i<num; ++i) {
+                cout<<spaces<<board[i]<<endl;
                 spaces += space;
             }
         }
     private:
         int num;
+        vector<string> board;
 };
 
 
