@@ -28,8 +28,11 @@ class hex_game {
         void input_move(int player, int x, int y) {
             // sanity check for the input location
             assert (x>=0 && x<num && y>=0 && y<num);
-            if(strcmp(&board[y][x*4],".")==0) {
-                cout << "The location has already been placed a move" << endl;
+            string test(1, board[y][x*4]);
+            string goal = ".";
+            if(test!=goal) {
+                cout << "The location has already been placed a move\n" <<
+                "Please do another move."<< endl;
                 return;
             } else if(player==0)
                 board[y].replace(x*4, 1, "o");
@@ -48,6 +51,8 @@ int main() {
     g.print_board();
     g.input_move(1, 0,0);
     g.input_move(1,9,7);
+    g.print_board();
+    g.input_move(0,9,7);
     g.print_board();
     return 0;
 }
