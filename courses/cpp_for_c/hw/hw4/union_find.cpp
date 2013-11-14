@@ -1,5 +1,5 @@
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include "union_find.h"
 
 using namespace std;
@@ -7,7 +7,7 @@ using namespace std;
 // check if one node has already been explored
 // if it is, return the leader element
 int union_find::find(int i) {
-    map<int, int>::iterator it = nodes.find(i);
+    unordered_map<int, int>::iterator it = nodes.find(i);
     if (it == nodes.end())
         return -1;
     return it->second;

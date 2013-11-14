@@ -1,7 +1,7 @@
 #ifndef UNIONFIND_H
 #define UNIONFIND_H
 
-#include<map>
+#include<unordered_map>
 #include<vector>
 #include "union_find.h"
 
@@ -16,9 +16,9 @@ class union_find {
         void insert(int i, int j);
     private:
         // the 1st element is the node, and the 2nd is the leader of cluster
-        map<int, int> nodes;
+        unordered_map<int, int> nodes;
         // the 1st element is the leader, and the 2nd are the nodes
-        map<int, vector<int> > leader;
+        unordered_map<int, vector<int> > leader;
 };
 
 #endif
