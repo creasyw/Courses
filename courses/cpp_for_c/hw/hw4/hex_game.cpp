@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <assert.h>
-#include <cstring>
 
 using namespace std;
 
@@ -40,6 +39,56 @@ class hex_game {
                 board[y].replace(x*4, 1, "x");
         }
 
+        vector< vector<int> > neighbors(int x, int y) {
+            vector< vector<int> > result;
+            vector<int> temp;
+            if (y+1<num) {
+                temp.push_back(x);
+                temp.push_back(y+1);
+                result.push_back(temp);
+                temp.clear();
+            }
+            if (y-1>=0) {
+                temp.push_back(x);
+                temp.push_back(y-1);
+                result.push_back(temp);
+                temp.clear();
+            }
+            if (x-1 >=0) {
+                temp.push_back(x-1);
+                temp.push_back(y);
+                result.push_back(temp);
+                temp.clear();
+                if (y+1<num) {
+                    temp.push_back(x-1);
+                    temp.push_back(y+1);
+                    result.push_back(temp);
+                    temp.clear();
+                }
+            }
+            if (x+1 < num) {
+                temp.push_back(x+1);
+                temp.push_back(y);
+                result.push_back(temp);
+                temp.clear();
+                if (y-1>=0) {
+                    temp.push_back(x+1);
+                    temp.push_back(y-1);
+                    result.push_back(temp);
+                }
+            }
+            return result;
+        }
+
+        void print_neighbors(vector<vector<int> > n) {
+            cout << "The neighbors include:" << endl;
+            for (auto it: n) {
+                for (auto in: it)
+                    cout << in << " ";
+                cout << "\t";
+            }
+            cout << endl;
+        }
     private:
         int num;
         vector<string> board;
@@ -54,6 +103,8 @@ int main() {
     g.print_board();
     g.input_move(0,9,7);
     g.print_board();
+
+    g.print_neighbors(g.neighbors(5,3));
     return 0;
 }
 
