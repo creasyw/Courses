@@ -34,7 +34,7 @@ void hex_game::input_move(int player, int x, int y) {
         "Please do another move."<< endl;
         return;
     } else if (player==0) {
-        board[x].replace(y*4, 1, "o");
+        board[x].replace(y*4, 1, "X");
         if (put_check(x, y, 0)) {
             cout << "The player 0 is the winner!" << endl;
             print_board();
@@ -42,7 +42,7 @@ void hex_game::input_move(int player, int x, int y) {
         }
     }
     else {
-        board[x].replace(y*4, 1, "x");
+        board[x].replace(y*4, 1, "O");
         if (put_check(x, y, 1)) {
             cout << "The player 1 is the winner!" << endl;
             print_board();
