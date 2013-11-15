@@ -42,14 +42,34 @@ class hex_game {
                 "Please do another move."<< endl;
                 return;
             } else if (player==0) {
-                put(x, y, 0);
+                if (put_check(x, y, 0)) {
+                    cout << "The player 0 is the winner!" << endl;
+                    print_board();
+                    exit(0);
+                }
                 board[x].replace(y*4, 1, "o");
             }
             else {
-                put(x, y, 1);
+                if (put_check(x, y, 1)) {
+                    cout << "The player 1 is the winner!" << endl;
+                    print_board();
+                    exit(0);
+                }
                 board[x].replace(y*4, 1, "x");
             }
         }
+
+        bool put_check(int x, int y, int player) {
+            vector<vector<int> > ns = neighbors(x, y);
+            vector<int> ns_val;
+            for (auto it: ns)
+                ns_val.push_back(transfer_coord(it));
+            vector<int> n;
+            n.push_back(x);
+            n.push_back(y);
+            return uf[player]->insert(n, ns_val, player);
+        }
+
 
 // input the coordinate of move and return all its neighbors
         vector< vector<int> > neighbors(int x, int y) {
@@ -103,19 +123,6 @@ class hex_game {
             cout << endl;
         }
 
-        void put(int x, int y, int player) {
-            vector<vector<int> > ns = neighbors(x, y);
-            vector<int> ns_val;
-            for (auto it: ns)
-                ns_val.push_back(transfer_coord(it));
-            vector<int> n;
-            n.push_back(x);
-            n.push_back(y);
-            uf[player]->insert(n, ns_val, player);
-            uf[player]->print();
-        }
-
-
     private:
         int num;
         union_find* uf[2];
@@ -129,15 +136,19 @@ int main() {
     g.input_move(1,8,9);
     g.input_move(1,0,2);
     g.input_move(1,9,7);
+    g.input_move(1,9,6);
+    g.input_move(1,9,5);
+    g.input_move(1,9,4);
+    g.input_move(1,9,3);
+    g.input_move(1,9,2);
+    g.input_move(1,9,0);
+    g.input_move(1,9,1);
     g.input_move(1,8,8);
     g.input_move(1,9,10);
     g.input_move(1,9,9);
     g.input_move(1,1,4);
     g.input_move(1,1,3);
     g.input_move(1,1,2);
-    g.print_board();
-    g.input_move(0,9,7);
-    g.print_board();
 
     g.print_neighbors(g.neighbors(5,3));
     return 0;
