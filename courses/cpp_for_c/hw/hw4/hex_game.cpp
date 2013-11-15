@@ -123,14 +123,30 @@ class hex_game {
             cout << endl;
         }
 
+        void play() {
+            int x, y;
+            while (true) {
+                cout << "Player 0 input move:\nx = ";
+                cin >> x;
+                cout << "y = ";
+                cin >> y;
+                input_move(0, x, y);
+                cout << "Player 1 input move:\nx = ";
+                cin >> x;
+                cout << "y = ";
+                cin >> y;
+                input_move(1, x, y);
+                print_board();
+            }
+        }
+
     private:
         int num;
         union_find* uf[2];
         vector<string> board;
 };
 
-
-int main() {
+void test() {
     hex_game g(11);
     g.print_board();
     g.input_move(1,8,9);
@@ -151,6 +167,18 @@ int main() {
     g.input_move(1,1,2);
 
     g.print_neighbors(g.neighbors(5,3));
+}
+
+int main() {
+    int i;
+    while (true) {
+        cout << "Please input the dimension of the board (7 or 11): ";
+        cin >> i;
+        if (i==7 || i==11) break;
+        cout << "The dimension should be 7 or 11!" << endl;
+    }
+    hex_game g(i);
+    g.play();
     return 0;
 }
 
