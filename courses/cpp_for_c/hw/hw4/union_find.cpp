@@ -1,4 +1,5 @@
 #include <vector>
+#include <iostream>
 #include <unordered_map>
 #include "union_find.h"
 
@@ -54,6 +55,19 @@ void union_find::insert(vector<int> n, vector<int> nbs, int player) {
             unions(new_leader, it);
         nodes[n_val] = new_leader;
         leader[new_leader].push_back(n_val);
+    }
+}
+
+void union_find::print() {
+    cout << "\nIn node map:" << endl;
+    for (auto it: nodes)
+        cout << "Node: " << it.first << "Leader: " << it.second << endl;
+    cout << "\nIn leader map:" << endl;
+    for (auto i: leader) {
+        cout << "Leader: "<< i.first << endl;
+        for (auto j: i.second)
+            cout << j << "  ";
+        cout << endl;
     }
 }
 

@@ -15,6 +15,7 @@ class union_find {
         int find(int i);
         void unions(int l1, int l2);
         void insert(vector<int> n, vector<int> ns, int p);
+        void print();
     private:
         int last;
         // the 1st element is the node, and the 2nd is the leader of cluster
