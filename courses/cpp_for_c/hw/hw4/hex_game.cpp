@@ -34,20 +34,20 @@ void hex_game::input_move(int player, int x, int y) {
         "Please do another move."<< endl;
         return;
     } else if (player==0) {
+        board[x].replace(y*4, 1, "o");
         if (put_check(x, y, 0)) {
             cout << "The player 0 is the winner!" << endl;
             print_board();
             exit(0);
         }
-        board[x].replace(y*4, 1, "o");
     }
     else {
+        board[x].replace(y*4, 1, "x");
         if (put_check(x, y, 1)) {
             cout << "The player 1 is the winner!" << endl;
             print_board();
             exit(0);
         }
-        board[x].replace(y*4, 1, "x");
     }
 }
 
@@ -63,7 +63,6 @@ bool hex_game::put_check(int x, int y, int player) {
 }
 
 
-// input the coordinate of move and return all its neighbors
 vector< vector<int> > hex_game::neighbors(int x, int y) {
     vector< vector<int> > result;
     vector<int> temp;
