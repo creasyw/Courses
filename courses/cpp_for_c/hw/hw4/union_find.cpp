@@ -28,14 +28,12 @@ void union_find::unions(int l1, int l2) {
 
 // assuming the player0 plays vertically and player1 plays horizontally
 // hence, player0's leader indicator is the # of row, and player1 is the # of column
-void union_find::insert(vector<int> n, vector<int> nbs, int player) {
+bool union_find::insert(vector<int> n, vector<int> nbs, int player) {
     int index;
     // the "universal" rul mapping coordinates to node indices
     int n_val = n[0]*100+n[1];
-    if (player==0)
-        index = n[0];
-    else
-        index = n[1];
+    if (player==0) index = n[0];
+    else index = n[1];
     vector<int> leaders;
     for (auto it: nbs) {
         int l = found(it);
@@ -55,9 +53,11 @@ void union_find::insert(vector<int> n, vector<int> nbs, int player) {
     int new_leader = *min_element(leaders.begin(),leaders.end());
     int max_leader = *max_element(leaders.begin(),leaders.end());
     // keep the route connect to last
+    if (new_leader==0 && max_leader==last) return true;
     if (max_leader==last)  new_leader = last;
     for (auto it: leaders)
         unions(new_leader, it);
+    return false;
 }
 
 void union_find::print() {
