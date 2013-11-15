@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <assert.h>
 #include "union_find.h"
 
 using namespace std;
@@ -33,8 +32,6 @@ class hex_game {
             cout << endl;
         }
         void input_move(int player, int x, int y) {
-            // sanity check for the input location
-            assert (x>=0 && x<num && y>=0 && y<num);
             string test(1, board[x][y*4]);
             string goal = ".";
             if(test!=goal) {
@@ -126,15 +123,25 @@ class hex_game {
         void play() {
             int x, y;
             while (true) {
-                cout << "Player 0 input move:\nx = ";
-                cin >> x;
-                cout << "y = ";
-                cin >> y;
+                cout << "Player 0 input move: [0,"<<num-1<<"]"<< endl;
+                while (true) {
+                    cout << "x = ";
+                    cin >> x;
+                    cout << "y = ";
+                    cin >> y;
+                    if (x>=0 && x<num && y>=0 && y<num) break;
+                    cout << "The input is out of range!" << endl;
+                }
                 input_move(0, x, y);
-                cout << "Player 1 input move:\nx = ";
-                cin >> x;
-                cout << "y = ";
-                cin >> y;
+                cout << "Player 1 input move: [0,"<<num-1<<"]"<< endl;
+                while (true) {
+                    cout << "x = ";
+                    cin >> x;
+                    cout << "y = ";
+                    cin >> y;
+                    if (x>=0 && x<num && y>=0 && y<num) break;
+                    cout << "The input is out of range!" << endl;
+                }
                 input_move(1, x, y);
                 print_board();
             }
