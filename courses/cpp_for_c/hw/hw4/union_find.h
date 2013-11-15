@@ -12,7 +12,7 @@ class union_find {
     public:
         inline union_find(int n): last(n) {}
         inline int num_of_unions() {return leader.size();}
-        int find(int i);
+        int found(int i);
         void unions(int l1, int l2);
         void insert(vector<int> n, vector<int> ns, int p);
         void print();

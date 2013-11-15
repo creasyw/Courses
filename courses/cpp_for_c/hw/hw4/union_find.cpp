@@ -7,7 +7,7 @@ using namespace std;
 
 // check if one node has already been explored
 // if it is, return the leader element
-int union_find::find(int i) {
+int union_find::found(int i) {
     unordered_map<int, int>::iterator it = nodes.find(i);
     if (it == nodes.end())
         return -1;
@@ -38,24 +38,26 @@ void union_find::insert(vector<int> n, vector<int> nbs, int player) {
         index = n[1];
     vector<int> leaders;
     for (auto it: nbs) {
-        int l = find(it);
+        int l = found(it);
         if (l!=-1)  leaders.push_back(l);
     }
-    if (leaders.size()==0) {
+    if (leaders.size()==0 || find(leaders.begin(),leaders.end(),index)==leaders.end()) {
         nodes[n_val] = index;
         leader[index] = vector<int>();
         leader[index].push_back(n_val);
+        leaders.push_back(index);
     } else {
-        int new_leader = *min_element(leaders.begin(), leaders.end());
-        if (new_leader > index) {
-            leader[index] = vector<int>();
-            new_leader = index;
-        }
-        for (auto it: leaders)
-            unions(new_leader, it);
-        nodes[n_val] = new_leader;
-        leader[new_leader].push_back(n_val);
+        nodes[n_val] = index;
+        leader[index].push_back(n_val);
     }
+
+    // rearrange nodes and leader in the map
+    int new_leader = *min_element(leaders.begin(),leaders.end());
+    int max_leader = *max_element(leaders.begin(),leaders.end());
+    // keep the route connect to last
+    if (max_leader==last)  new_leader = last;
+    for (auto it: leaders)
+        unions(new_leader, it);
 }
 
 void union_find::print() {
