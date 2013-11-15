@@ -15,8 +15,8 @@ class hex_game {
             for(int i=0; i<num; ++i) {
                 board.push_back(line);
             }
-            uf[0] = new union_find(n);
-            uf[1] = new union_find(n);
+            uf[0] = new union_find(n-1);
+            uf[1] = new union_find(n-1);
         }
         
         inline int transfer_coord (vector<int> n) {
@@ -126,12 +126,12 @@ class hex_game {
 int main() {
     hex_game g(11);
     g.print_board();
-    g.input_move(1, 0,0);
+    g.input_move(1,8,9);
     g.input_move(1,0,2);
     g.input_move(1,9,7);
-    g.input_move(1,2,5);
-    g.input_move(1,1,5);
-    g.input_move(1,2,6);
+    g.input_move(1,8,8);
+    g.input_move(1,9,10);
+    g.input_move(1,9,9);
     g.input_move(1,1,4);
     g.input_move(1,1,3);
     g.input_move(1,1,2);
