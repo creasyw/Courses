@@ -20,17 +20,6 @@ def binary_pam(nsample):
     """ Generate PAM symbols with equal probability. """
     return np.array(map(lambda x: -1 if x==0 else x, np.random.randint(2, size=nsample)))
 
-# 1st version of signal generation
-#def channel(signal, tap, snr):
-#    """ Construct the effect of ISI and AWGN. """
-#    L = len(signal)
-#    output = awgn(L, 10**(-snr/10.))
-#    output = np.zeros(L, dtype=float)
-#    for n in range(L):
-#        for k in range(len(tap)):
-#            if n-k >= 0: output[n] += tap[k]*signal[n-k]
-#    return output
-
 def channel(signal, tap, snr):
     """ Construct the effect of ISI and AWGN. """
     L = len(tap)
