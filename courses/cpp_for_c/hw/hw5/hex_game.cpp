@@ -170,8 +170,8 @@ int main() {
     while (true) {
         cout << "Please input the dimension of the board (7 or 11): ";
         cin >> i;
-        if (i==7 || i==11) break;
-        cout << "The dimension should be 7 or 11!" << endl;
+        if (i > 0) break;
+        cout << "The dimension should be larger than zero!" << endl;
     }
     hex_game g(i);
     g.play();
