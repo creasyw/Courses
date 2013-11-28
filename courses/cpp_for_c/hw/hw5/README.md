@@ -6,9 +6,11 @@
 * For the moving decision, the program evaluates all legal available next moves and select a “best” move.  Each legal move will be evaluated using approximately 1000 or more trials (Monte Carlo simulation). Each trial winds the game forward by randomly selecting successive moves until there is a winner. The trial is counted as a win or loss. The ratio: wins/trials are the AI’s metric for picking which next move to make. In this procedure, the Minmax algorithm and alpha-beta pruning might be used.
 * For the complexity, the program should efficiently determine within no more than 2 minutes.
 
-###Some hints:
+###Some hints from discussion board:
 * using
 ````
 g++ -O3 -Wall -c -fmessage-length=0 -std=c++11 ...
 ````
-to accelerate the compiled program.
+to accelerate the compiled program. For more options, refer to [GCC - Options That Control Optimization](http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html).
+* Take 4 by 4 board for example. There are 16! orderings for filling the board, but at the end of a game the order of tokens is indistinguishable. So, both color has 8! deduction. Furthermore, the board is "mirror-symmetric" along the diagonal. Hence, there are 16!/8!/8!/2=6435 different arrangements for a Monte Carlo simulation.
+* It is unnecessary to fill both players. Fill one players for the half the rest positions, then it is ready to check for winner. And there is one and only one winner for each trail.
