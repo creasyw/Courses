@@ -5,3 +5,10 @@
 * The program should determine when the game is over and announce the winner.
 * For the moving decision, the program evaluates all legal available next moves and select a “best” move.  Each legal move will be evaluated using approximately 1000 or more trials (Monte Carlo simulation). Each trial winds the game forward by randomly selecting successive moves until there is a winner. The trial is counted as a win or loss. The ratio: wins/trials are the AI’s metric for picking which next move to make. In this procedure, the Minmax algorithm and alpha-beta pruning might be used.
 * For the complexity, the program should efficiently determine within no more than 2 minutes.
+
+###Some hints:
+* using
+````
+g++ -O3 -Wall -c -fmessage-length=0 -std=c++11 ...
+````
+to accelerate the compiled program.
