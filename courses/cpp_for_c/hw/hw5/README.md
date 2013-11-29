@@ -15,10 +15,11 @@ to accelerate the compiled program. For more options, refer to [GCC - Options Th
 * Take 4 by 4 board for example. There are 16! orderings for filling the board, but at the end of a game the order of tokens is indistinguishable. So, both color has 8! deduction. Furthermore, the board is "mirror-symmetric" along the diagonal. Hence, there are 16!/8!/8!/2=6435 different arrangements for a Monte Carlo simulation.
 * It is unnecessary to fill both players. Fill one players for the half the rest positions, then it is ready to check for winner. And there is one and only one winner for each trail.
 * To perform 1000 Monte Carlo simulation for every move, the "copy-current-state" might be the bottleneck of performace for a large board. Try to use "shallow copy" or a vector of move, which starts from the current state, stops as either side wins, and then performs rollback.
-* The union-find algorithm should be "incrementable" to decide the winner.
+* The union-find algorithm should be "incrementable" to decide the winner. (done in the previous hw)
 * A possible roadmap:
     * Write a class that does random valid moves automatically.
     * Write a class that iterates over all free cells, make MC evaluations everywhere and makes the best possible moves.
     * Look more moves into the future using Min-Max (refine the "best possible" move).
     * Optimize Min-Max using Alpha-Beta.
     * Try to further optimize.
+* The decision of winner should better be made earlier than later. As the game has a winner, all of the rest fillings can be "pruned".
