@@ -17,8 +17,8 @@ to accelerate the compiled program. For more options, refer to [GCC - Options Th
 * To perform 1000 Monte Carlo simulation for every move, the "copy-current-state" might be the bottleneck of performace for a large board. Try to use "shallow copy" or a vector of move, which starts from the current state, stops as either side wins, and then performs rollback.
 * The union-find algorithm should be "incrementable" to decide the winner.
 * A possible roadmap:
-    1. Write a class that does random valid moves automatically.
-    1. Write a class that iterates over all free cells, make MC evaluations everywhere and makes the best possible moves.
-    1. Look more moves into the future using Min-Max.
-    1. Optimize Min-Max using Alpha-Beta.
-    1. Try to further optimize.
+    * Write a class that does random valid moves automatically.
+    * Write a class that iterates over all free cells, make MC evaluations everywhere and makes the best possible moves.
+    * Look more moves into the future using Min-Max (refine the "best possible" move).
+    * Optimize Min-Max using Alpha-Beta.
+    * Try to further optimize.
