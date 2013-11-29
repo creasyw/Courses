@@ -9,7 +9,7 @@
 ###Some hints from discussion board:
 * using
 ````
-g++ -O3 -Wall -c -fmessage-length=0 -std=c++11 ...
+g++ -O3 -Wall -fmessage-length=0 -std=c++11 ...
 ````
 to accelerate the compiled program. For more options, refer to [GCC - Options That Control Optimization](http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html).
 * Take 4 by 4 board for example. There are 16! orderings for filling the board, but at the end of a game the order of tokens is indistinguishable. So, both color has 8! deduction. Furthermore, the board is "mirror-symmetric" along the diagonal. Hence, there are 16!/8!/8!/2=6435 different arrangements for a Monte Carlo simulation.
