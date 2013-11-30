@@ -26,13 +26,13 @@ void hex_game::print_board() {
     }
     cout << endl;
 }
-void hex_game::input_move(int player, int x, int y) {
+bool hex_game::input_move(int player, int x, int y) {
     string test(1, board[x][y*4]);
     string goal = ".";
     if(test!=goal) {
         cout << "The location has already been placed a move\n" <<
         "Please do another move."<< endl;
-        return;
+        return false;
     } else if (player==0) {
         board[x].replace(y*4, 1, "X");
         if (put_check(x, y, 0)) {
@@ -49,6 +49,7 @@ void hex_game::input_move(int player, int x, int y) {
             exit(0);
         }
     }
+    return true;
 }
 
 bool hex_game::put_check(int x, int y, int player) {
@@ -116,8 +117,10 @@ void hex_game::print_neighbors(vector<vector<int> > n) {
 
 void hex_game::play() {
     int x, y;
+    int count = 0;
     while (true) {
-        cout << "Player 0 input move: [0,"<<num-1<<"]"<< endl;
+        int player = count%2;
+        cout << "Player "<< player << " input move: [0,"<<num-1<<"]"<< endl;
         while (true) {
             cout << "x = ";
             cin >> x;
@@ -126,18 +129,9 @@ void hex_game::play() {
             if (x>=0 && x<num && y>=0 && y<num) break;
             cout << "The input is out of range!" << endl;
         }
-        input_move(0, x, y);
-        cout << "Player 1 input move: [0,"<<num-1<<"]"<< endl;
-        while (true) {
-            cout << "x = ";
-            cin >> x;
-            cout << "y = ";
-            cin >> y;
-            if (x>=0 && x<num && y>=0 && y<num) break;
-            cout << "The input is out of range!" << endl;
-        }
-        input_move(1, x, y);
-        print_board();
+        if (input_move(player, x, y)) count++;
+        // print board for every two legal moves
+        if (player==1) print_board();
     }
 }
 
@@ -168,7 +162,7 @@ void test() {
 int main() {
     int i;
     while (true) {
-        cout << "Please input the dimension of the board (7 or 11): ";
+        cout << "Please input the dimension of the board: ";
         cin >> i;
         if (i > 0) break;
         cout << "The dimension should be larger than zero!" << endl;

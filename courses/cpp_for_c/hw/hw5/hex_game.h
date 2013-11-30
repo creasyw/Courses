@@ -16,7 +16,7 @@ class hex_game {
         // print the board with up-to-date moves
         void print_board();
         // maojor func for player to put a move on board
-        void input_move(int player, int x, int y);
+        bool input_move(int player, int x, int y);
         // interact with union_find to store all moves
         bool put_check(int x, int y, int player);
         // input the coordinate of move and return all its neighbors
