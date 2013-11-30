@@ -116,10 +116,10 @@ void hex_game::print_neighbors(vector<vector<int> > n) {
 }
 
 void hex_game::play() {
-    int x, y;
+    int x, y, player;
     int count = 0;
     while (true) {
-        int player = count%2;
+        player = count%2;
         cout << "Player "<< player << " input move: [0,"<<num-1<<"]"<< endl;
         while (true) {
             cout << "x = ";
@@ -129,9 +129,11 @@ void hex_game::play() {
             if (x>=0 && x<num && y>=0 && y<num) break;
             cout << "The input is out of range!" << endl;
         }
-        if (input_move(player, x, y)) count++;
-        // print board for every two legal moves
-        if (player==1) print_board();
+        if (input_move(player, x, y)) {
+            count++;
+            // print board for every two legal moves
+            if (player==1) print_board();
+        }
     }
 }
 
