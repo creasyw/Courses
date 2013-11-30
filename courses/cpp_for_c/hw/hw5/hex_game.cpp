@@ -7,6 +7,8 @@
 using namespace std;
 
 hex_game::hex_game(int n): num(n) {
+    // hard coded as 1000 times of trails
+    num_trails = 1000;
     string dots = ".   ";
     string line;
     for(int i=0; i<num; ++i) {
@@ -69,16 +71,54 @@ bool hex_game::put_check(int x, int y, int player) {
     return uf[player]->insert(n, ns_val, player);
 }
 
-vector<int> hex_game::random_select() {
+vector<int> hex_game::random_select(unorder_map<int, int>& tempt) {
     vector<int> result;
     srand(clock());
-    unordered_map<int, int>::const_iterator it(exmpty_slots.begin());
-    advance(it, rand()%exmpty_slots.size());
+    unordered_map<int, int>::const_iterator it(tempt.begin());
+    advance(it, rand()%tempt.size());
     result.push_back(it->first / num);
     result.push_back(it->first - num*result[0]);
     return result;
 }
 
+vector<int> hex_game::best_move(int p) {
+    int count = p;
+    int player;
+    temp[0](uf[0]);
+    temp[1](uf[1]);
+    unorder_map<int, int> score = exmpty_slots;
+
+    for(int i=0; i<num_trails; ++i) {
+        unorder_map<int, int> current = exmpty_slots;
+        vector< vector<int> > moves;
+        while (true) {
+            player = count%2;
+            ai_select = random_select(current);
+            moves.push_back(ai_select);
+            if (ai_move(player, ai_select[0], ai_select[1])) {
+                int x = moves[0][0];
+                int y = moves[0][1];
+                score[x*num+y]++;
+                break;
+            } else {
+                count++;
+            }
+        }
+    }
+
+    int max_score = -1;
+    int index = -1;
+    for (auto it:score) {
+        if (it->second > max_score) {
+            max_score = it->second;
+            index = it->first;
+        }
+    }
+    vector<int> result;
+    result.push_back(index/num);
+    result.push_back(index-num*result[0]);
+    return result;
+}
 
 vector< vector<int> > hex_game::neighbors(int x, int y) {
     vector< vector<int> > result;

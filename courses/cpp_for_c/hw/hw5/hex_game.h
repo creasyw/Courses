@@ -34,8 +34,11 @@ class hex_game {
         int num;
         // storing the indices of empty slots
         unordered_map<int, int> exmpty_slots;
+        // the number of trails for each move
+        int num_trails;
         // two union_find object for two players respectively
         union_find* uf[2];
+        union_find* temp[2];
         // used in print out the board
         vector<string> board;
 };
