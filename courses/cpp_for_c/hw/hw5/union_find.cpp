@@ -14,6 +14,11 @@ int union_find::found(int i) {
     return it->second;
 }
 
+union_find::union_find(union_find& u):union_find(u.get_last()) {
+    nodes = u.nodes;
+    leader = u.leader;
+}
+
 // merge nodes with leader of l2 to l1
 void union_find::unions(int l1, int l2) {
     // to simplify the procedure of insert

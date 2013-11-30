@@ -12,6 +12,8 @@ class union_find {
     public:
         inline union_find(int n): last(n) {}
         inline int num_of_unions() {return leader.size();}
+        inline int get_last() {return last;}
+        union_find(union_find& u);
         int found(int i);
         void unions(int l1, int l2);
         bool insert(vector<int> n, vector<int> ns, int p);
