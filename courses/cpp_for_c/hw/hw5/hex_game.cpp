@@ -12,7 +12,7 @@ hex_game::hex_game(int n): num(n) {
     for(int i=0; i<num; ++i) {
         line += dots;
         for (int j=0; j<num; j++)
-            exmpty_slots.insert(i*num+j);
+            exmpty_slots[i*num+j] = 0;
     }
     for(int i=0; i<num; ++i) {
         board.push_back(line);
@@ -72,10 +72,10 @@ bool hex_game::put_check(int x, int y, int player) {
 vector<int> hex_game::random_select() {
     vector<int> result;
     srand(clock());
-    set<int>::const_iterator it(exmpty_slots.begin());
+    unordered_map<int, int>::const_iterator it(exmpty_slots.begin());
     advance(it, rand()%exmpty_slots.size());
-    result.push_back(*it/num);
-    result.push_back(*it-num*result[0]);
+    result.push_back(it->first / num);
+    result.push_back(it->first - num*result[0]);
     return result;
 }
 
