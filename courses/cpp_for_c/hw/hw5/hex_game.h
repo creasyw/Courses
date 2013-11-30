@@ -20,6 +20,8 @@ class hex_game {
         bool input_move(int player, int x, int y);
         // interact with union_find to store all moves
         bool put_check(int x, int y, int player);
+        // random select a move within the empty slots
+        vector<int> random_select();
         // input the coordinate of move and return all its neighbors
         vector< vector<int> > neighbors(int x, int y);
         // hepler function of neighbors

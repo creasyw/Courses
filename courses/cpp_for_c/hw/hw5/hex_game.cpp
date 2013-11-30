@@ -2,6 +2,7 @@
 #include <vector>
 #include "union_find.h"
 #include "hex_game.h"
+#include <algorithm>    // for advance
 
 using namespace std;
 
@@ -29,6 +30,7 @@ void hex_game::print_board() {
     }
     cout << endl;
 }
+
 bool hex_game::input_move(int player, int x, int y) {
     string test(1, board[x][y*4]);
     string goal = ".";
@@ -65,6 +67,16 @@ bool hex_game::put_check(int x, int y, int player) {
     n.push_back(x);
     n.push_back(y);
     return uf[player]->insert(n, ns_val, player);
+}
+
+vector<int> hex_game::random_select() {
+    vector<int> result;
+    srand(clock());
+    set<int>::const_iterator it(exmpty_slots.begin());
+    advance(it, rand()%exmpty_slots.size());
+    result.push_back(*it/num);
+    result.push_back(*it-num*result[0]);
+    return result;
 }
 
 
@@ -122,16 +134,36 @@ void hex_game::print_neighbors(vector<vector<int> > n) {
 void hex_game::play() {
     int x, y, player;
     int count = 0;
+    vector<int> ai_select(2);
+    string temp;
+    bool p[2];
+    // check if ai is needed
+    cout << "AI acts as the first player [y,n]?" << endl;
+    cin >> temp;
+    if (temp=="y") p[0] = true;
+    else p[0] = false;
+    cout << "AI acts as the second player [y,n]?" << endl;
+    cin >> temp;
+    if (temp=="y") p[1] = true;
+    else p[1] = false;
+    
+    // now, playing
     while (true) {
         player = count%2;
         cout << "Player "<< player << " input move: [0,"<<num-1<<"]"<< endl;
-        while (true) {
-            cout << "x = ";
-            cin >> x;
-            cout << "y = ";
-            cin >> y;
-            if (x>=0 && x<num && y>=0 && y<num) break;
-            cout << "The input is out of range!" << endl;
+        if (p[player]) {
+            ai_select = random_select();
+            x = ai_select[0];
+            y = ai_select[1];
+        } else {
+            while (true) {
+                cout << "x = ";
+                cin >> x;
+                cout << "y = ";
+                cin >> y;
+                if (x>=0 && x<num && y>=0 && y<num) break;
+                cout << "The input is out of range!" << endl;
+            }
         }
         if (input_move(player, x, y)) {
             count++;
