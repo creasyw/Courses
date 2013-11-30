@@ -8,8 +8,11 @@ using namespace std;
 hex_game::hex_game(int n): num(n) {
     string dots = ".   ";
     string line;
-    for(int i=0; i<num; ++i)
+    for(int i=0; i<num; ++i) {
         line += dots;
+        for (int j=0; j<num; j++)
+            exmpty_slots.insert(i*num+j);
+    }
     for(int i=0; i<num; ++i) {
         board.push_back(line);
     }
@@ -49,6 +52,7 @@ bool hex_game::input_move(int player, int x, int y) {
             exit(0);
         }
     }
+    exmpty_slots.erase(exmpty_slots.find(x*num+y));
     return true;
 }
 

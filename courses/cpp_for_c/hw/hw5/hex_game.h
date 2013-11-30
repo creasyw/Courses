@@ -2,6 +2,7 @@
 #define HEX_GAME_H
 
 #include <vector>
+#include <set>
 #include "union_find.h"
 
 using namespace std;
@@ -29,6 +30,8 @@ class hex_game {
     private:
         // the dimension of the board
         int num;
+        // storing the indices of empty slots
+        set<int> exmpty_slots;
         // two union_find object for two players respectively
         union_find* uf[2];
         // used in print out the board
