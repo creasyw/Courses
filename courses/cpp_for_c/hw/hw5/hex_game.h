@@ -21,7 +21,8 @@ class hex_game {
         // interact with union_find to store all moves
         bool put_check(int x, int y, int player);
         // random select a move within the empty slots
-        vector<int> random_select();
+        vector<int> random_select(unordered_map<int, int>& tempt);
+        vector<int> best_move(int p);
         // input the coordinate of move and return all its neighbors
         vector< vector<int> > neighbors(int x, int y);
         // hepler function of neighbors
@@ -38,7 +39,7 @@ class hex_game {
         int num_trails;
         // two union_find object for two players respectively
         union_find* uf[2];
-        union_find* temp[2];
+        union_find temp[2];
         // used in print out the board
         vector<string> board;
 };

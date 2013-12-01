@@ -71,7 +71,7 @@ bool hex_game::put_check(int x, int y, int player) {
     return uf[player]->insert(n, ns_val, player);
 }
 
-vector<int> hex_game::random_select(unorder_map<int, int>& tempt) {
+vector<int> hex_game::random_select(unordered_map<int, int>& tempt) {
     vector<int> result;
     srand(clock());
     unordered_map<int, int>::const_iterator it(tempt.begin());
@@ -95,14 +95,14 @@ vector<int> hex_game::best_move(int p) {
             player = count%2;
             ai_select = random_select(current);
             moves.push_back(ai_select);
-            if (ai_move(player, ai_select[0], ai_select[1])) {
+        /*    if (ai_move(player, ai_select[0], ai_select[1])) {
                 int x = moves[0][0];
                 int y = moves[0][1];
                 score[x*num+y]++;
                 break;
             } else {
                 count++;
-            }
+            }*/
         }
     }
 
@@ -192,7 +192,7 @@ void hex_game::play() {
         player = count%2;
         cout << "Player "<< player << " input move: [0,"<<num-1<<"]"<< endl;
         if (p[player]) {
-            ai_select = random_select();
+            ai_select = best_move(player);
             x = ai_select[0];
             y = ai_select[1];
         } else {
