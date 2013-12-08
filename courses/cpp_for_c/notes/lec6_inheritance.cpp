@@ -24,3 +24,6 @@ class grad_student : public student {//public - subtype
   char thesis[80]; 
   }; 
 
+
+
+
