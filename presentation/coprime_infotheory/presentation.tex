@@ -224,7 +224,7 @@ with constant $A$ and $B$ relevant with the choices of $S$ and $\Lambda$ and ind
      \end{bmatrix}
 \end{equation}
 \begin{itemize}
-  \item Toeplitz matrices are also closely connected with Fourier series, and has the property of commute asymptotically.
+  \item Toeplitz matrices are closely related with Fourier series, and has the property of asymptotical commutation.
   \item A Toeplitz matrix can be briefly described as $T_n=[t_{i-j};i,j=0,1,\dots,n-1]$, which is uniquely defined by the sequence $\{t_k\}$.
 \end{itemize}
 \end{frame}
@@ -275,11 +275,11 @@ Similarly, the Fourier coefficients of the circulant matrix $U_n(f)$ is also wel
 \begin{block}{}
   \cite[Lemma 1]{Gray:2006} Suppose $A_n\sim B_n$ with eighenvalues $\{\alpha_{n,k}\}$ and $\{\beta_{n,k}\}$, respectively. Let $g(x)$ be an arbitrary continuous function. Then,
   \begin{equation}
-    \lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1}(\alpha_{n,k}-\beta_{n,k})=0
+    \lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1}g(\alpha_{n,k}-\beta_{n,k})=0
   \end{equation}
   and hence if either limit exists individually,
   \begin{equation}
-    \lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1}\alpha_{n,k}=\lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1}\beta_{n,k}
+    \lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1}g(\alpha_{n,k})=\lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1}g(\beta_{n,k})
   \end{equation}
 \end{block}
 \end{frame}
@@ -319,8 +319,8 @@ Similarly, the Fourier coefficients of the circulant matrix $U_n(f)$ is also wel
 \begin{frame}
 \frametitle{Matrices of Impulse Responses}
 \begin{align}
-  \pmb{G}_m &=[\dots\text{ }G_{m,-1}\text{ }G_{m,0}\text{ }G_{m,1}\text{ }\dots]\quad 0\leq m\leq M \\
-  G_{m,0} &=[g^0_m,\underbrace{0,\dots,0}_\text{N-1},g^1_m,0,\dots,0,g^{\frac{L-1}{M}}_m]^T
+  \pmb{G}_m &=[\dots\text{ }G_{m,-1}\text{ }G_{m,0}\text{ }G_{m,1}\text{ }\dots]\quad 1\leq m\leq M \\
+  G_{m,0} &=[g^0_m,\underbrace{0,\dots,0}_\text{N-1},g^N_m,0,\dots,0,g^{\frac{L-1}{M}}_m]^T
 \end{align}
 \begin{equation}
     \pmb{G}_m = \begin{bmatrix}
@@ -334,6 +334,14 @@ Similarly, the Fourier coefficients of the circulant matrix $U_n(f)$ is also wel
       \dots & g_m^{\frac{L-1}{M}} & 0 & \dots & 0 & g_m^{\frac{L-N-1}{M}} & \dots \\%[1.5mm]
     \end{bmatrix}.
 \end{equation}
+\end{frame}
+
+\begin{frame}
+\frametitle{Matrices of Impulse Responses}
+\begin{figure}
+\includegraphics[width=0.7\linewidth]{virtual_flowchart.pdf}
+\end{figure}
+Let $\tilde{T}_s$ be the actual sampling time and $T_s$ be the equivalent sampling time, their relation is $\tilde{T}_s=MNT_s$. Suppose the overall time of signal receiving is $T=L\tilde{T}_s$ and $\tilde{T}_s=\beta\xi$ with integers $L$ and $\beta$.
 \end{frame}
 
 \begin{frame}
@@ -386,7 +394,16 @@ Hence, the Hermitian matrix $\tilde{\pmb{S}}\coloneqq \pmb{S}_u\pmb{S}_v^*$ is s
 \end{frame}
 
 \begin{frame}
-\frametitle{Theorem 3: Capacity of Coprime Filter-banks}
+\frametitle{Formulae Definitions for Theorem 4}
+$\pmb{F}_s$ and $\pmb{F}_c$ are both defined in the Fourier domain. $\pmb{F}_s$ is an infinite matrix of $mn$ rows and infinite many columns, and $\pmb{F}_c$ is a diagonal infinite matrix, such that for $i$ ($1\leq i\leq\beta$) and every integer $l$
+\begin{align}
+  \left(\pmb{F}_s\right)_{i,l} &= S_i\left(f-\frac{lf_s}{MN}\right)\sqrt{S_\eta\left(f-\frac{lf_s}{MN}\right)}\\
+  \left(\pmb{F}_c\right)_{i,l} &= \left.C\left(f-\frac{lf_s}{MN}\right)\middle/\sqrt{S_\eta\left(f-\frac{lf_s}{MN}\right)}\right.
+\end{align}
+\end{frame}
+
+\begin{frame}
+\frametitle{Theorem 4: Capacity of Coprime Filter-banks}
 \begin{block}{}
   Assume that $c(t)$ and $s_i(t)$ ($1\leq i\leq MN$) are all continuous, bounded and absolutedly Riemann integrable, and $c_\eta(t)=\mathscr{F}^{-1}\left(\frac{C(f)}{\sqrt{S_\eta(f)}}\right)$ satisfies $c_\eta(t)=o(t^{-\varepsilon})$ for some constant $\varepsilon>1$, and that $\pmb{F}_s(f)$ is right-invertible for every $f$. Define $\tilde{\pmb{F}}_s\triangleq (\pmb{F}_s\pmb{F}_s^*)^{-\frac{1}{2}}\pmb{F}_s$. The capacity $\mathbb{C}(f_s)$ of the sampled channel with a power constraint $P$ is given as
   \begin{equation}
@@ -402,7 +419,7 @@ Hence, the Hermitian matrix $\tilde{\pmb{S}}\coloneqq \pmb{S}_u\pmb{S}_v^*$ is s
 \begin{frame}
 \frametitle{Corollary: Existence of the Maximum Capacity}
 \begin{block}{}
-  For each aliased set $\left\{f-\frac{if_s}{MN}|i\in\mathbb{Z}\right\}$ and each $k$ ($1\leq k\leq MN$), there exists an integer $l$ such that $\frac{|H(f-\frac{lf_s}{MN})|^2}{S_\eta(f-\frac{lf_s}{MN})}$ is euqal to the kth largest element in $\left\{\frac{|H(f-\frac{lf_s}{MN})|^2}{S_\eta(f-\frac{lf_s}{MN})} | i\in\mathbb{Z}\right\}$. The maximum capacity is
+  For each aliased set $\left\{f-\frac{if_s}{MN}|i\in\mathbb{Z}\right\}$ and each $k$ ($1\leq k\leq MN$), there exists an integer $l$ such that $\frac{|C(f-\frac{lf_s}{MN})|^2}{S_\eta(f-\frac{lf_s}{MN})}$ is euqal to the kth largest element in $\left\{\frac{|C(f-\frac{lf_s}{MN})|^2}{S_\eta(f-\frac{lf_s}{MN})} | i\in\mathbb{Z}\right\}$. The maximum capacity is
   \begin{equation}
     \mathbb{C}(f_s)  =\frac{1}{2}\int_{-\frac{f_s}{2MN}}^{\frac{f_s}{2MN}}\sum_{i=1}^{nMN}\log^+\left(\nu\lambda_i\left(\pmb{F}_{c}\pmb{F}_{c}^*\right)\right)df
   \end{equation}
@@ -415,7 +432,7 @@ Hence, the Hermitian matrix $\tilde{\pmb{S}}\coloneqq \pmb{S}_u\pmb{S}_v^*$ is s
 \begin{block}{}
   the frequency response of the $k$th filter of the filter bank is given by
   \begin{align}
-    S_i\left(f-\frac{lf_s}{MN}\right) = \begin{cases} 1,& \frac{|H(f-\frac{lf_s}{MN})|^2}{S_\eta(f-\frac{lf_s}{MN})}=\lambda_i\left(\pmb{F}_{c}\pmb{F}_{c}^*\right) \\
+    S_i\left(f-\frac{lf_s}{MN}\right) = \begin{cases} 1,& \frac{|C(f-\frac{lf_s}{MN})|^2}{S_\eta(f-\frac{lf_s}{MN})}=\lambda_i\left(\pmb{F}_{c}\pmb{F}_{c}^*\right) \\
       0,& \mbox{otherwise,} \end{cases}
   \end{align}
   and the corresponding water filling scheme for $\nu$ is
@@ -446,6 +463,15 @@ Hence, the Hermitian matrix $\tilde{\pmb{S}}\coloneqq \pmb{S}_u\pmb{S}_v^*$ is s
 %------------------------------------------------
 \section{Conclusions}
 %------------------------------------------------
+
+\begin{frame}
+\frametitle{Conclusions}
+\begin{itemize}
+  \item The work illuminates a connection between MIMO channel capacity and capacity using Coprime sampling strategy.
+  \item The capacity optimizing sampling structures are shown to extract the frequency components with highest SNRs from each aliased set, and hence suppress aliasing and out-of-band noise.
+  \item Given the same number of filter-banks, the achievable rate of the channel is closer to the upper bound of capacity via Coprime sampling than via uniform sampling.
+\end{itemize}
+\end{frame}
 
 %\begin{frame}
 %\frametitle{Table}
