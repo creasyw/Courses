@@ -79,6 +79,34 @@
 \usepackage{graphicx} % Allows including images
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
 
+% add for formula and theorems
+\usepackage{amsthm}  % added again for properly using thmtools, seems i overwrite sth..
+\usepackage{amssymb} % for symbols
+\usepackage{multirow} % for table
+\usepackage{mathrsfs} % for fancy characters like z-transform
+\usepackage{thmtools}
+\usepackage{array} % for customize the distance between columns in a array
+%\declaretheoremstyle[headfont=\scshape,postheadspace=\newline]{mystyle}
+%\declaretheorem[style=mystyle]{theorem}
+%\newcounter{mytempeqncnt}
+
+\usepackage{blkarray} % Used for multi-blocks matrix
+%\usepackage{easybmat}
+
+%\newtheorem{theory}{Theorem}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{corollary}{Corollary}
+%\newtheorem{property}{Property}
+%\newtheorem{define}{Definition}
+%\newtheorem{remark}{Remark}
+%\usepackage{bbm}
+%\usepackage[justification=centering]{caption}
+%\usepackage{ctable} % for \specialrule command
+%\usepackage{mathtools} % for \coloneqq
+
+
+
+
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
@@ -141,7 +169,7 @@ This motivates the exploration of the effects of sub-Nyquist sampling upon the c
 \section{Preliminaries}
 
 \begin{frame}
-\frametitle{Bullet Points}
+\frametitle{Preliminaries: Revisit Coprime}
 \begin{itemize}
 \item Lorem ipsum dolor sit amet, consectetur adipiscing elit
 \item Aliquam blandit faucibus nisi, sit amet dapibus enim tempus eu
@@ -149,6 +177,84 @@ This motivates the exploration of the effects of sub-Nyquist sampling upon the c
 \item Nam cursus est eget velit posuere pellentesque
 \item Vestibulum faucibus velit a augue condimentum quis convallis nulla gravida
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Theorem 1: Channel capacity}
+\begin{block}{}
+  \cite[Th. 8.5.1]{Gallager:1968} For the channel with a power constraint $P$ and noise PSD $N(f)$, assume that $|H(f)|^2/N(f)$ is bounded and integrable, and that either $\int\limits_{-\infty}^{+\infty}N(f)df<+\infty$ or that $N(f)$ is white. Then the channel capacity is given by
+  \begin{equation}
+    \label{nyquist_rate}
+    \mathbb{C}=\frac{1}{2}\int\limits_{-\infty}^{+\infty}\log^+\left( \nu\frac{|H(f)|^2}{N(f)}\right)df,
+  \end{equation}
+where $\nu$ is the water-filling for additive Gaussian channel and satisfying
+\begin{equation}
+  \int\limits_{-\infty}^{+\infty}\left[\nu-\frac{N(f)}{|H(f)|^2}\right]^+df=P.
+\end{equation}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Theorem 2: Landau Sampling Rate}
+\begin{block}{}
+  \cite[Th. 1 and Lemma 4]{Landau:1967} Given a fixed set $S$ of N-frequency bands whose total finite length, including both the negative and positive frequencies, denoted by $m(S)$, the space $\mathscr{B}(S)$ of all signals of finite energy with frequencies contained only in $S$, and $\Lambda$ is a sampling set from $\mathscr{B}(S)$, All signals $f(t)\in\mathscr{B}(S)$ can be uniquely determined by their samples $\{f(t_n)|t_n\in\Lambda\}$ only if the lower Beurling density $D^-(\Lambda)$ satisfying
+  \begin{align}
+    D^-(\Lambda) &= \lim_{r\to\infty}\inf\frac{n^-(r)}{r} \nonumber \\
+    & \geq \lim_{r\to\infty}\left[\frac{m(S)}{2\pi}-\frac{A\log^+(r)-B}{r}\right]
+   \end{align}
+with constant $A$ and $B$ relevant with the choices of $S$ and $\Lambda$ and independent of the sampling interval $r$.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Definition: Asymptotic Equivalence of Toeplitz Matrix}
+\begin{block}{}
+\cite{Gray:2006} Two $n\times n$ matrices $\{A_n\}$ and $\{B_n\}$ are said to be asymptotically equivalent and be abbreviated as $A_n\sim B_n$ if
+  \begin{itemize}
+    \item $A_n$ and $B_n$ are uniformly bounded for any integer $n$ and a constant $\Psi$ independent of $n$:
+      \begin{equation}
+        ||A_n||_2, ||B_n||_2\leq\Psi<+\infty
+      \end{equation}
+    \item The determinant of the differnece between $A_n$ and $B_n$ is approximately zero as $n\to\infty$.
+      \begin{equation}
+        \lim_{n\to\infty}|A_n-B_n|=0
+      \end{equation}
+  \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lemma 1: Eighenvalues of Toeplitz Matrices}
+\begin{block}{}
+  \cite[Lemma 1]{Gray:2006} Suppose $A_n\sim B_n$ with eighenvalues $\{\alpha_{n,k}\}$ and $\{\beta_{n,k}\}$, respectively. Let $g(x)$ be an arbitrary continuous function. Then,
+  \begin{equation}
+    \lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1}(\alpha_{n,k}-\beta_{n,k})=0
+  \end{equation}
+  and hence if either limit exists individually,
+  \begin{equation}
+    \lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1}\alpha_{n,k}=\lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1}\beta_{n,k}
+  \end{equation}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lemma 2: Operations of Toeplitz Matrices}
+\begin{block}{}
+  \cite[Lemma 7 and 10]{Gray:2006}
+  \label{lemma2}
+  \begin{itemize}
+    \item Suppose a banded Toeplitz matrix $T_n=\{t_{i-j};i,j=0,1,\dots,n-1\}$, which satisfies that $\{t_k\}$ is absolutely summable, and the Fourier serieris $f(\lambda)$ related to $T_n$ is positive and $T_n$ is Hermitian.
+  Then we have
+  \begin{equation}
+    T_n(f)\sim U_n(f)
+  \end{equation}
+  If $f(\lambda)$ is real and there exists a constant $\varepsilon>0$ such that $\inf{f}\geq\varepsilon$, then
+  \begin{equation}
+    T_n(f)^{-1}\sim U_n(f)^{-1}=U_n(1/f)\sim T_n(1/f)
+  \end{equation}
+\item Suppose $\pmb{A}_n\sim\pmb{B}_n$ and $\pmb{C}_n\sim\pmb{D}_n$, then $\pmb{A}_n\pmb{C}_n\sim\pmb{B}_n\pmb{D}_n$.
+  \end{itemize}
+\end{block}
 \end{frame}
 
 %------------------------------------------------
@@ -264,17 +370,14 @@ Uncomment the code on this slide to include your own image from the same directo
 \bibitem{Chen:20132}
     Y. Chen, Y. C. Eldar, and A. J. Goldsmith, ``Shannon meets Nyquist: capacity of sampled Gaussian channels,'' \emph{IEEE Transactions on Information Theory}, vol. 59, no. 8, pp. 4889-4914, Aug. 2013.
 
-\bibitem{Chen:20131}
-  Y. Chen, A. J. Goldsmith, and Y. C. Eldar, ``Channel capacity under sub-Nyquist nonuniform sampling,'' under revision, \emph{IEEE Transactions on Information Theory}, arXiv:1204.6049v4, 2013.
+\bibitem{Gallager:1968}
+  R. G. Gallager, \emph{Information theory and reliable communication}, New York, Wiley, 1968.
+  
+\bibitem{Landau:1967}
+  H. Landau, ``Necessary density conditions for sampling and interpolation of certain entire functions,'' \emph{Acta Mathematica}, vol. 117, pp. 37-52, 1967.
 
-\bibitem{Szego:1984}
-    U. Grenander and G. Szego, \emph{Toeplitz forms and their applications}, New York, NY, USA: Amer. Math. Soc., 1984.
-
-\bibitem{Tilli:1998}
-    P. Tilli, ``Singular values and eigenvalues of non-Hermitian block Toeplitz matrices,'' \emph{Linear Algebra Appl.}, vol. 272, no. 1–3, pp. 59-89, March 1998.
-
-  \bibitem{Gray:2006}
-      R. Gray, ``Toeplitz and circulant matrices: A review'', \emph{Foundations and Trends in Communications and Information Theory}, vol. 2, no. 3, pp. 155-239, Now Publishers, Delft, The Netherlands, 2006.
+\bibitem{Gray:2006}
+  R. Gray, ``Toeplitz and circulant matrices: A review'', \emph{Foundations and Trends in Communications and Information Theory}, vol. 2, no. 3, pp. 155-239, Now Publishers, Delft, The Netherlands, 2006.
 
 \end{thebibliography}
 }
