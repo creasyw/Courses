@@ -111,19 +111,34 @@ Wireless Comm. and Networking Lab\\
 %----------------------------------------------------------------------------------------
 
 %------------------------------------------------
-\section{Background} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
+\section{Introduction} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
 %------------------------------------------------
 
 %\subsection{Subsection Example} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
 
-\begin{frame}
-\frametitle{Paragraphs of Text}
-Sed iaculis dapibus gravida. Morbi sed tortor erat, nec interdum arcu. Sed id lorem lectus. Quisque viverra augue id sem ornare non aliquam nibh tristique. Aenean in ligula nisl. Nulla sed tellus ipsum. Donec vestibulum ligula non lorem vulputate fermentum accumsan neque mollis.\\~\\
 
-Sed diam enim, sagittis nec condimentum sit amet, ullamcorper sit amet libero. Aliquam vel dui orci, a porta odio. Nullam id suscipit ipsum. Aenean lobortis commodo sem, ut commodo leo gravida vitae. Pellentesque vehicula ante iaculis arcu pretium rutrum eget sit amet purus. Integer ornare nulla quis neque ultrices lobortis. Vestibulum ultrices tincidunt libero, quis commodo erat ullamcorper id.
+\begin{frame}
+\frametitle{Introduction}
+The study of capacity of analog Gaussian channels and capacity-achieving transmission strategies was pioneered by Shannon, whose work focused on capacity of channels sampled at or above twice the channel bandwidth.\\~\\
+
+However, in practice, the Nyquist rate may be {\bf excessive} for perfect reconstruction of signals that the transmission channel possess certain structures known a priori. On the other hand, the {\bf hardware} and {\bf power limitations} may preclude sampling at the Nyquist rate for a wideband communication system.\\~\\
+
+This motivates the exploration of the effects of sub-Nyquist sampling upon the capacity of an analog Gaussian channel, and the capacity limits that result from general sampling methods.
+\end{frame}
+
+\begin{frame}
+\frametitle{Related works}
+\begin{itemize}
+  \item When the channel or signal structure is unknown, the blind sub-Nyquist sampling approaches have be proposed to exploit the structure of various classes of input signals based on sampling with modulation and filter banks \cite{Mishali:2010}.
+  \item At the transmitter side, although MRC maximizes the combiner SNR for a MISO channel, it is suboptimal for the joint optimization problem compared with selection combining \cite{Goldsmith:2005}.
+  \item The capacity with sampling rate under modulation-bank are not monotonously increasing, which indicates that more sophisticated sampling techniques are necessary to maximize the capacity \cite{Chen:20132}.
+
+\end{itemize}
 \end{frame}
 
 %------------------------------------------------
+
+\section{Preliminaries}
 
 \begin{frame}
 \frametitle{Bullet Points}
@@ -137,6 +152,9 @@ Sed diam enim, sagittis nec condimentum sit amet, ullamcorper sit amet libero. A
 \end{frame}
 
 %------------------------------------------------
+
+
+\section{System Modeling}
 
 \begin{frame}
 \frametitle{Blocks of Highlighted Text}
@@ -154,6 +172,8 @@ Suspendisse tincidunt sagittis gravida. Curabitur condimentum, enim sed venenati
 \end{frame}
 
 %------------------------------------------------
+
+\section{Theorems and Proofs}
 
 \begin{frame}
 \frametitle{Multiple Columns}
@@ -174,7 +194,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer lectus nisl, ul
 \end{frame}
 
 %------------------------------------------------
-\section{Second Section}
+\section{Conclusions}
 %------------------------------------------------
 
 \begin{frame}
@@ -229,22 +249,33 @@ Uncomment the code on this slide to include your own image from the same directo
 
 %------------------------------------------------
 
-\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
-\frametitle{Citation}
-An example of the \verb|\cite| command to cite within the presentation:\\~
-
-This statement requires citation \cite{p1}.
-\end{frame}
-
-%------------------------------------------------
 
 \begin{frame}
 \frametitle{References}
-\footnotesize{
-\begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as below
-\bibitem[Smith, 2012]{p1} John Smith (2012)
-\newblock Title of the publication
-\newblock \emph{Journal Name} 12(3), 45 -- 678.
+\scriptsize{
+\begin{thebibliography}{1} % Beamer does not support BibTeX so references must be inserted manually as below
+
+\bibitem{Mishali:2010}
+    M. Mishali and Y. C. Eldar, ``From theory to practice: sub-Nyquist sampling of sparse wideband analog signals,'' \emph{IEEE J. Sel. Topics Signal Process.}, vol. 4, no. 2, pp. 375-391, Apr. 2010.
+
+\bibitem{Goldsmith:2005}
+    A. J. Goldsmith, \emph{Wireless Communications}. New York, USA: Cambridge Univ. Press, 2005.
+
+\bibitem{Chen:20132}
+    Y. Chen, Y. C. Eldar, and A. J. Goldsmith, ``Shannon meets Nyquist: capacity of sampled Gaussian channels,'' \emph{IEEE Transactions on Information Theory}, vol. 59, no. 8, pp. 4889-4914, Aug. 2013.
+
+\bibitem{Chen:20131}
+  Y. Chen, A. J. Goldsmith, and Y. C. Eldar, ``Channel capacity under sub-Nyquist nonuniform sampling,'' under revision, \emph{IEEE Transactions on Information Theory}, arXiv:1204.6049v4, 2013.
+
+\bibitem{Szego:1984}
+    U. Grenander and G. Szego, \emph{Toeplitz forms and their applications}, New York, NY, USA: Amer. Math. Soc., 1984.
+
+\bibitem{Tilli:1998}
+    P. Tilli, ``Singular values and eigenvalues of non-Hermitian block Toeplitz matrices,'' \emph{Linear Algebra Appl.}, vol. 272, no. 1–3, pp. 59-89, March 1998.
+
+  \bibitem{Gray:2006}
+      R. Gray, ``Toeplitz and circulant matrices: A review'', \emph{Foundations and Trends in Communications and Information Theory}, vol. 2, no. 3, pp. 155-239, Now Publishers, Delft, The Netherlands, 2006.
+
 \end{thebibliography}
 }
 \end{frame}
@@ -252,7 +283,7 @@ This statement requires citation \cite{p1}.
 %------------------------------------------------
 
 \begin{frame}
-\Huge{\centerline{The End}}
+\Huge{\centerline{Thanks!}}
 \end{frame}
 
 %----------------------------------------------------------------------------------------
