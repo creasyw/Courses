@@ -50,6 +50,10 @@ set t_vb=
 " Use <F11> to toggle between 'paste' and 'nopaste'
 set pastetoggle=<F11>
 
+" set 80 cols notification
+highlight ColorColumn ctermbg=magenta
+call matchadd('ColorColumn', '\%81v', 100)
+
 filetype plugin on
 filetype indent on
 
@@ -57,24 +61,24 @@ filetype indent on
 au BufRead,BufNewFile *.rkt set filetype=racket
 
 " vim -b : edit binary using xxd-format!
-augroup Binary
-  au!
-  au BufReadPre  *.bin let &bin=1
-  au BufReadPost *.bin if &bin | %!xxd
-  au BufReadPost *.bin set ft=xxd | endif
-  au BufWritePre *.bin if &bin | %!xxd -r
-  au BufWritePre *.bin endif
-  au BufWritePost *.bin if &bin | %!xxd
-  au BufWritePost *.bin set nomod | endif
-augroup END
+"augroup Binary
+"  au!
+"  au BufReadPre  *.bin let &bin=1
+"  au BufReadPost *.bin if &bin | %!xxd
+"  au BufReadPost *.bin set ft=xxd | endif
+"  au BufWritePre *.bin if &bin | %!xxd -r
+"  au BufWritePre *.bin endif
+"  au BufWritePost *.bin if &bin | %!xxd
+"  au BufWritePost *.bin set nomod | endif
+"augroup END
 
 
 " add java
-set sm
-set ai
-let java_highlight_all=1
-let java_highlight_functions="style"
-let java_allow_cpp_keywords=1
+"set sm
+"set ai
+"let java_highlight_all=1
+"let java_highlight_functions="style"
+"let java_allow_cpp_keywords=1
 
 
 "For screen.vim send block
@@ -83,9 +87,7 @@ let java_allow_cpp_keywords=1
 vmap <C-c><C-c> :ScreenSend<CR>
 nmap <C-c><C-c> vip<C-c><C-c>
 
-
-
-" For LATEX:
+"""For LATEX:
 " REQUIRED. This makes vim invoke Latex-Suite when you open a tex file.
 filetype plugin on
 "
@@ -97,9 +99,6 @@ set shellslash
 " " search in a singe file. This will confuse Latex-Suite. Set your grep
 " " program to always generate a file-name.
 set grepprg=grep\ -nH\ $*
-"
-" " OPTIONAL: This enables automatic indentation as you type.
-filetype indent on
 "
 " " OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
 " " 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
