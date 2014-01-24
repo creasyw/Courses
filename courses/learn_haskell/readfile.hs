@@ -12,3 +12,4 @@ withFile' path mode f = do
   result <- f handle
   hClose handle
   return result
+
