@@ -6,4 +6,4 @@ def nash_equilibrium(matrix):
     output- has_ne: bool. whether the N.E. exists
     """
     # minimax of col == maximin of row
-    return matrix.max(0).min()==matrix.min(1).max
+    return matrix.max(0).min()==matrix.min(1).max()
