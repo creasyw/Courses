@@ -7,3 +7,15 @@ def nash_equilibrium(matrix):
     """
     # minimax of col == maximin of row
     return matrix.max(0).min()==matrix.min(1).max()
+
+def saddle_points(matrix):
+    """
+    input: extensive game in matrix form (ndarray)
+    output: list of saddle points [(x1,y1),...,(xn, yn)]
+    """
+    mr = matrix.min(1)
+    maximin = mr.max()
+    mc = matrix.max(0)
+    minimax = mc.min()
+    return [(i, j) for i in range(len(mr)) if mr[i]==maximin \
+                   for j in range(len(mc)) if mc[j]==minimax]
