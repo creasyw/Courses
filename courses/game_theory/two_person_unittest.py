@@ -15,5 +15,8 @@ class BasicMatrixGame(unittest.TestCase):
     def test_nash_fail(self):
         self.assertTrue(mm.nash_equilibrium(self.m2)==False)
 
+    def test_saddle_points(self):
+        self.assertEqual(mm.saddle_points(self.m2), [(0,0),(1,0)])
+
 suite = unittest.TestLoader().loadTestsFromTestCase(BasicMatrixGame)
 unittest.TextTestRunner(verbosity=2).run(suite)
