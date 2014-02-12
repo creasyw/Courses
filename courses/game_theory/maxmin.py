@@ -10,6 +10,8 @@ def nash_equilibrium(matrix):
 
 def saddle_points(matrix):
     """
+    In the course, they are called (maximin, minimax) pair, but the essense is
+    the same -- both players cannot achieve better results by deviating from them.
     input: extensive game in matrix form (ndarray)
     output: list of saddle points [(x1,y1),...,(xn, yn)]
     """
