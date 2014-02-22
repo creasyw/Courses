@@ -1,29 +1,52 @@
-# Consider the source localization problem studied in class. Let the source be 
-# located at position (x_s, y_s) = (10, 20) and suppose that the reference time
-# \tau_0 = 0. You are going to use this location to generate the measurements 
-# t_i using the nonlinear model described in class. To do that you will have to
-# place at the positions you want N sensors (the number N will be input in your
-# program along with the positions of the sensors {(x_i, y_i)}^N_i=1
-# 
-# Using the linearization approach described in class use the BLUE to find the 
-# source location estimate (\hat{x}_s, \hat{y}_s).
-# 
-# You can try different selections for the nominal source location (x_n,y_n) 
-# which is needed to perform linearization. Try values that are close to the 
-# true position (x , y ), as well as far to see how the localization error 
-# (\hat{x}_s − x_s)2 + (\hat{y}_s − y_s)2 is affected.
-# 
-# The goal is to plot the localization error as a function of the number of 
-# sensors used. Try values N = 3:2:30. For each value of N fix (xn, yn), 
-# and run your method multiple times where every time you place the sensors at 
-# different locations and you generate a different set of measurements ti. 
-# Perform 100 different runs (Monte Carlo iterations) for each value of N and 
-# then save the 100 different localization errors you get and average them. 
-# Then, plot the average localization error for each value of N. Perform this 
-# process for small noise variance \delta^2 = 10^{-2}, and relatively large
-# variance \delta^2 = 0.1.
+import numpy as np
+from numpy import dot
+from numpy.linalg import inv
+import matplotlib.pyplot as plt
+
+def source_localization(xn, yn, loc, noise_power):
+    """input: loc -- array of locations of sensors"""
+    xs = 10
+    ys = 20
+
+    def trigonometric(xi, yi):
+        rn = ((xn-xi)**2+(yn-yi)**2)**0.5
+        return (xn-xi)/rn, (yn-yi)/rn
+    
+    angle = np.array([list(trigonometric(i[0],i[1])) for i in loc])
+    
+    c = 3*10**8
+    N = len(loc)
+    A = np.zeros((N-1, N))
+    H = np.zeros((N-1, 2))
+    noise = np.random.normal(0, noise_power**0.5, N)
+    Ep = np.zeros((N-1, 1))
+    for i in range(N-1):
+        A[i,i] = -1
+        A[i,i+1] = 1
+        H[i,0] = (angle[i+1,0]-angle[i,0])/c
+        H[i,1] = (angle[i+1,1]-angle[i,1])/c
+        Ep[i] = (H[i,0]*(xs-xn)+H[i,1]*(ys-yn))/c+noise[i+1]-noise[i]
+    C = noise_power*dot(A, A.T)
+    return dot(dot(dot(inv(dot(dot(H.T,inv(C)),H)),H.T),inv(C)),Ep).flatten()
 
 
+def generate_sensor(num, lower, upper):
+    return np.random.randint(lower, upper+1, size=(num, 2))
 
+def main():
+    xn = 10
+    yn = 10
+    nvar = 0.01
+    result = []
+    for N in range(3,31,2):
+        estimation = np.zeros((100,2))
+        for run in range(100):
+            loc = generate_sensor(N, 5, 25)
+            estimation[run] = source_localization(xn, yn, loc, nvar)
+        result.append(np.mean(estimation,0))
+    print result
+    #plt.plot(np.linalg.norm(np.array(result),axis=1))
+    #plt.show()
 
-
+if __name__=="__main__":
+    main()
