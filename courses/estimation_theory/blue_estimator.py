@@ -25,28 +25,37 @@ def source_localization(xn, yn, loc, noise_power):
         A[i,i+1] = 1
         H[i,0] = (angle[i+1,0]-angle[i,0])/c
         H[i,1] = (angle[i+1,1]-angle[i,1])/c
-        Ep[i] = (H[i,0]*(xs-xn)+H[i,1]*(ys-yn))/c+noise[i+1]-noise[i]
+        Ep[i] = H[i,0]*(xs-xn)+H[i,1]*(ys-yn)+noise[i+1]-noise[i]
     C = noise_power*dot(A, A.T)
     return dot(dot(dot(inv(dot(dot(H.T,inv(C)),H)),H.T),inv(C)),Ep).flatten()
 
 
-def generate_sensor(num, lower, upper):
-    return np.random.randint(lower, upper+1, size=(num, 2))
+def generate_sensor(num, upper):
+    return np.random.random(size=(num, 2))*upper
 
 def main():
     xn = 10
     yn = 10
     nvar = 0.01
-    result = []
-    for N in range(3,31,2):
+    high_snr = []
+    for N in range(3,31):
         estimation = np.zeros((100,2))
         for run in range(100):
-            loc = generate_sensor(N, 5, 25)
+            loc = generate_sensor(N, 25)
             estimation[run] = source_localization(xn, yn, loc, nvar)
-        result.append(np.mean(estimation,0))
-    print result
-    #plt.plot(np.linalg.norm(np.array(result),axis=1))
-    #plt.show()
+        mean = np.mean(estimation,0)
+        high_snr.append(((mean[0]-10)**2+(mean[1]-20)**2)**0.5)
+    low_snr = []
+    for N in range(3,31):
+        estimation = np.zeros((100,2))
+        for run in range(100):
+            loc = generate_sensor(N, 25)
+            estimation[run] = source_localization(xn, yn, loc, nvar)
+        mean = np.mean(estimation,0)
+        low_snr.append(((mean[0]-10)**2+(mean[1]-20)**2)**0.5)
+    plt.plot(high_snr)
+    plt.plot(low_snr)
+    plt.show()
 
 if __name__=="__main__":
     main()
