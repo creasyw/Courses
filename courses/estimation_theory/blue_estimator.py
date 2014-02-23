@@ -46,6 +46,7 @@ def main():
         mean = np.mean(estimation,0)
         high_snr.append(((mean[0]-10)**2+(mean[1]-20)**2)**0.5)
     low_snr = []
+    nvar = 0.1
     for N in range(3,31):
         estimation = np.zeros((100,2))
         for run in range(100):
@@ -53,8 +54,9 @@ def main():
             estimation[run] = source_localization(xn, yn, loc, nvar)
         mean = np.mean(estimation,0)
         low_snr.append(((mean[0]-10)**2+(mean[1]-20)**2)**0.5)
-    plt.plot(high_snr)
-    plt.plot(low_snr)
+    plt.plot(high_snr, '-', label="SNR=20")
+    plt.plot(low_snr, '-.', label="SNR=10")
+    plt.legend()
     plt.show()
 
 if __name__=="__main__":
