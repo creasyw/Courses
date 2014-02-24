@@ -57,3 +57,30 @@ def reduce_dimension(m):
             break
 
     return local
+
+import unittest
+class BasicMatrixGame(unittest.TestCase):
+    #def setUp(self):
+        # m2 does not have N.E. point
+
+    def test_nash_true(self):
+        m1 = np.ones((5,3))
+        m1[2][1] = 5
+        self.assertTrue(nash_equilibrium(m1)==True)
+
+    def test_nash_fail(self):
+        m2 = np.array([[3,-1],[-1,9]])
+        self.assertTrue(nash_equilibrium(m2)==False)
+
+    def test_saddle_points(self):
+        m2 = np.array([[3,-1],[-1,9]])
+        self.assertEqual(saddle_points(m2), [(0,0),(1,0)])
+    
+    def test_reduce_dimension(self):
+        m = np.array([[8,-1,-3,6],[-3,10,8,-4],[3,-4,-5,4]])
+        self.assertTrue(np.array_equal(reduce_dimension(m),
+                np.array([[-3,6],[8,-4]])))
+
+suite = unittest.TestLoader().loadTestsFromTestCase(BasicMatrixGame)
+unittest.TextTestRunner(verbosity=2).run(suite)
+
