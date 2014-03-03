@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[letterpaper,10pt]{article}
 
 \usepackage{fancyhdr}
 \usepackage{extramarks}
@@ -8,8 +8,12 @@
 \usepackage{tikz}
 \usepackage[plain]{algorithm}
 \usepackage{algpseudocode}
-
 \usetikzlibrary{automata,positioning}
+
+\usepackage{parskip} % Adds spacing between paragraphs
+\usepackage{indentfirst} % indent the first paragraph of a section
+\setlength{\parindent}{15pt} % Indent paragraphs
+%\setlength\parindent{0pt}
 
 %
 % Basic Document Settings
@@ -36,8 +40,6 @@
 \renewcommand\headrulewidth{0.4pt}
 \renewcommand\footrulewidth{0.4pt}
 
-\setlength\parindent{0pt}
-
 %
 % Create Problem Sections
 %
@@ -53,7 +55,9 @@
     \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
 }
 
-\setcounter{secnumdepth}{0}
+\setcounter{secnumdepth}{1} % set section numbering
+\renewcommand\thesection{\Roman{section}.} % set section numbering style
+
 \newcounter{partCounter}
 \newcounter{homeworkProblemCounter}
 \setcounter{homeworkProblemCounter}{1}
@@ -132,6 +136,27 @@
 \begin{document}
 
 \maketitle
+
+\pagebreak
+
+\section{Introduction}
+Compressive Covariance Sampling or equivalently Power Spectrum Blind Sampling is an interesting strategy to recon- struct the power spectrum of a given signal from sub-Nyquist rate samples [1,2]. Its application is clear in the area of spec- trum sensing for cognitive radio [3], since we are dealing with wideband signals and traditional sampling devices at the corresponding Nyquist rate can not be implemented.
+
+Although compressive sampling strategies [4,5] are closely related to PSBS, it is not necessary to assume sparsity of the spectrum in order to apply a PSBS strategy, as it has already been shown [1,2]. Compressed measurements can be ob- tained in different ways to reconstruct the power spectrum, although in this paper we will focus on multicoset sampling techniques [6,7].
+
+\pagebreak
+
+\begin{thebibliography}{1}
+    \setlength{\parskip}{2pt} % decreasing vertical spacing between refs
+  \bibitem{Pal:2010} P. Pal and P.P. Vaidyanathan, `` Nested array: A novel approach to array processing with enhanced degrees of freedom,'' \emph{IEEE Trans. on Signal Processing}, vol. 58, no. 8, pp. 4167-4181, August 2010.
+
+  \bibitem{Pal:2012} P. Pal and P.P. Vaidyanathan, ``Multiple level nested array: an efficient geometry for 2q-th order cumulant based array processing,'' \emph{IEEE Trans. on Signal Processing}, vol. 60, no. 3, pp. 1253-1269, March 2012.
+
+  \bibitem{Ariananda:2012} D.D. Ariananda and G. Leus, ``Compressive wideband power spectrum estimation,'' \emph{IEEE Trans. on Signal Processing}, vol. 60, no. 9, pp. 4775-4789, September 2012.
+
+  \bibitem{Dominguez:2013} M.E. Dominguez-Jimenez and N. Gonzalez-Prelcic, ``A class of circular sparse rulers for compressive power spectrum estimation,'' \emph{Proc. of Euro. Signal Processing Conference (EUSIPCO)}, September 2013.
+
+\end{thebibliography}
 
 \pagebreak
 
