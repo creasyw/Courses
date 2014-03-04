@@ -141,13 +141,15 @@
 
 \section{Introduction}
 
-Channel estimation is a well-studied problem in the fileds of telecommunication and signal processing. It has become a popular topic again due to its importance implementation in the modern wireless communication system. Combination of Space-Time Block Code (STBC) with Orthogonal Frequency Division Multiplexing (OFDM) has the potential to approach the information theoretical capacity limit of Multiple Input Multiple Output (MIMO) channels \cite{Ganesan:2001}. However, at the receiver side, most space-time equalizer require the knowledge of the Channel State Information (CSI) to recover the transmitted data.
-
-Without CSI, the differential schemes proposed in \cite{Ganesan:2002, Zhu:2005} incurred a penalty in performance of at least 3dB as compared to the coherent Maximum-Likelihood (ML) receiver based on training based method at the expense of the bandwidth efficiency \cite{Larsson:2002, Larsson:2003}. The drawbacks of training-based approaches and differential schemes have motivated an increasing interest in the development of blind channel estimation algorithms for STBC systems. 
+Channel estimation is a well-studied problem in the fileds of telecommunication and signal processing. It has become a popular topic again due to its importance implementation in the modern wireless communication system. Combination of Space-Time Block Code (STBC) with Orthogonal Frequency Division Multiplexing (OFDM) has the potential to approach the information theoretical capacity limit of Multiple Input Multiple Output (MIMO) channels \cite{Ganesan:2001}. However, at the receiver side, most space-time equalizer require the knowledge of the Channel State Information (CSI) to recover the transmitted data. This information is usually obtained through training the coherent Maximum-Likelihood (ML) receiver \cite{Larsson:2003}. The drawbacks of training-based approaches and differential schemes have motivated an increasing interest in the development of blind channel estimation algorithms for STBC systems. 
 
 Despite the high performances of ML algorithm, their computational costs become prohibitive for high-order modulations. In the case of BPSK or QPSK constellations, the blind-ML detection can be simplified to a Boolean Quadratic Program (BQP) \cite{Ma:2006}. For more general settings, iterative procedure can be employed to avoid the computational complexity of the ML approach. These include the Cyclic ML \cite{Larsson:2003} and the Expectation-Maximisation (EM) \cite{Li:2001} algorithms. However, these iterative methods require a careful initialization of the channel and/or symbols. In particular, a poor initialization can strongly affect the Symbol-Error Rate (SER) performance. To avoid these drawbacks, several authors have investigated the use of sub-space \cite{Ammar:2007} or second-order statistics \cite{Shahbazpanahi:2005, Via:2008} approaches. However, excluding some specific low-rate codes, these approaches fail to extract the channel in a full-blind context \cite{Ammar:2007, Shahbazpanahi:2005, Via:2008}. Several approach have been proposed in literature to solve this problem, including the transmission of a short training sequence \cite{Ammar:2007} or the use of precoders \cite{Via:2008}. However, these semi-blind methods cannot be employed in a non-cooperative scenario since they require modification of the transmitter.
 
-One solution to avoid the limitations of second-order statistics or subspace algorithms is to exploit Higher-Order Statistics (HOS) \cite{Mendel:1991}, which could be approached by Independent Component Analysis (ICA) \cite{Hyvarinen:2001} that was originally developed for non-coded systems, and then extended to STBC communications \cite{Iglesias:2008}. Nevertheless, these extensions have several limitations and drawbacks. In particular, the algorithms were limited to a sub-class of Orthogonal STBCs and their extension to the general class of STBCs is far from trivial \cite{Iglesias:2008}. On the other hand, the methods \cite{Xu:2005} do not take into account the specific structure of the STBC.
+One solution to avoid these limitations is to exploit Higher-Order Statistics (HOS) \cite{Mendel:1991}, which could be approached by Independent Component Analysis (ICA) \cite{Hyvarinen:2001} that was originally developed for non-coded systems, and then extended to STBC communications \cite{Iglesias:2008}. Nevertheless, these algorithms were limited to a sub-class of Orthogonal STBCs and their extension to the general class of STBCs is far from trivial \cite{Iglesias:2008}. On the other hand, although there was other literature providing promising performance \cite{Choqueuse:2011}, it did not take into account the dramatically increased computational complexity as calculating HOS, which was equivalent to going back and forth between the trade-off of complexity and performance.
+
+The dilemma above was my motivation to design the algorithm of channel estimation based on HOS via multi-level nested sampling, which had been proved useful in decreasing computational complexity while still maintaining statistical features of the original signal \cite{Pal:2010}. The basic idea of co-prime processing was to use Chinese reminder theorem with Bezout's identity to identify multiple frequencies from under-sampled sequences \cite{Xia:1999}. Vaidynanathan \cite{Vaidynanathan1:2011} further confined the rates of downsampling to be co-prime, and  provided concrete demonstrations for sampling region so that either co-prime or nested sampled points were able to calculate all of the second order derivatives. Furthermore, both sampling methods had already been used with HOS \cite{Pal:2012, Wu:2014}. However, the $2q$-order nested array was used for estimating the direction of arrival, while the co-prime sampling for channel estimation suffered from high estimation variance and slow convergence. Another similar approach worth mentioning was sparse ruling sampling \cite{Ariananda:2012} which was used to estimate power spectral density. Although it was able to combine with co-prime sampling \cite{Dominguez:2013}, the extension to calculate HOS is nontrivial.
+
+Based on the previous work \cite{Wu:2014}, I will develop an algorithm performing channel estimation using adaptive multi-level nested sampling, which means the algorithm will adaptively changing the ``nested'' part for calculating HOS in accordance with the instantaneous signal-to-noise (SNR) ratio of the channel. Besides, its performance and complexity will be analyzed in different scenarios, and compared with benchmark algorithm provided in \cite{Choqueuse:2011}.
 
 \pagebreak
 
@@ -156,15 +158,9 @@ One solution to avoid the limitations of second-order statistics or subspace alg
 
   \bibitem{Ganesan:2001} G. Ganesan and P. Stoica, ``Space-time block codes: a maximum SNR approach,'' \emph{IEEE Trans. on Information Theory}, vol. 47, no. 4, pp. 1650-1656, May 2001.
 
-  \bibitem{Ganesan:2002} G. Ganesan and P. Stoica, ``Differential modulation using space-time block codes,'' \emph{IEEE Signal Processing Letter}, vol. 9, no. 2, pp. 57-60, Feb. 2002.
-
-  \bibitem{Zhu:2005} Y. Zhu and H. Jafarkhani, ``Differential modulation based on quasi-orthogonal codes,'' \emph{IEEE Trans. on Wireless Communications}, vol. 4, no. 6, pp. 3005-3017, Nov. 2005.
-
-  \bibitem{Larsson:2002} E. Larsson, P. Stoica, and J. Li, ``On maximum-likelihood detection and decoding for space-time coding systems,'' \emph{IEEE Trans. on Signal Processing}, vol. 50, no. 4, pp. 937-944, 2002.
-
   \bibitem{Larsson:2003} E. Larsson, P. Stoica, and J. Li, ``Orthogonal space-time block codes: maximum likelihood detection for unknown channels and unstructured intereferences,'' \emph{IEEE Trans. on Signal Processing}, vol. 51, no. 2, pp. 362-372, 2003.
 
-  \bibitem{Ma:2006} W. Ma, B. Vo, T. Davidson, and P. Ching, ``Blind ML detection of orthogonal space-time block codes: efficient high-performance implementations,'' \emph{IEEE Trans. on Signal Processing}, vol. 54, no. 2, pp. 738-751, 2006.
+  \bibitem{Ma:2006} W. Ma, B. Vo, and P. Ching, ``Blind ML detection of orthogonal space-time block codes: efficient high-performance implementations,'' \emph{IEEE Trans. on Signal Processing}, vol. 54, no. 2, pp. 738-751, 2006.
 
   \bibitem{Li:2001} Y. Li, C. Georghiades, and G. Huang, ``Iterative maximum likelihood sequence estimation for space-time coded systems,'' \emph{IEEE Trans. on Communications}, vol. 49, no. 6, pp. 948-951, 2001.
 
@@ -180,15 +176,19 @@ One solution to avoid the limitations of second-order statistics or subspace alg
 
   \bibitem{Iglesias:2008} H. Iglesias, J. Garcia-Naya, and A. Dapena, ``A blind channel estimation strategy for the 2x1 Alamouti system based on diagonalising 4th order cumulant matrices,'' in \emph{Proc. International Conf. Acoustic Speech Signal Process.}, pp. 3329-3332, Las Vegas, USA, Mar. 2008.
 
-  \bibitem{Xu:2005}  H. Xu, J. Liu, A. Perez-Neira, and M. Lagunas, ``Independent component analysis applied to multiple antenna space-time systems,'' in \emph{Proc. IEEE 16th International Symp. Personal, Indoor Mobile Radio Commun.}, pp. 57-61, Berlin, Germany, 2005.
+  \bibitem{Choqueuse:2011} V. Choqueuse, A. Mansour, and K. Yao, ``Blind channel estimation for STBC systems using higher-order statistics,'' \emph{IEEE Trans. on Wireless Comm.}, vol. 10, no. 2 , pp. 495-505, 2011.
 
   \bibitem{Pal:2010} P. Pal and P. P. Vaidyanathan, `` Nested array: A novel approach to array processing with enhanced degrees of freedom,'' \emph{IEEE Trans. on Signal Processing}, vol. 58, no. 8, pp. 4167-4181, August 2010.
 
-  \bibitem{Mishali:2010} M. Mishali and Y. C. Eldar, ``From theory to practice: Sub-Nyquist sampling of sparse wideband analog signals,'' \emph{IEEE Journal of Selected Topics in Signal Processing}, vol. 4, no. 2, pp. 375-391, April 2010.
+\bibitem{Xia:1999}
+  X. Xia, ``On estimation of multiple frequencies in undersampled complex valued waveforms,'' \emph{IEEE Trans. Signal Processing}, vol. 47, no. 12, pp. 3417-3419, Dec. 1999.
 
-  \bibitem{Mishali:2009} M. Mishali and Y. C. Eldar, ``Blind multiband signal reconstruction: Compressed sensing for analog signals,'' \emph{IEEE Trans. on Signal Processing}, vol. 57, no. 3, pp. 993-1009, March 2009.
+\bibitem{Vaidynanathan1:2011}
+  P. P. Vaidyanathan and P. Pal, ``Sparse sensing with co-prime samplers and arrays,'' \emph{IEEE Trans. Signal Proc.}, vol. 59, pp. 573-586, Feb. 2011.
 
-  \bibitem{Pal:2012} P. Pal and P. P. Vaidyanathan, ``Multiple level nested array: an efficient geometry for $2q$-th order cumulant based array processing,'' \emph{IEEE Trans. on Signal Processing}, vol. 60, no. 3, pp. 1253-1269, March 2012.
+  \bibitem{Pal:2012} P. Pal and P. P. Vaidyanathan, ``Multiple level nested array: an efficient geometry for $2q$-th order cumulant based array processing,'' \emph{IEEE Trans. on Signal Process.}, vol. 60, no. 3, pp. 1253-1269, 2012.
+
+  \bibitem{Wu:2014} Qiong Wu and Qilian Liang, ``Co-prime Sampling for Higher-Order Statistics with Application to LTE Channel Estimation,'' \emph{IEEE Conf. on Comm. (ICC)}, Syndney, Australia, June, 2014.
 
   \bibitem{Ariananda:2012} D. D. Ariananda and G. Leus, ``Compressive wideband power spectrum estimation,'' \emph{IEEE Trans. on Signal Processing}, vol. 60, no. 9, pp. 4775-4789, September 2012.
 
