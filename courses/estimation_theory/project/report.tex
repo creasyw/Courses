@@ -153,6 +153,22 @@ Based on the previous work \cite{Wu:2014}, I will develop an algorithm performin
 
 \pagebreak
 
+
+\section{Preliminaries}
+
+For most wireless applications, the coherence time is typically on the order of hundreds of times larger than the delay spread \cite[Ch.~9.7]{Gallager:2008}. As a result, it is feasible to measure the channel multiple times within one coherence interval and then average the calculated estimates of each channel filter tap (corresponding to ML estimation based on the multiple observations).
+
+The baseband outputs $v_m$ are written in the form
+\begin{equation}
+  v_m = \sum_{k}g_{k,m}u_{m-k},\quad \text{where }g_{k,m}=\int g(\tau,mT)\text{sinc}(k-\tau/T)d\tau.
+\end{equation}
+
+The magnitude $|G_{k,m}|$ of the $k$th tap follows the composite gamma-lognormal distribution, which includes the Rayleigh-lognornal fading, Nakagami-$m$ fading, and shadowing scenarios as special cases.
+\begin{equation}
+  p(g_k;\mu_k,\sigma_k^2) = \frac{\xi}{g_k\sqrt{2\pi\sigma_k^2}}\exp\left[-\frac{(10\log_{10}g_k-\mu_k)^2}{2\sigma_k^2}\right]
+\end{equation}
+where $g_k$ is the mean-signal power in the $k$th tap. These taps are independent,identically distributed (i.i.d.) random variables with lognormal pdf. That is, $g_k$ is assumed to be constant within an observation interval
+
 \begin{thebibliography}{1}
     \setlength{\parskip}{2pt} % decreasing vertical spacing between refs
 
@@ -193,6 +209,9 @@ Based on the previous work \cite{Wu:2014}, I will develop an algorithm performin
   \bibitem{Ariananda:2012} D. D. Ariananda and G. Leus, ``Compressive wideband power spectrum estimation,'' \emph{IEEE Trans. on Signal Processing}, vol. 60, no. 9, pp. 4775-4789, September 2012.
 
   \bibitem{Dominguez:2013} M. E. Dominguez-Jimenez and N. Gonzalez-Prelcic, ``A class of circular sparse rulers for compressive power spectrum estimation,'' \emph{Proc. of Euro. Signal Processing Conference (EUSIPCO)}, September 2013.
+
+  \bibitem{Gallager:2008} R. G. Gallager, \emph{Principles of digital communication}, Cambridge University Press, Cambridge, UK, 2008.
+
 
 \end{thebibliography}
 
