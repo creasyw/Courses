@@ -11,7 +11,6 @@
 #include <cool-parse.h>
 #include <stringtab.h>
 #include <utilities.h>
-#include <string.h>
 
 /* The compiler assumes these identifiers. */
 #define yylval cool_yylval
@@ -40,162 +39,249 @@ extern int verbose_flag;
 
 extern YYSTYPE cool_yylval;
 
-/*
- *  Add Your own definitions here
- */
-
-
-
+ /*
+  *  Add Your own definitions here
+  */
+#include <stdio.h>
+static int yyinput();
+void count_backspace(const char * const beg, const char * const end) {
+    for (const char * ptr = beg;ptr != end;ptr++) {
+        if(*ptr == '\n') ++curr_lineno;
+    }
+}
+void read_to_EOF() {
+    char ch;
+    while( (ch = yyinput()) != EOF ) {
+        if(ch == '\n') ++curr_lineno;
+    }
+}
+void read_to_backspace() {
+    char ch, pre = 0;
+    while( (ch = yyinput()) != EOF ) {
+        if(ch == '\n'){
+            ++curr_lineno;
+            if(pre != '\\') break;
+        }
+        pre = ch;
+    }   
+}
+static int left;
 %}
 
-/*
- * Define names for regular expressions here.
- */
+ /*
+  * Define names for regular expressions here.
+  */
 
 DARROW          =>
-LE      <=
 ASSIGN      <-
-DIGIT   [0-9]
-LETTER  [a-zA-Z:_]
-SPACE   [ \t\f\r]
-NEWLINE [\n]
+LE      <=
+DIGIT       [0-9]
+LETTER      [A-Za-z]
+SPACE       [\ \f\r\t\v]
+NEST_COMMENT    "(*"(.|\n)*"*)"
+COMMENT     --.*(\n{0,1})
+TYPE        [A-Z][A-Za-z0-9_]*
+OBJECT      [a-z][A-Za-z0-9_]*
+STRING      \"(.|\n)*\"
+QUOTES      \"
+LT_COMMENT  "(*"
+RT_COMMENT  "*)"
 %%
-
- /* 
-  * single line comments
-  */
-"--"[^\n]*  {
-        printf("matching comment %s\n",yytext);
-        /*do nothing, consume the comments */
-        }
-
-
-
 
  /*
   *  Nested comments
-  *  
   */
-
-
+{NEST_COMMENT} {
+    int left = 1, n;
+    char pre = 0, * ptr, * yycopy;
+    for(ptr = yytext + 2;*ptr && left;++ptr) {
+        if(pre == '(' && *ptr == '*') {
+            left++;
+            pre = 0;
+        } else if(pre == '*' && *ptr == ')') {
+            left--;
+            pre = 0;
+        } else {
+            pre = *ptr;
+        }
+    }
+    if(left == 0) {
+        /* accpected comment */
+        count_backspace(yytext, ptr);
+        yycopy = strdup(ptr);
+        for(n = strlen(yycopy) - 1;n >= 0;--n) {
+            unput(yycopy[n]);
+        }
+        free(yycopy);
+    } else {
+        /* same with LT_COMMENT */
+        count_backspace(yytext, ptr);
+        cool_yylval.error_msg = "EOF in comment";
+        return (ERROR);
+    }
+}
+{LT_COMMENT} {
+    read_to_EOF();
+    cool_yylval.error_msg = "EOF in comment";
+    return ERROR;
+}
+{RT_COMMENT} {
+    cool_yylval.error_msg = "Unmatch *)";
+    return (ERROR);
+}
+{COMMENT}   {
+    count_backspace(yytext, yytext + yyleng);
+}
  /*
   *  The multiple-character operators.
   */
-
+"+"         |
+"-"         |
+"*"         |
+"/"         |
+"="         |
+"<"         |
+"."         |
+"~"         |
+","         |
+";"         |
+":"         |
+"("         |
+")"         |
+"@"         |
+"{"         |
+"}"         {
+        return yytext[0]; 
+}
+{ASSIGN}        { return (ASSIGN); }
+{LE}            { return (LE); }
 {DARROW}        { return (DARROW); }
-{LE}            { return LE; }
-{ASSIGN}        {return ASSIGN;}
 
  /*
-  * Keywords are case-insensitive except for the values true and false,
-  * which must begin with a lower-case letter.
-  */
-
-class   {return CLASS;}
-else    {return ELSE;}
-fi  {return FI;}
-if  {return IF;}
-in  {return IN;}
-inherits    {return INHERITS;}
-let {return LET;}
-loop    {return LOOP;}
-pool    {return POOL;}
-then    {return THEN;}
-while   {return WHILE;}
-case    {return CASE;}
-esac    {return ESAC;}
-of  {return OF;}
-new {return NEW;}
-isvoid  {return ISVOID;}
-
-t[Rr][Uu][Ee]   { 
-        cool_yylval.boolean=1;
-            return BOOL_CONST;
-        }
-
-f[aA][lL][sS][eE]   {
-            cool_yylval.boolean=0;
-            return BOOL_CONST;
+ * Keywords are case-insensitive except for the values true and false,
+ * which must begin with a lower-case letter.
+ */
+(?i:class)      { return (CLASS); }
+(?i:else)       { return (ELSE); }
+(?i:fi)         { return (FI); }
+(?i:if)         { return (IF); }
+(?i:in)         { return (IN); }
+(?i:inherits)       { return (INHERITS); }
+(?i:isvoid)     { return (ISVOID); }
+(?i:let)        { return (LET); }
+(?i:loop)       { return (LOOP); }
+(?i:pool)       { return (POOL); }
+(?i:then)       { return (THEN); }
+(?i:while)      { return (WHILE); }
+(?i:case)       { return (CASE); }
+(?i:esac)       { return (ESAC); }
+(?i:new)        { return (NEW); }
+(?i:of)         { return (OF); }
+(?i:not)        { return (NOT); }
+t(?i:rue)   {
+    cool_yylval.boolean = 1;
+    return (BOOL_CONST); 
+}
+f(?i:alse)  { 
+    cool_yylval.boolean = 0;
+    return (BOOL_CONST); 
+}
+ /*
+ *  String constants (C syntax)
+ *  Escape sequence \c is accepted for all characters c. Except for 
+ *  \n \t \b \f, the result is c.
+ */
+{STRING} {
+    char pre = 0, * ptr, *yycopy;
+    int n, state = 0;
+    std::string res;
+    for(ptr = yytext + 1;*ptr && state == 0;++ptr) {
+        if(pre == '\\') {
+            if(*ptr == 'n') {
+                res.append(1, '\n');
+            } else if(*ptr == 't') {
+                res.append(1, '\t');
+            } else if(*ptr == 'b') {
+                res.append(1, '\b');
+            } else if(*ptr == 'f') {
+                res.append(1, '\f');
+            } else {
+                res.append(1, *ptr);
             }
-
-"+" {return '+';} /* for expressions, not implemented yet do nothing for now */
-"-" {return '-';} /* for expressions, not implemented yet do nothing for now*/
-";" {return ';';}
-"{" {return '{';} /* begin scope do nothing for now*/
-"}" {return '}';} /* end scope do nothing for now*/
-"." {return '.';}
-"(" {return '(';}
-")" {return ')';}
-":" {return ':';}
-
- /* 
-  * IntConst
-  */
-{DIGIT}*        {
-                /*not sure if we should use inttable.add_string() or inttable.addint() look sour*/
-                cool_yylval.symbol = inttable.add_string(yytext);
-                return INT_CONST;
-                }
-
-
-{SPACE}
-
- /*
-  *  String constants (C syntax)
-  *  Escape sequence \c is accepted for all characters c. Except for 
-  *  \n \t \b \f, the result is c.
-  *
-  */
-\"[^"\0\t\f]*\"?    {
-        /*printf("string const:%s",yytext);*/
-        std::string s1(yytext);
-        std::string s2 = s1.substr(1,strlen(yytext)-2);
-        char *type = new char[s2.length()];
-        /*printf("stripped str const:%s",type);*/
-        strcpy(type,s2.c_str());
-        cool_yylval.symbol = stringtable.add_string(type);
-        return STR_CONST;
+            pre = 0;
+        } else if(*ptr == '\"') {
+            state = 1;
+        } else if(*ptr == '\n') {
+            state = 2;
+        } else if(*ptr == '\\') {
+            pre = *ptr;
+        } else {
+            pre = *ptr;
+            res.append(1, *ptr);
         }
-
- /*
-  * Identifiers, there are 2 types, a string identifier and a typeid identifier. 
-  * A typeid identifier starts with a : followed by whitespace and a series of letters
-  * A string identifier is just a series of letters. These 2 rules have to work simultaenously
-  * put the colon rule first, should be a longest subsequence match
-  * the above rule is wrong, make the colon a char return, then 
-  * make everything else a id_table token
-  */
-
-
-
-
- /*  TYPEID starts with upper case?
-  *  a class starts with upper case like type 
-  *  OBJECTID starts with lower case? 
-  *
-  */
-[a-z]{LETTER}*       {
-        /*printf("id:%s \n",yytext);*/
-        cool_yylval.symbol=idtable.add_string(yytext);
-        return OBJECTID;
-        }
-
-[A-Z]{LETTER}*  {
-                 /*printf("upper case:%s",yytext);*/
-                 cool_yylval.symbol=idtable.add_string(yytext);
-         return TYPEID;
-                }
-
-{NEWLINE}    {curr_lineno++;}
-
-<<EOF>>
-
- .  { //this is 2 chars, one for end of string char and one for the char being tokenized which has no match
-
-       char *tp = new char[2];
-        strcpy(tp,yytext);
-       cool_yylval.error_msg=tp;
-       return ERROR;
     }
+
+    count_backspace(yytext, ptr);
+    yycopy = strdup(ptr);
+    for(n = strlen(yycopy) - 1;n >= 0;n--) {
+        unput(yycopy[n]);
+    }
+    free(yycopy);
+
+    if(state == 1) {
+        if(res.size() >= MAX_STR_CONST) {
+            cool_yylval.error_msg = "String constant too long";
+            return (ERROR);
+        }
+        yycopy = strdup(res.c_str());
+        cool_yylval.symbol = stringtable.add_string(yycopy);
+        free(yycopy);
+        return (STR_CONST);
+    } else {
+        cool_yylval.error_msg = "Unterminated string constant";
+        return (ERROR);
+    }
+}
+{QUOTES} {
+    read_to_backspace();
+    cool_yylval.error_msg = "Unterminated string constant";
+    return (ERROR);
+}
+
+ /*
+  * constant integer.
+  */
+{DIGIT}+    { 
+    cool_yylval.symbol = inttable.add_string(yytext);
+    return (INT_CONST);
+}
+ /*
+  * indentifier
+  */
+{TYPE}  {
+    cool_yylval.symbol = idtable.add_string(yytext);
+    return (TYPEID);
+}
+{OBJECT}    {
+    cool_yylval.symbol = idtable.add_string(yytext);
+    return (OBJECTID);
+}
+ /*
+  * eat whitespace.
+  * store current line number.
+  * set error message.
+  */
+{SPACE}+  {
+    }
+[\n]    { 
+    ++curr_lineno; 
+}
+ /*
+  * error_msg : nothing match, left_comment is nozero
+  */
+.   {
+    cool_yylval.error_msg = yytext;
+    return ERROR;
+}
 
 %%
