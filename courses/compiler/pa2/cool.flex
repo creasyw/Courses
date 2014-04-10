@@ -294,14 +294,17 @@ extern YYSTYPE cool_yylval;
   * set error message.
   */
 
-  {SPACE}+  {
+  {SPACE}+ {
       }
   [\n]    { 
       ++curr_lineno; 
   }
+
+
    /*
     * error_msg : nothing match, left_comment is nozero
     */
+
   .   {
       cool_yylval.error_msg = yytext;
       return ERROR;
