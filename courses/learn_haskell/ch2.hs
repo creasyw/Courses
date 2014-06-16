@@ -10,3 +10,4 @@ texasRanges = do
              -- putStrLn $ show [(x!!i)*(y!!i) | x<-[1,2,3], y<-[10,20,30], i<-[0,1,2]]
 
 length' xs = sum [1| _ <- xs]
+triangular xs =  [(a, b, c) | c<-xs, b<-[1..c], a<-[1..b], a^2+b^2==c^2]
