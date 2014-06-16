@@ -183,5 +183,6 @@ by Prelude.")
 (set-face-background 'hl-line "#3e4446")
 ;; Keep syntax highlighting in the current line
 (set-face-foreground 'highlight nil)
-
+;; disable the limitations of guru-mode for arrow keys
+(setq guru-warn-only t)
 ;;; init.el ends here
