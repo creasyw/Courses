@@ -26,7 +26,7 @@ def merge(line):
     """
     Helper function that merges a single row or column in 2048
     """
-    result = [0 for i in range(len(line))]
+    result = [0 for _ in range(len(line))]
     ptr = 0
     merged = True
     for num in line:
@@ -54,7 +54,7 @@ class TwentyFortyEight:
     def __init__(self, grid_height, grid_width):
         self.rows = grid_height
         self.cols = grid_width
-        self.cells = [ [0 for col in range(grid_width)] for row in range(grid_height)]
+        self.cells = [ [0 for _ in range(grid_width)] for _ in range(grid_height)]
         # init starting points
         self.init_points={}
         self.init_points[UP] = [(0, i) for i in range(self.cols)]
@@ -66,7 +66,7 @@ class TwentyFortyEight:
         """
         Reset the game so the grid is empty.
         """
-        self.cells = [ [0 for col in range(self.cols)] for row in range(self.rows)]
+        self.cells = [ [0 for _ in range(self.cols)] for _ in range(self.rows)]
     
     def __str__(self):
         """
@@ -101,7 +101,6 @@ class TwentyFortyEight:
 
         changed = False
         for point in self.init_points[direction]:
-            print limit, point
             old_lst = [self.get_tile(point[0]+i*x_off, point[1]+i*y_off) for i in range(limit)]
             new_lst = merge(old_lst)
             for index in range(len(new_lst)):
