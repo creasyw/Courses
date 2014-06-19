@@ -100,27 +100,22 @@ class TwentyFortyEight:
         """
         Set the tile at position row, col to have the given value.
         """        
-        # replace with your code
-        pass
+        self.cells[row][col] = value
 
     def get_tile(self, row, col):
         """
         Return the value of the tile at position row, col.
         """        
-        # replace with your code
-        return 0
+        return self.cells[row][col]
  
     
 #poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
 
 
 # for testing function "merge"
-def test_merge():
-    """
-    Some informal testing code
-    """
-    
+def test_merge():    
     # create a TestSuite object
+    print "Test merge function:"
     suite = poc_simpletest.TestSuite()
     
     # test the initial configuration of the board using the str method
@@ -132,4 +127,23 @@ def test_merge():
 
     # report number of tests and failures
     suite.report_results()
+
+def test_basic_gui():
+    # create a TestSuite object
+    print "Test basic 2048 GUI functions:"
+    suite = poc_simpletest.TestSuite()
+    board = TwentyFortyEight(2,2)
+    
+    # test the initial configuration of the board using the str method
+    suite.run_test(board.__str__(), [[0,0],[0,0]], "Test #0: ")
+    suite.run_test(board.get_grid_height(), 2, "Test #1: ")
+    suite.run_test(board.get_grid_width(), 2, "Test #2: ")
+    board.set_tile(1,1,5)
+    suite.run_test(board.__str__(), [[0,0],[0,5]], "Test #3: ")
+    suite.run_test(board.get_tile(0,1), 0, "Test #4: ")
+    suite.run_test(board.get_tile(1,1), 5, "Test #5: ")
+    
+    suite.report_results()
+
 test_merge()
+test_basic_gui()
