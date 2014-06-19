@@ -50,36 +50,34 @@ class TwentyFortyEight:
     """
 
     def __init__(self, grid_height, grid_width):
-        # replace with your code
-        pass
+        self.rows = grid_height
+        self.cols = grid_width
+        self.cells = [ [0 for col in range(grid_width)] for row in range(grid_height)]
+        
     
     def reset(self):
         """
         Reset the game so the grid is empty.
         """
-        # replace with your code
-        pass
+        self.cells = [ [0 for col in range(self.cols)] for row in range(self.rows)]
     
     def __str__(self):
         """
         Return a string representation of the grid for debugging.
         """
-        # replace with your code
-        pass
+        return self.cells
 
     def get_grid_height(self):
         """
         Get the height of the board.
         """
-        # replace with your code
-        return 0
+        return self.rows
     
     def get_grid_width(self):
         """
         Get the width of the board.
         """
-        # replace with your code
-        return 0
+        return self.cols
                             
     def move(self, direction):
         """
