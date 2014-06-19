@@ -91,6 +91,25 @@ class TwentyFortyEight:
         Move all tiles in the given direction and add
         a new tile if any tiles moved.
         """
+        limit = 0
+        if direction == UP or direction == DOWN:
+            limit = self.rows
+        else:
+            limit = self.cols
+        x_off = OFFSETS[direction][0]
+        y_off = OFFSETS[direction][1]
+
+        changed = False
+        for point in self.init_points[direction]:
+            old_lst = [self.get_tile[point[0]+i*x_off, point[1]+i*y_off] for i in range(limit)]
+            new_lst = merge(old_lst)
+            for index in range(len(new_lst)):
+                if new_lst[index] != old_lst[index]:
+                    changed = True
+                    set_title(point[0]+index*x_off, point[1]*index*y_off, new_lst[index])
+        if changed:
+            self.new_tile()
+
     def new_tile(self):
         """
         Create a new tile in a randomly selected empty 
@@ -123,7 +142,7 @@ class TwentyFortyEight:
         return self.cells[row][col]
  
     
-#poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
+poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
 
 
 # for testing function "merge"
