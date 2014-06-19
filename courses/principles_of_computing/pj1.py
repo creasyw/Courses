@@ -2,7 +2,10 @@
 Clone of 2048 game.
 """
 
-import poc_2048_gui        
+import poc_2048_gui     
+
+# for testing
+import poc_simpletest
 
 # Directions, DO NOT MODIFY
 UP = 1
@@ -21,8 +24,25 @@ def merge(line):
     """
     Helper function that merges a single row or column in 2048
     """
-    # replace with your code
-    return []
+    result = [0 for i in range(len(line))]
+    ptr = 0
+    merged = True
+    for num in line:
+        #print num, merged, ptr, result
+        if num == 0:
+            continue
+        else:
+            if merged:
+                result[ptr] = num
+                ptr += 1
+                merged = False
+            elif result[ptr-1] == num:
+                result[ptr-1] += num
+                merged = True
+            else:
+                result[ptr] = num
+                ptr += 1
+    return result
 
 class TwentyFortyEight:
     """
@@ -93,5 +113,25 @@ class TwentyFortyEight:
         return 0
  
     
-poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
+#poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
 
+
+# for testing function "merge"
+def test_merge():
+    """
+    Some informal testing code
+    """
+    
+    # create a TestSuite object
+    suite = poc_simpletest.TestSuite()
+    
+    # test the initial configuration of the board using the str method
+    suite.run_test(merge([2, 0, 2, 4]), [4, 4, 0, 0], "Test #1: ")
+    suite.run_test(merge([0, 0, 2, 2]), [4, 0, 0, 0], "Test #2: ")
+    suite.run_test(merge([2, 2, 0, 0]), [4, 0, 0, 0], "Test #3: ")
+    suite.run_test(merge([2, 2, 2, 2]), [4, 4, 0, 0], "Test #4: ")
+    suite.run_test(merge([8, 16, 16, 8]), [8, 32, 8, 0], "Test #5: ")
+
+    # report number of tests and failures
+    suite.report_results()
+test_merge()
