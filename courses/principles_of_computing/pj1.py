@@ -101,12 +101,13 @@ class TwentyFortyEight:
 
         changed = False
         for point in self.init_points[direction]:
-            old_lst = [self.get_tile[point[0]+i*x_off, point[1]+i*y_off] for i in range(limit)]
+            print limit, point
+            old_lst = [self.get_tile(point[0]+i*x_off, point[1]+i*y_off) for i in range(limit)]
             new_lst = merge(old_lst)
             for index in range(len(new_lst)):
                 if new_lst[index] != old_lst[index]:
                     changed = True
-                    set_title(point[0]+index*x_off, point[1]*index*y_off, new_lst[index])
+                    self.set_tile(point[0]+index*x_off, point[1]*index*y_off, new_lst[index])
         if changed:
             self.new_tile()
 
