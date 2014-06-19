@@ -107,7 +107,7 @@ class TwentyFortyEight:
             for index in range(len(new_lst)):
                 if new_lst[index] != old_lst[index]:
                     changed = True
-                    self.set_tile(point[0]+index*x_off, point[1]*index*y_off, new_lst[index])
+                    self.set_tile(point[0]+index*x_off, point[1]+index*y_off, new_lst[index])
         if changed:
             self.new_tile()
 
