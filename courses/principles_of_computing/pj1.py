@@ -2,7 +2,9 @@
 Clone of 2048 game.
 """
 
-import poc_2048_gui     
+import poc_2048_gui
+# generating tile
+from random import randint
 
 # for testing
 import poc_simpletest
@@ -53,7 +55,12 @@ class TwentyFortyEight:
         self.rows = grid_height
         self.cols = grid_width
         self.cells = [ [0 for col in range(grid_width)] for row in range(grid_height)]
-        
+        # init starting points
+        self.init_points={}
+        self.init_points[UP] = [(0, i) for i in range(self.cols)]
+        self.init_points[DOWN] = [(self.rows-1, i) for i in range(self.cols)]
+        self.init_points[LEFT] = [(i, 0) for i in range(self.rows)]
+        self.init_points[RIGHT] = [(i, self.cols-1) for i in range(self.rows)]
     
     def reset(self):
         """
@@ -84,18 +91,25 @@ class TwentyFortyEight:
         Move all tiles in the given direction and add
         a new tile if any tiles moved.
         """
-        # replace with your code
-        pass
-        
     def new_tile(self):
         """
         Create a new tile in a randomly selected empty 
         square.  The tile should be 2 90% of the time and
         4 10% of the time.
         """
-        # replace with your code
-        pass
+        val = randint(1,10)
+        if val == 10:
+            val = 4
+        else:
+            val = 2
+        empty_slots = [(i, j) for i in range(self.rows) for j in range(self.cols) if self.cells[i][j]==0]
         
+        if len(empty_slots) == 0:
+            print "You lose............."
+        else:
+            point = empty_slots[randint(0,len(empty_slots)-1)]
+            self.set_tile(point[0], point[1], val)
+
     def set_tile(self, row, col, value):
         """
         Set the tile at position row, col to have the given value.
