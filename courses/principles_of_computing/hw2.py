@@ -25,6 +25,28 @@ def resources_vs_time(upgrade_cost_increment, num_upgrade):
 
     return result
 
+
+def resources_vs_time2(percent, num_upgrade):
+    """
+    Simulate the cost increasing in exponential manner.
+    Note that for small "percent", it needs more time to grow "faster".
+    But eventually, exponential should be larger than the polynomial
+    given the same number of steps.
+    """
+    result = []
+    resource = time = 0
+    cost = rate = 1
+
+    for i in range(num_upgrade):
+        step = cost/rate
+        time += step
+        resource += rate * step
+        result.append([time, resource])
+        cost = cost * (1 + percent)
+        rate += 1
+
+    return result
+
 def test():
     """
     Testing code for resources_vs_time
