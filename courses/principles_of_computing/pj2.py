@@ -14,7 +14,7 @@ import poc_clicker_provided as provided
 
 # Constants
 #SIM_TIME = 10000000000.0
-SIM_TIME = 20.0
+SIM_TIME = 100.0
 
 class ClickerState:
     """
@@ -32,7 +32,10 @@ class ClickerState:
         """
         Return human readable state
         """
-        return str(self.tot_cookies, self.cur_cookies, self.time, self.cps)
+        return "\nTotoal cookies:" + str(self.tot_cookies) +\
+               "\nCurrent cookies:" + str(self.cur_cookies) +\
+               "\nCurrent time:" + str(self.time) +\
+               "\nCurrent CPS:"+ str(self.cps)
         
     def get_cookies(self):
         """
@@ -98,7 +101,7 @@ class ClickerState:
         """
         if cost < self.cur_cookies:
             self.cur_cookies -= cost
-            self.cps += additional_cps
+            self.cps = additional_cps
             self.history.append((self.time, item_name, cost, self.tot_cookies))
    
 
@@ -108,9 +111,21 @@ def simulate_clicker(build_info, duration, strategy):
     duration with the given strategy.  Returns a ClickerState
     object corresponding to game.
     """
+    st = ClickerState()
+    local_info = build_info.clone()
+    while duration > 0:
+        item = strategy(st.cur_cookies, st.cps, duration, local_info)
+        cost = local_info.get_cost(item)
+        time = st.time_until(cost-st.cur_cookies)
+        if time > duration:
+            break
+        else:
+            duration -= time
+            st.wait(time)
+            st.buy_item(item, cost, local_info.get_cps(item))
+            local_info.update_item(item)
 
-    # Replace with your code
-    return ClickerState()
+    return st
 
 
 def strategy_cursor(cookies, cps, time_left, build_info):
