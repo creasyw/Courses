@@ -13,8 +13,8 @@ codeskulptor.set_timeout(20)
 import poc_clicker_provided as provided
 
 # Constants
-#SIM_TIME = 10000000000.0
-SIM_TIME = 100.0
+SIM_TIME = 10000000000.0
+#SIM_TIME = 100.0
 
 class ClickerState:
     """
@@ -32,11 +32,11 @@ class ClickerState:
         """
         Return human readable state
         """
-        return "\nTotoal cookies:" + str(self.tot_cookies) +\
+        return "\nCurrent time:" + str(self.time) +\
                "\nCurrent cookies:" + str(self.cur_cookies) +\
-               "\nCurrent time:" + str(self.time) +\
-               "\nCurrent CPS:"+ str(self.cps)
-        
+               "\nCurrent CPS:"+ str(self.cps) +\
+               "\nTotoal cookies:" + str(self.tot_cookies)
+
     def get_cookies(self):
         """
         Return current number of cookies 
@@ -99,9 +99,9 @@ class ClickerState:
 
         Should do nothing if you cannot afford the item
         """
-        if cost < self.cur_cookies:
+        if cost <= self.cur_cookies:
             self.cur_cookies -= cost
-            self.cps = additional_cps
+            self.cps += additional_cps
             self.history.append((self.time, item_name, cost, self.tot_cookies))
    
 
@@ -113,7 +113,7 @@ def simulate_clicker(build_info, duration, strategy):
     """
     st = ClickerState()
     local_info = build_info.clone()
-    while duration > 0:
+    while duration >= 0:
         item = strategy(st.cur_cookies, st.cps, duration, local_info)
         cost = local_info.get_cost(item)
         time = st.time_until(cost-st.cur_cookies)
@@ -124,7 +124,7 @@ def simulate_clicker(build_info, duration, strategy):
             st.wait(time)
             st.buy_item(item, cost, local_info.get_cps(item))
             local_info.update_item(item)
-
+    st.wait(duration)
     return st
 
 
@@ -185,6 +185,3 @@ def run():
     # run_strategy("Best", SIM_TIME, strategy_best)
 
 run()
-
-
-
