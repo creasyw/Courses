@@ -12,6 +12,10 @@ codeskulptor.set_timeout(20)
 
 import poc_clicker_provided as provided
 
+# for testing
+import poc_simpletest
+TESTSUITE = poc_simpletest.TestSuite()
+
 # Constants
 SIM_TIME = 10000000000.0
 #SIM_TIME = 100.0
@@ -80,7 +84,10 @@ class ClickerState:
 
         Should return a float with no fractional part
         """
-        return ceil(cookies/self.cps)
+        if self.cur_cookies >= cookies:
+            return 0.0
+        else:
+            return ceil((cookies-self.cur_cookies)/self.cps)
 
     def wait(self, time):
         """
@@ -184,4 +191,42 @@ def run():
     # run_strategy("Expensive", SIM_TIME, strategy_expensive)
     # run_strategy("Best", SIM_TIME, strategy_best)
 
-run()
+#run()
+
+def phase_one_tests():
+    test = ClickerState()
+
+    # Initialization
+    TESTSUITE.run_test(str(test.get_cookies()), "0.0", "Test 1: Initial amount of cookies should be equal 0.0")
+    TESTSUITE.run_test(str(test.get_time()), "0.0", "Test 2: Initial time should be equal 0.0")
+    TESTSUITE.run_test(str(test.get_cps()), "1.0", "Test 3: Initial CPS should be equal 1.0")
+    TESTSUITE.run_test(str(test.get_history()), "[(0.0, None, 0.0, 0.0)]", "Test 4: Initial history should be [(0.0, None, 0.0, 0.0)]")
+    TESTSUITE.run_test(str(test.time_until(5.1)), "6.0", "Test 5: time_until should return float without fractional part")
+    TESTSUITE.run_test(str(test.time_until(0.0)), "0.0", "Test 6: time_until should return 0.0 if given amount of cookies <= current cookies")
+
+    test.wait(5)
+    TESTSUITE.run_test(str(test.get_cookies()), "5.0", "Test 7: wait(5) should increase current cookies by 5.0")
+    TESTSUITE.run_test(str(test.get_time()), "5.0", "Test 8: wait(5) should increase time by 5.0")
+    TESTSUITE.run_test("%0.1f, %0.1f" %(test.time_until(4.0), test.time_until(5.0)), "0.0, 0.0", "Test 9: time_until(n) for n <= current cookies should return 0.0")
+
+    test.wait(0)
+    test.wait(-1)
+    TESTSUITE.run_test(str(test.get_time()), "5.0", "Test 10: wait(n) should do nothing if n <= 0")
+    TESTSUITE.run_test(str(test.get_history())=="[(0.0, None, 0.0, 0.0)]", True, "Test 11: wait() should not change history")
+
+    test.buy_item("item", 5, 1)
+    TESTSUITE.run_test("%0.1f, %0.1f" %(test.get_cookies(), test.get_cps()), "0.0, 2.0","Test 12: Current cookies and CPS should be updated")
+    TESTSUITE.run_test(str(test.get_history()[-1]), "(5.0, 'item', 5, 5.0)", "Test 13: history should be updated")
+
+    test.buy_item("item", 5, 1)
+    TESTSUITE.run_test("%0.1f, %0.1f" %(test.get_cookies(), test.get_cps()), "0.0, 2.0","Test 14: buy_item() should do nothing if cost > current cookies")
+
+def run_tests(simulate_clicker=None, strategy_cursor=None, strategy_cheap=None, strategy_expensive=None, strategy_best=None):
+    phase_one_tests()
+    if simulate_clicker != None:
+        phase_two_tests(simulate_clicker,  strategy_cursor)
+        if strategy_cheap != None:
+            phase_three_tests(simulate_clicker, strategy_cursor, strategy_cheap, strategy_expensive, strategy_best)
+    TESTSUITE.report_results()
+
+run_tests()
