@@ -122,6 +122,9 @@ def simulate_clicker(build_info, duration, strategy):
     local_info = build_info.clone()
     while duration >= 0:
         item = strategy(st.cur_cookies, st.cps, duration, local_info)
+        # in the current strategy, it cannot afford anything
+        if item is None:
+            break
         cost = local_info.get_cost(item)
         time = st.time_until(cost)
         if time > duration:
@@ -156,7 +159,16 @@ def strategy_none(cookies, cps, time_left, build_info):
     return None
 
 def strategy_cheap(cookies, cps, time_left, build_info):
-    return None
+    items = build_info.build_items()
+    result = None
+    cost = float('+inf')
+    overall = cookies + time_left*cps
+    for item in items:
+        temp_cost = build_info.get_cost(item)
+        if temp_cost <= overall and cost > temp_cost:
+            result = item
+            cost = temp_cost
+    return result
 
 def strategy_expensive(cookies, cps, time_left, build_info):
     return None
@@ -238,11 +250,17 @@ def phase_two_tests():
     TESTSUITE.run_test("%0.1f, %0.1f, %0.1f" %(test.get_time(), test.get_cookies(), test.get_cps()),\
                        "15.0, 0.0, 1.1", "Test 18: simulate_clicker should buy item if sim time == item cost")
 
+def phase_three_tests():
+    test = simulate_clicker(provided.BuildInfo(growth_factor=10), 150.0, strategy_cheap)
+    TESTSUITE.run_test(test.get_history()[-1][1]=="Grandma", True, "Test 19: strategy_cheap doesn't select the cheapest item")
+    TESTSUITE.run_test(strategy_cheap(0.0, 1.0, 10.0, provided.BuildInfo())==None, True, "Test 20: strategy_cheap should return None if you can't afford any item in time left")
+    TESTSUITE.run_test(strategy_cheap(15.0, 0.0, 0.0, provided.BuildInfo())=="Cursor", True, "Test 21: strategy_cheap: probably you forgot to add cookies to your budget")
 
-def run_tests(simulate_clicker=None, strategy_cursor=None, strategy_cheap=None, strategy_expensive=None, strategy_best=None):
+
+def run_tests():
     phase_one_tests()
     phase_two_tests()
-    #phase_three_tests(simulate_clicker, strategy_cursor, strategy_cheap, strategy_expensive, strategy_best)
+    phase_three_tests()
     TESTSUITE.report_results()
 
 run_tests()
