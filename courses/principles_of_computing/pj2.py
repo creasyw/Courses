@@ -183,7 +183,16 @@ def strategy_expensive(cookies, cps, time_left, build_info):
     return result
 
 def strategy_best(cookies, cps, time_left, build_info):
-    return None
+    items = build_info.build_items()
+    result = None
+    cost = 0
+    overall = cookies + time_left*cps
+    for item in items:
+        temp_cost = build_info.get_cps(item)/build_info.get_cost(item)
+        if temp_cost <= overall and cost < temp_cost:
+            result = item
+            cost = temp_cost
+    return result
         
 def run_strategy(strategy_name, time, strategy):
     """
@@ -208,11 +217,12 @@ def run():
     run_strategy("Cursor", SIM_TIME, strategy_cursor)
 
     # Add calls to run_strategy to run additional strategies
-    # run_strategy("Cheap", SIM_TIME, strategy_cheap)
-    # run_strategy("Expensive", SIM_TIME, strategy_expensive)
-    # run_strategy("Best", SIM_TIME, strategy_best)
 
-#run()
+    run_strategy("Cheap", SIM_TIME, strategy_cheap)
+    run_strategy("Expensive", SIM_TIME, strategy_expensive)
+    run_strategy("Best", SIM_TIME, strategy_best)
+
+run()
 
 def phase_one_tests():
     test = ClickerState()
