@@ -26,20 +26,20 @@ class ClickerState:
     """
 
     def __init__(self):
-        self.tot_cookies = 0.0
-        self.cur_cookies = 0.0
-        self.time = 0.0
-        self.cps = 1.0
-        self.history = [(0.0, None, 0.0, 0.0)]
+        self._tot_cookies = 0.0
+        self._cur_cookies = 0.0
+        self._time = 0.0
+        self._cps = 1.0
+        self._history = [(0.0, None, 0.0, 0.0)]
         
     def __str__(self):
         """
         Return human readable state
         """
-        return "\nCurrent time:" + str(self.time) +\
-               "\nCurrent cookies:" + str(self.cur_cookies) +\
-               "\nCurrent CPS:"+ str(self.cps) +\
-               "\nTotoal cookies:" + str(self.tot_cookies)
+        return "\nCurrent time:" + str(self._time) +\
+               "\nCurrent cookies:" + str(self._cur_cookies) +\
+               "\nCurrent CPS:"+ str(self._cps) +\
+               "\nTotoal cookies:" + str(self._tot_cookies)
 
     def get_cookies(self):
         """
@@ -48,7 +48,7 @@ class ClickerState:
         
         Should return a float
         """
-        return self.cur_cookies
+        return self._cur_cookies
 
     def get_cps(self):
         """
@@ -56,7 +56,7 @@ class ClickerState:
 
         Should return a float
         """
-        return self.cps
+        return self._cps
 
     def get_time(self):
         """
@@ -64,7 +64,7 @@ class ClickerState:
 
         Should return a float
         """
-        return self.time
+        return self._time
 
     def get_history(self):
         """
@@ -75,7 +75,7 @@ class ClickerState:
 
         For example: (0.0, None, 0.0, 0.0)
         """
-        return self.history
+        return self._history
 
     def time_until(self, cookies):
         """
@@ -84,10 +84,10 @@ class ClickerState:
 
         Should return a float with no fractional part
         """
-        if self.cur_cookies >= cookies:
+        if self._cur_cookies >= cookies:
             return 0.0
         else:
-            return ceil((cookies-self.cur_cookies)/self.cps)
+            return ceil((cookies-self._cur_cookies)/self._cps)
 
     def wait(self, time):
         """
@@ -96,9 +96,9 @@ class ClickerState:
         Should do nothing if time <= 0
         """
         if time>0:
-            self.time += time
-            self.cur_cookies += time*self.cps
-            self.tot_cookies += time*self.cps
+            self._time += time
+            self._cur_cookies += time*self._cps
+            self._tot_cookies += time*self._cps
 
     def buy_item(self, item_name, cost, additional_cps):
         """
@@ -106,10 +106,10 @@ class ClickerState:
 
         Should do nothing if you cannot afford the item
         """
-        if cost <= self.cur_cookies:
-            self.cur_cookies -= cost
-            self.cps += additional_cps
-            self.history.append((self.time, item_name, cost, self.tot_cookies))
+        if cost <= self._cur_cookies:
+            self._cur_cookies -= cost
+            self._cps += additional_cps
+            self._history.append((self._time, item_name, cost, self._tot_cookies))
    
 
 def simulate_clicker(build_info, duration, strategy):
@@ -118,24 +118,24 @@ def simulate_clicker(build_info, duration, strategy):
     duration with the given strategy.  Returns a ClickerState
     object corresponding to game.
     """
-    st = ClickerState()
+    state = ClickerState()
     local_info = build_info.clone()
     while duration >= 0:
-        item = strategy(st.cur_cookies, st.cps, duration, local_info)
+        item = strategy(state.get_cookies(), state.get_cps(), duration, local_info)
         # in the current strategy, it cannot afford anything
         if item is None:
             break
         cost = local_info.get_cost(item)
-        time = st.time_until(cost)
+        time = state.time_until(cost)
         if time > duration:
             break
         else:
             duration -= time
-            st.wait(time)
-            st.buy_item(item, cost, local_info.get_cps(item))
+            state.wait(time)
+            state.buy_item(item, cost, local_info.get_cps(item))
             local_info.update_item(item)
-    st.wait(duration)
-    return st
+    state.wait(duration)
+    return state
 
 
 def strategy_cursor(cookies, cps, time_left, build_info):
@@ -159,6 +159,9 @@ def strategy_none(cookies, cps, time_left, build_info):
     return None
 
 def strategy_cheap(cookies, cps, time_left, build_info):
+    """
+    This strategy always selects the cheapest item.
+    """
     items = build_info.build_items()
     result = None
     cost = float('+inf')
@@ -171,6 +174,10 @@ def strategy_cheap(cookies, cps, time_left, build_info):
     return result
 
 def strategy_expensive(cookies, cps, time_left, build_info):
+    """
+    This strategy always selects the most expensive item
+    you can afford in the time left.
+    """
     items = build_info.build_items()
     result = None
     cost = float('-inf')
@@ -183,6 +190,9 @@ def strategy_expensive(cookies, cps, time_left, build_info):
     return result
 
 def strategy_best(cookies, cps, time_left, build_info):
+    """
+    This documentation is silly.
+    """
     items = build_info.build_items()
     result = None
     cost = 0
@@ -224,6 +234,7 @@ def run():
 
 run()
 
+# the contents below are for testing
 def phase_one_tests():
     test = ClickerState()
 
