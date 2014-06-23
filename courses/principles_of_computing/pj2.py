@@ -171,7 +171,16 @@ def strategy_cheap(cookies, cps, time_left, build_info):
     return result
 
 def strategy_expensive(cookies, cps, time_left, build_info):
-    return None
+    items = build_info.build_items()
+    result = None
+    cost = float('-inf')
+    overall = cookies + time_left*cps
+    for item in items:
+        temp_cost = build_info.get_cost(item)
+        if temp_cost <= overall and cost < temp_cost:
+            result = item
+            cost = temp_cost
+    return result
 
 def strategy_best(cookies, cps, time_left, build_info):
     return None
@@ -256,6 +265,10 @@ def phase_three_tests():
     TESTSUITE.run_test(strategy_cheap(0.0, 1.0, 10.0, provided.BuildInfo())==None, True, "Test 20: strategy_cheap should return None if you can't afford any item in time left")
     TESTSUITE.run_test(strategy_cheap(15.0, 0.0, 0.0, provided.BuildInfo())=="Cursor", True, "Test 21: strategy_cheap: probably you forgot to add cookies to your budget")
 
+    test = simulate_clicker(provided.BuildInfo(), 100.0, strategy_expensive)
+    TESTSUITE.run_test(test.get_history()[-1][1]=="Grandma", True, "Test 22: strategy_expensive doesn't select the most expensive item that you can get")
+    TESTSUITE.run_test(strategy_expensive(0, 1, 10, provided.BuildInfo())==None, True, "Test 23: strategy_expensive should return None if you can't afford any item in given time")
+    TESTSUITE.run_test(strategy_expensive(100.0, 1.0, 15.0, provided.BuildInfo())=="Grandma", True, "Test 24: strategy_expensive: probably you forgot to add cookies to your budget" )
 
 def run_tests():
     phase_one_tests()
