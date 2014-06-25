@@ -70,20 +70,46 @@ def get_best_move(board, scores):
     It finds all of the empty squares with the maximum score and randomly
     return one of them as a (row, column) tuple.
     """
+    candidates = []
+    maximum = 0
+    for row in range(len(scores)):
+        for col in range(len(scores[row])):
+            if scores[row][col] > maximum:
+                maximum = scores[row][col]
+                candidates = [(row, col)]
+            elif scores[row][col] == maximum:
+                candidates.append((row, col))
+    return candidates[random.randrange(len(candidates))]
 
 def mc_move(board, player, trials):
     """
     This function takes a current board, which player the machine player is,
-    and the number of trials to run. It uses the Monte Carlo simulation described
-    above to return a move for the machine player in the form of a (row, column) tuple.
-    Be sure to use the other functions you have written!
+    and the number of trials to run. It uses the Monte Carlo simulation
+    described above to return a move for the machine player in the form of a
+    (row, column) tuple. Be sure to use the other functions you have written!
     """
+    # make sure the updating score is for empty slots
+    # the representation of "scores" is dictated by the API
+    empties = board.get_empty_squares()
+    if len(empties) == 0:
+        raise AssertionError("The board is full! -- MC_MOVE")
+    nrow = ncol = board.get_dim()
+    scores = [[-1 for _ in range(ncol)] for _ in range(nrow)]
+    for empty in empties:
+        scores[empty[0]][empty[1]] = 0
+    # begin trails
+    for _ in range(trials):
+        local_board = board.clone()
+        mc_trial(local_board, player)
+        mc_update_scores(scores, local_board, player)
+        mv = get_best_move(board, scores)
+        
 
 # Test game with the console or the GUI.
 # Uncomment whichever you prefer.
 # Both should be commented out when you submit for
 # testing to save time.
 
-# provided.play_game(mc_move, NTRIALS, False)        
-# poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
+provided.play_game(mc_move, NTRIALS, False)        
+poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
 
