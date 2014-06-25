@@ -8,7 +8,7 @@ import poc_ttt_provided as provided
 
 # Constants for Monte Carlo simulator
 # Change as desired
-NTRIALS = 100    # Number of trials to run
+NTRIALS = 1    # Number of trials to run
 MCMATCH = 1.0  # Score for squares played by the machine player
 MCOTHER = 1.0  # Score for squares played by the other player
 
@@ -22,6 +22,15 @@ def mc_trial(board, player):
     The modified board will contain the state of the game, so the function
     does not return anything.
     """
+    empties = board.get_empty_squares()
+    local_player = player    
+    while len(empties)!=0:
+        loc = empties.pop(random.randrange(len(empties)))
+        board.move(loc[0], loc[1], player)
+        if board.check_win() is not None:
+            break
+        local_player = provided.switch_player(local_player)
+
 
 def mc_update_scores(scores, board, player):
     """
