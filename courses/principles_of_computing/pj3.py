@@ -40,6 +40,29 @@ def mc_update_scores(scores, board, player):
     It scores the completed board and update the scores grid. 
     As the function updates the scores grid directly, it does not return anything.
     """
+    result = board.check_win()
+    if result == provided.DRAW:
+        return
+    price = penalty = 0
+    if result is None:
+        raise ValueError("The board should have a final result! -- MC_UPDATE_SCORES")
+    elif result == player:
+        price = MCMATCH
+        penalty = -MCOTHER
+    else:
+        price = -MCMATCH
+        penalty = MCOTHER
+
+    for row in range(len(scores)):
+        for col in range(len(scores[row])):
+            if scores[row][col] == -1:
+                continue
+            status = board.square(row, col)
+            if status == player:
+                scores[row][col] += price
+            # add score for the other player, if that slot is not empty
+            elif status != provided.EMPTY:
+                scores[row][col] += penalty
 
 def get_best_move(board, scores):
     """
