@@ -95,15 +95,13 @@ def mc_move(board, player, trials):
     if len(empties) == 0:
         raise AssertionError("The board is full! -- MC_MOVE")
     nrow = ncol = board.get_dim()
-    scores = [[-1 for _ in range(ncol)] for _ in range(nrow)]
-    for empty in empties:
-        scores[empty[0]][empty[1]] = 0
+    scores = [[0 for _ in range(ncol)] for _ in range(nrow)]
     # begin trails
     for _ in range(trials):
         local_board = board.clone()
         mc_trial(local_board, player)
         mc_update_scores(scores, local_board, player)
-        mv = get_best_move(board, scores)
+    return get_best_move(board, scores)
 
 # Test game with the console or the GUI.
 # Uncomment whichever you prefer.
@@ -114,6 +112,7 @@ def mc_move(board, player, trials):
 # poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
 
 
+# needs to be commented out for grading
 import poc_simpletest
 
 def set_board(board, arrangement):
