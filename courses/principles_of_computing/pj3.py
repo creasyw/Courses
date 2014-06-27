@@ -69,9 +69,12 @@ def get_best_move(board, scores):
     return one of them as a (row, column) tuple.
     """
     candidates = []
-    maximum = 0
+    maximum = float('-inf')
+    empties = board.get_empty_squares()
     for row in range(len(scores)):
         for col in range(len(scores[row])):
+            if (row, col) not in empties:
+                continue
             if scores[row][col] > maximum:
                 maximum = scores[row][col]
                 candidates = [(row, col)]
@@ -241,10 +244,6 @@ def test_best_move(get_best_move):
 
     suite.report_results()
 
-
-
 test_trial(mc_trial)
 test_update_scores(mc_update_scores, MCMATCH, MCOTHER)
-#test_best_move(get_best_move)
-
-
+test_best_move(get_best_move)
