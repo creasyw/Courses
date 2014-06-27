@@ -55,8 +55,6 @@ def mc_update_scores(scores, board, player):
 
     for row in range(len(scores)):
         for col in range(len(scores[row])):
-            if scores[row][col] == -1:
-                continue
             status = board.square(row, col)
             if status == player:
                 scores[row][col] += price
