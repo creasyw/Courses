@@ -23,14 +23,14 @@ def mc_trial(board, player):
     does not return anything.
     """
     empties = board.get_empty_squares()
+    random.shuffle(empties)
     local_player = player    
     while len(empties)!=0:
-        loc = empties.pop(random.randrange(len(empties)))
-        board.move(loc[0], loc[1], player)
+        loc = empties.pop()
+        board.move(loc[0], loc[1], local_player)
         if board.check_win() is not None:
             break
         local_player = provided.switch_player(local_player)
-
 
 def mc_update_scores(scores, board, player):
     """
