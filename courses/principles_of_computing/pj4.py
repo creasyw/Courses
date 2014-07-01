@@ -12,7 +12,7 @@ def gen_all_sequences(outcomes, length):
     Iterative function that enumerates the set of all sequences of
     outcomes of given length.
     """
-    
+
     answer_set = set([()])
     for dummy_idx in range(length):
         temp_set = set()
@@ -34,7 +34,10 @@ def score(hand):
 
     Returns an integer score 
     """
-    return 0
+    result = [ 0 for _ in range(6)]
+    for dice in hand:
+        result[dice-1] += dice
+    return max(result)
 
 
 def expected_value(held_dice, num_die_sides, num_free_dice):
@@ -85,18 +88,25 @@ def run_example():
     hand = (1, 1, 1, 5, 6)
     hand_score, hold = strategy(hand, num_die_sides)
     print "Best strategy for hand", hand, "is to hold", hold, "with expected score", hand_score
-    
-    
-run_example()
+
+
+#run_example()
 
 
 #import poc_holds_testsuite
 #poc_holds_testsuite.run_suite(gen_all_holds)
-                                       
-    
-    
-    
+
+# needs to be commented out for grading
+import poc_simpletest
+
+def test_funcs():
+    suite = poc_simpletest.TestSuite()
+    suite.run_test(score([1,2,3,4,5,6]), 6, "Test 0: Baisc functionality")
+    suite.run_test(score([1,2,3,4,6,6]), 12, "Test 1: two are the same.")
+    suite.run_test(score([1,1,1,1,1,5]), 5, "Test 2: two combinatories, same answer")
+
+    suite.report_results()
 
 
-
+test_funcs()
 
