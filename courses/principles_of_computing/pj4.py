@@ -50,8 +50,6 @@ def expected_value(held_dice, num_die_sides, num_free_dice):
     num_free_dice: number of dice to be rolled
 
     Returns a floating point expected value
-
-    A good explanation is: http://bit.ly/1lMiH6y
     """
     outcomes = [item+held_dice for item in gen_all_sequences(range(1, num_die_sides+1), num_free_dice)]
     scores = [score(hand) for hand in outcomes]
@@ -66,7 +64,14 @@ def gen_all_holds(hand):
 
     Returns a set of tuples, where each tuple is dice to hold
     """
-    return set([()])
+    hand = tuple(sorted(hand))
+    result = set([])
+    for index in range(len(hand)):
+        hold = hand[:index]
+        comb = gen_all_sequences(hand[index:], len(hand[index:]))
+        for item in comb:
+            result.add(tuple(sorted(hold+item)))
+    return result
 
 
 
