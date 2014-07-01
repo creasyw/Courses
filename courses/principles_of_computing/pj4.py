@@ -51,7 +51,9 @@ def expected_value(held_dice, num_die_sides, num_free_dice):
 
     Returns a floating point expected value
     """
-    return 0.0
+    outcomes = [item+held_dice for item in gen_all_sequences(range(1, num_die_sides+1), num_free_dice)]
+    scores = [score(hand) for hand in outcomes]
+    return float(sum(scores))/len(scores)
 
 
 def gen_all_holds(hand):
@@ -99,7 +101,7 @@ def run_example():
 # needs to be commented out for grading
 import poc_simpletest
 
-def test_funcs():
+def test_score():
     suite = poc_simpletest.TestSuite()
     suite.run_test(score([1,2,3,4,5,6]), 6, "Test 0: Baisc functionality")
     suite.run_test(score([1,2,3,4,6,6]), 12, "Test 1: two are the same.")
@@ -107,6 +109,48 @@ def test_funcs():
 
     suite.report_results()
 
+def test_expected_value():
+    suite = poc_simpletest.TestSuite()
+    held_dice =  ()
+    num_die_sides = 6
+    num_free_dice = 2
+    suite.run_test(round(expected_value(held_dice, num_die_sides, num_free_dice), 7), round(5.0555556, 7), "Test #1:")
 
-test_funcs()
 
+    held_dice =  (2, 1, 2)
+    num_die_sides = 6
+    num_free_dice = 3
+    suite.run_test(round(expected_value(held_dice, num_die_sides, num_free_dice), 7), round(6.9120370, 7), "Test #2:")
+
+
+    held_dice =  (2,)
+    num_die_sides = 6
+    num_free_dice = 5
+    suite.run_test(round(expected_value(held_dice, num_die_sides, num_free_dice), 7), round(8.8801440, 7), "Test #3:")
+
+
+    held_dice =  (1,)
+    num_die_sides = 6
+    num_free_dice = 2
+    suite.run_test(round(expected_value(held_dice, num_die_sides, num_free_dice), 7), round(5.0833333, 7), "Test #4:")
+
+
+    held_dice =  (2, 1)
+    num_die_sides = 6
+    num_free_dice = 3
+    suite.run_test(round(expected_value(held_dice, num_die_sides, num_free_dice), 7), round(6.4722222, 7), "Test #5:")
+
+
+    held_dice =  (2, 2)
+    num_die_sides = 6
+    num_free_dice = 5
+    suite.run_test(round(expected_value(held_dice, num_die_sides, num_free_dice), 7), round(9.2250514, 7), "Test #6:")
+
+
+    held_dice =  (1, 2)
+    num_die_sides = 6
+    num_free_dice = 4
+    suite.run_test(round(expected_value(held_dice, num_die_sides, num_free_dice), 7), round(7.6689815, 7), "Test #7:")
+
+
+    suite.report_results()
