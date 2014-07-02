@@ -54,23 +54,28 @@ def expected_value(held_dice, num_die_sides, num_free_dice):
     scores = [score(hand) for hand in outcomes]
     return float(sum(scores))/len(scores)
 
-def combinations(iterable, r):
+def combinations(iterable, leng):
+    """
+    implement combinations for 'iterable' with given length
+    """
     pool = tuple(iterable)
-    n = len(pool)
-    if r > n:
+    maxi = len(pool)
+    if leng > maxi:
         return
-    indices = range(r)
-    yield tuple(pool[i] for i in indices)
+    indices = range(leng)
+    yield tuple(pool[index] for index in indices)
     while True:
-        for i in range(r)[::-1]:
-            if indices[i] != i + n - r:
+        counter = 0
+        for index in range(leng)[::-1]:
+            if indices[index] != index + maxi - leng:
+                counter = index
                 break
         else:
             return
-        indices[i] += 1
-        for j in range(i+1, r):
-            indices[j] = indices[j-1] + 1
-        yield tuple(pool[i] for i in indices)
+        indices[counter] += 1
+        for index_1 in range(counter+1, leng):
+            indices[index_1] = indices[index_1-1] + 1
+        yield tuple(pool[index] for index in indices)
 
 def gen_all_holds(hand):
     """
