@@ -82,7 +82,7 @@ def gen_all_holds(hand):
     """
     result = set([()])
     # the number of cards left
-    for length in range(1, len(hand)):
+    for length in range(1, len(hand)+1):
         # all possible combinations given the length
         for item in combinations(hand, length):
             result.add(item)
