@@ -24,7 +24,6 @@ def gen_all_sequences(outcomes, length):
         answer_set = temp_set
     return answer_set
 
-
 def score(hand):
     """
     Compute the maximal score for a Yahtzee hand according to the
@@ -38,7 +37,6 @@ def score(hand):
     for dice in hand:
         result[dice-1] += dice
     return max(result)
-
 
 def expected_value(held_dice, num_die_sides, num_free_dice):
     """
@@ -55,6 +53,23 @@ def expected_value(held_dice, num_die_sides, num_free_dice):
     scores = [score(hand) for hand in outcomes]
     return float(sum(scores))/len(scores)
 
+def combinations(iterable, r):
+    pool = tuple(iterable)
+    n = len(pool)
+    if r > n:
+        return
+    indices = range(r)
+    yield tuple(pool[i] for i in indices)
+    while True:
+        for i in range(r)[::-1]:
+            if indices[i] != i + n - r:
+                break
+        else:
+            return
+        indices[i] += 1
+        for j in range(i+1, r):
+            indices[j] = indices[j-1] + 1
+        yield tuple(pool[i] for i in indices)
 
 def gen_all_holds(hand):
     """
