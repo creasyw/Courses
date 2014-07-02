@@ -79,16 +79,13 @@ def gen_all_holds(hand):
 
     Returns a set of tuples, where each tuple is dice to hold
     """
-    hand = tuple(sorted(hand))
-    result = set([])
-    for index in range(len(hand)):
-        hold = hand[:index]
-        comb = gen_all_sequences(hand[index:], len(hand[index:]))
-        for item in comb:
-            result.add(tuple(sorted(hold+item)))
+    result = set([()])
+    # the number of cards left
+    for length in range(1, len(hand)):
+        # all possible combinations given the length
+        for item in combinations(hand, length):
+            result.add(item)
     return result
-
-
 
 def strategy(hand, num_die_sides):
     """
