@@ -33,7 +33,8 @@ def score(hand):
 
     Returns an integer score 
     """
-    result = [ 0 for _ in range(6)]
+    max_dice = max(hand)
+    result = [ 0 for _ in range(max_dice)]
     for dice in hand:
         result[dice-1] += dice
     return max(result)
