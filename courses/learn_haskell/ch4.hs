@@ -21,6 +21,10 @@ bmiTell weight height
   where bmi = weight / height ^ 2
         (skinny, normal, fat) = (18.5, 25.0, 30.0)
 
+-- input is a list of pair tuples, and the output is a list of
+-- floats. It is a little confusing to have three variables listed in
+-- the first part of list comprehension. The reason for that is to
+-- make the two variables within the pair visible to the "where" clause.
 calcBmis :: (RealFloat a) => [(a, a)] -> [a]
 calcBmis xs = [bmi weight height | (weight, height) <- xs]
   where bmi weight height = weight / height ^ 2
