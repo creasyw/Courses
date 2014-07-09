@@ -28,3 +28,8 @@ bmiTell weight height
 calcBmis :: (RealFloat a) => [(a, a)] -> [a]
 calcBmis xs = [bmi weight height | (weight, height) <- xs]
   where bmi weight height = weight / height ^ 2
+
+-- let bindings can be treated as expresssions, but where bindings are
+-- just syntatic constructs. This makes the let makes more sense in
+-- list comprehension
+calcBmis1 xs = [bmi | (w, h) <- xs, let bmi = w / h^2]
