@@ -1,6 +1,8 @@
 -- patter matching could be achieve either from repeating the name of
--- the function (in the exactly the same form) or using guards
-
+-- the function (in the exactly the same form) or using
+-- "case". ALthough guards could do similar stuff, it evaluates
+-- expressions and returns boolean value deciding if the part of code
+-- should be executed.
 factorial :: Integral a => a -> a
 factorial x
   | x <= 1 = 1
@@ -8,6 +10,9 @@ factorial x
 
 length' [] = 0
 length' (x:xs) = 1 + length' xs
+
+length1 lst = case lst of [] -> 0
+                          (x:xs) -> 1 + length1 xs
 
 max' a b | a > b = a | otherwise = b
 
