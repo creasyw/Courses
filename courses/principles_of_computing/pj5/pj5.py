@@ -63,7 +63,7 @@ class Zombie(poc_grid.Grid):
         """
         Return number of zombies
         """
-        return 0       
+        return len(self._zombie_list)
 
     def zombies(self):
         """
