@@ -48,6 +48,8 @@ class Zombie(poc_grid.Grid):
         Reset zombie and human lists to be empty
         """
         poc_grid.Grid.__init__(self, poc_grid.Grid._grid_height, poc_grid.Grid._grid_width)
+        self._zombie_list = []
+        self._human_list = []
         return
 
     def add_zombie(self, row, col):
