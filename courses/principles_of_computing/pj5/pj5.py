@@ -77,7 +77,8 @@ class Zombie(poc_grid.Grid):
         """
         Add human to the human list
         """
-        pass
+        self._human_list.append((row, col))
+        return
 
     def num_humans(self):
         """
