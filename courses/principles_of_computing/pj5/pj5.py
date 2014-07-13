@@ -84,14 +84,14 @@ class Zombie(poc_grid.Grid):
         """
         Return number of humans
         """
-        return 0
+        return len(self._human_list)
 
     def humans(self):
         """
         Generator that yields the humans in the order they were added.
         """
-        # replace with an actual generator
-        return
+        for person in self._human_list:
+            yield person
 
     def compute_distance_field(self, entity_type):
         """
