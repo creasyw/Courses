@@ -41,7 +41,7 @@ class Zombie(poc_grid.Grid):
             self._human_list = list(human_list)  
         else:
             self._human_list = []
-        
+
     def clear(self):
         """
         Set cells in obstacle grid to be empty
@@ -56,14 +56,15 @@ class Zombie(poc_grid.Grid):
         """
         Add zombie to the zombie list
         """
-        pass
-                
+        self._zombie_list.append((row, col))
+        return
+
     def num_zombies(self):
         """
         Return number of zombies
         """
         return 0       
-          
+
     def zombies(self):
         """
         Generator that yields the zombies in the order they were
@@ -77,7 +78,7 @@ class Zombie(poc_grid.Grid):
         Add human to the human list
         """
         pass
-        
+
     def num_humans(self):
         """
         Return number of humans
@@ -90,7 +91,7 @@ class Zombie(poc_grid.Grid):
         """
         # replace with an actual generator
         return
-        
+
     def compute_distance_field(self, entity_type):
         """
         Function computes a 2D distance field
