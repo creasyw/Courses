@@ -47,8 +47,9 @@ class Zombie(poc_grid.Grid):
         Set cells in obstacle grid to be empty
         Reset zombie and human lists to be empty
         """
-        pass
-        
+        poc_grid.Grid.__init__(self, poc_grid.Grid._grid_height, poc_grid.Grid._grid_width)
+        return
+
     def add_zombie(self, row, col):
         """
         Add zombie to the zombie list
@@ -80,7 +81,7 @@ class Zombie(poc_grid.Grid):
         Return number of humans
         """
         return 0
-    
+
     def humans(self):
         """
         Generator that yields the humans in the order they were added.
@@ -95,14 +96,14 @@ class Zombie(poc_grid.Grid):
         Shortest paths avoid obstacles and use distance_type distances
         """
         pass
-    
+
     def move_humans(self, zombie_distance):
         """
         Function that moves humans away from zombies, diagonal moves
         are allowed
         """
         pass
-    
+
     def move_zombies(self, human_distance):
         """
         Function that moves zombies towards humans, no diagonal moves
