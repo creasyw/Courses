@@ -99,7 +99,33 @@ class Zombie(poc_grid.Grid):
         Distance at member of entity_queue is zero
         Shortest paths avoid obstacles and use distance_type distances
         """
-        pass
+        visited = poc_grid.Grid(poc_grid.Grid.get_grid_height(self), poc_grid.Grid.get_grid_width(self))
+        product = poc_grid.Grid.get_grid_height(self)*poc_grid.Grid.get_grid_width(self)
+        distance_field = [[product for _ in range(poc_grid.Grid.get_grid_width(self))] for _ in range(poc_grid.Grid.get_grid_height(self))]
+        boundary = poc_queue.Queue()
+        # initialize related variables
+        if entity_type == ZOMBIE:
+            lst = self._zombie_list
+        elif entity_type == HUMAN:
+            lst = self._human_list
+        else:
+            raise ValueError("The entity_type should be either ZOMBIE or HUMAN -- COMPUTE_DISTANCE_FIELD")
+
+        for item in lst:
+            boundary.enqueue(item)
+            visited.set_full(item[0], item[1])
+            distance_field[item[0]][item[1]] = 0
+        # perform BFS
+        while len(boundary) != 0:
+            cell = boundary.dequeue()
+            neighbors = self.four_neighbors(cell[0], cell[1])
+            for neighbor in neighbors:
+                if visited.is_empty(neighbor[0], neighbor[1]):
+                    #visited.set_full(neighbor[0], neighbor[1])
+                    boundary.enqueue(neighbor)
+                    distance_field[neighbor[0]][neighbor[1]] = \
+                        min(distance_field[neighbor[0]][neighbor[1]], distance_field[cell[0]][cell[1]]+1)
+        return distance_field
 
     def move_humans(self, zombie_distance):
         """
