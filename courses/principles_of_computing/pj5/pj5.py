@@ -70,8 +70,8 @@ class Zombie(poc_grid.Grid):
         Generator that yields the zombies in the order they were
         added.
         """
-        # replace with an actual generator
-        return
+        for zombie in self._zombie_list:
+            yield zombie
 
     def add_human(self, row, col):
         """
