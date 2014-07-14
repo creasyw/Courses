@@ -133,7 +133,20 @@ class Zombie(poc_grid.Grid):
         Function that moves humans away from zombies, diagonal moves
         are allowed
         """
-        pass
+        result = []
+        for person in self._human_list:
+            neighbors = self.eight_neighbors(person[0], person[1])
+            moves = [person]
+            max_distance = 0
+            for cell in neighbors:
+                if zombie_distance[cell[0]][cell[1]] > max_distance:
+                    max_distance = zombie_distance[cell[0]][cell[1]]
+                    moves = [cell]
+                elif zombie_distance[cell[0]][cell[1]] == max_distance:
+                    moves.append(cell)
+            result.append(moves[random.randrange(len(moves))])
+        self._human_list = result
+        return
 
     def move_zombies(self, human_distance):
         """
