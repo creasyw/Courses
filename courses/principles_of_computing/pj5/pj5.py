@@ -110,7 +110,7 @@ class Zombie(poc_grid.Grid):
             lst = self._human_list
         else:
             raise ValueError("The entity_type should be either ZOMBIE or HUMAN -- COMPUTE_DISTANCE_FIELD")
-            
+
         for item in lst:
             boundary.enqueue(item)
             visited.set_full(item[0], item[1])
