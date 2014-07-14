@@ -121,7 +121,8 @@ class Zombie(poc_grid.Grid):
             neighbors = self.four_neighbors(cell[0], cell[1])
             for neighbor in neighbors:
                 if visited.is_empty(neighbor[0], neighbor[1]):
-                    #visited.set_full(neighbor[0], neighbor[1])
+                    # for BFS, every node only explores once.
+                    visited.set_full(neighbor[0], neighbor[1])
                     boundary.enqueue(neighbor)
                     distance_field[neighbor[0]][neighbor[1]] = \
                         min(distance_field[neighbor[0]][neighbor[1]], distance_field[cell[0]][cell[1]]+1)
