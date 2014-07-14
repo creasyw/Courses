@@ -110,7 +110,7 @@ class Zombie(poc_grid.Grid):
             lst = self._human_list
         else:
             raise ValueError("The entity_type should be either ZOMBIE or HUMAN -- COMPUTE_DISTANCE_FIELD")
-
+            
         for item in lst:
             boundary.enqueue(item)
             visited.set_full(item[0], item[1])
@@ -120,8 +120,9 @@ class Zombie(poc_grid.Grid):
             cell = boundary.dequeue()
             neighbors = self.four_neighbors(cell[0], cell[1])
             for neighbor in neighbors:
-                if visited.is_empty(neighbor[0], neighbor[1]):
-                    # for BFS, every node only explores once.
+                # omit any visited cell and only check the passable cells
+                if visited.is_empty(neighbor[0], neighbor[1]) and self.is_empty(neighbor[0], neighbor[1]):
+                    # BES only visit each cell once
                     visited.set_full(neighbor[0], neighbor[1])
                     boundary.enqueue(neighbor)
                     distance_field[neighbor[0]][neighbor[1]] = \
