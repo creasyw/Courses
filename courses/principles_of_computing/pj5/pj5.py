@@ -137,7 +137,7 @@ class Zombie(poc_grid.Grid):
         for person in self._human_list:
             neighbors = self.eight_neighbors(person[0], person[1])
             moves = [person]
-            max_distance = 0
+            max_distance = zombie_distance[person[0]][person[1]]
             for cell in neighbors:
                 if zombie_distance[cell[0]][cell[1]] > max_distance:
                     max_distance = zombie_distance[cell[0]][cell[1]]
