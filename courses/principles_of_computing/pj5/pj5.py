@@ -153,7 +153,20 @@ class Zombie(poc_grid.Grid):
         Function that moves zombies towards humans, no diagonal moves
         are allowed
         """
-        pass
+        result = []
+        for zombie in self._zombie_list:
+            neighbors = self.four_neighbors(zombie[0], zombie[1])
+            moves = [zombie]
+            min_distance = human_distance[zombie[0]][zombie[1]]
+            for cell in neighbors:
+                if human_distance[cell[0]][cell[1]] < min_distance:
+                    min_distance = human_distance[cell[0]][cell[1]]
+                    moves = [cell]
+                elif human_distance[cell[0]][cell[1]] == min_distance:
+                    moves.append(cell)
+            result.append(moves[random.randrange(len(moves))])
+        self._zombie_list = result
+        return
 
 # Start up gui for simulation - You will need to write some code above
 # before this will work without errors
