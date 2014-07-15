@@ -25,3 +25,6 @@ filter' p (x:xs)
 testMap =
   let x = [[1,2],[3,4,5,6], [7,8]]
   in map (map (^2)) x
+
+-- example of lazy evaluation
+sumOddSquare l = sum (takeWhile (< l) [n^2 | n<-[1..], odd(n^2)])
