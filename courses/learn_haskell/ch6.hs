@@ -12,3 +12,11 @@ isUpperCase = (`elem` ['A'..'Z'])
 zipWith' _ [] _ = []
 zipWith' _ _ [] = []
 zipWith' f (x:xs) (y:ys) = f x y : zipWith' f xs ys
+
+map' _ [] = []
+map' f (x:xs) = f x : map f xs
+
+filter' _ [] = []
+filter' p (x:xs)
+  | p x = x : filter p xs
+  | otherwise = filter p xs
