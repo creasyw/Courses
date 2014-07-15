@@ -20,3 +20,8 @@ filter' _ [] = []
 filter' p (x:xs)
   | p x = x : filter p xs
   | otherwise = filter p xs
+
+-- dealing with nested list with "map"
+testMap =
+  let x = [[1,2],[3,4,5,6], [7,8]]
+  in map (map (^2)) x
