@@ -1,3 +1,7 @@
+-- test quicksort
+import System.Random
+import Data.List
+
 maximum' [] = error "Maximum of empty list"
 maximum' [x] = x
 maximum' (x:xs) = max x (maximum' xs)
@@ -10,6 +14,18 @@ quicksort (x:xs) =
   let small = quicksort [a | a <- xs, a <= x]
       large = quicksort [a | a <- xs, a > x]
   in small ++ [x] ++ large
+
+testQuicksort n = do
+  seed  <- newStdGen
+  let rs = randomList n seed
+  putStrLn "Before sorting:"
+  print rs
+  putStrLn "After the sort"
+  print $ quicksort rs
+
+randomList :: Int -> StdGen -> [Int]
+randomList n = take n . unfoldr (Just . random)
+
 
 -- TODO: still not sure how to write local helper function
 -- This is a LISP-style tail-recursive function used in the following
