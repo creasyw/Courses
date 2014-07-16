@@ -28,3 +28,22 @@ testMap =
 
 -- example of lazy evaluation
 sumOddSquare l = sum (takeWhile (< l) [n^2 | n<-[1..], odd(n^2)])
+
+-- Collatz sequence
+chain 1 = [1]
+chain n
+  | even n = n : chain (div n 2)
+  | odd n = n : chain (3*n+1)
+
+-- a good example for the abstraction of calculation process
+-- three basic components: predicate, generator, seed. and another three
+-- functions piplined to derive the final result
+numLongChains = length (filter (\xs-> length xs > 15) (map chain [1..100]))
+
+-- reduce list to a single value with pattern matching of empty list
+-- encapsulated into higher order function (folds)
+sum1 xs = foldl (\acc x -> acc + x) 0 xs
+-- using curry to make it even more concise
+sum2 = foldl (+) 0
+
+elem' y ys = foldl (\acc x -> if x == y then True else acc) False ys
