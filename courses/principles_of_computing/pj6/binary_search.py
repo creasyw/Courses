@@ -9,7 +9,7 @@ def iter_binary_search(ordered_list, lower, upper, item):
     Iterative version of binary search
     Test whether item is in ordered_list[lower:upper]
     """
-    
+
     while lower + 1 < upper:
         mid = (lower + upper) / 2        
         if item < ordered_list[mid]:
@@ -18,12 +18,12 @@ def iter_binary_search(ordered_list, lower, upper, item):
             lower = mid            
     return item == ordered_list[lower]
 
-    
+
 def rec1_binary_search(ordered_list, item):
     """
     Recursively check whether item lies in non-empty ordered_list
     """
-    
+
     if len(ordered_list) == 1:
         return item == ordered_list[0]    
     mid = len(ordered_list) / 2
@@ -31,7 +31,7 @@ def rec1_binary_search(ordered_list, item):
         return rec1_binary_search(ordered_list[: mid], item)
     else:
         return rec1_binary_search(ordered_list[mid :], item)
-    
+
 
 def rec2_binary_search(ordered_list, lower, upper, item):
     """
@@ -60,5 +60,3 @@ print "Searched for 125", "Comptued:", rec1_binary_search(sorted_list, 125), "Ex
 print
 print "Searched for 135", "Computed:", rec2_binary_search(sorted_list, 0, len(sorted_list), 135), "Expected: True"
 print "Searched for 125", "Comptued:", rec2_binary_search(sorted_list, 0, len(sorted_list), 125), "Expected: False"
-              
-   
