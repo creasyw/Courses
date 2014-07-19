@@ -38,7 +38,14 @@ def intersect(list1, list2):
 
     This function can be iterative.
     """
-    return []
+    if len(list1)==0 or len(list2)==0:
+        return []
+    elif list1[0] < list2[0]:
+        return intersect(list1[1:], list2)
+    elif list1[0] > list2[0]:
+        return intersect(list1, list2[1:])
+    else:
+        return [list1[0]] + intersect(list1[1:], list2[1:])
 
 # Functions to perform merge sort
 
