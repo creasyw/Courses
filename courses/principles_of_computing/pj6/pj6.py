@@ -78,7 +78,10 @@ def merge_sort(list1):
 
     This function should be recursive.
     """
-    return []
+    if len(list1) == 1 or len(list1)==0:
+        return list1
+    else:
+        return merge(merge_sort(list1[:len(list1)/2]), merge_sort(list1[len(list1)/2:]))
 
 # Function to generate all strings for the word wrangler game
 
