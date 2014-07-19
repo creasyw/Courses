@@ -42,7 +42,14 @@ def test_merge_sort():
     suite.run_test(mycode.merge_sort([38,27,43,3,9,82,10]), [3,9,10,27,38,43,82], "Test 4")
     suite.report_results()
 
+def test_gen_all_strings():
+    suite = poc_simpletest.TestSuite()
+    print("test_gen_all_strings():"),
+    suite.run_test(set(mycode.gen_all_strings("aab")), set(["", "b", "a", "ab", "ba", "a", "ab", "ba", "aa", "aa", "aab", "aab", "aba", "aba", "baa", "baa"]), "Test")
+    suite.report_results()
+
 test_remove_duplicates()
 test_intersect()
 test_merge()
 test_merge_sort()
+test_gen_all_strings()
