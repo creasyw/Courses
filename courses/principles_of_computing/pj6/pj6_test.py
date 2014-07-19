@@ -22,6 +22,16 @@ def test_intersect():
     suite.run_test(mycode.intersect([1,1,1,1,1],[1,1,2,3]), [1,1], "Test 6")
     suite.report_results()
 
+def test_merge():
+    suite = poc_simpletest.TestSuite()
+    print("test_merge():"),
+    suite.run_test(mycode.merge([],[]), [], "Test 0")
+    suite.run_test(mycode.merge([],[1,2,3]), [1,2,3], "Test 1")
+    suite.run_test(mycode.merge([1,2,3], []), [1,2,3], "Test 2")
+    suite.run_test(mycode.merge([1,2,3], [1,2,3]), [1,1,2,2,3,3], "Test 3")
+    suite.run_test(mycode.merge([1,2,3], [0,4,5]), [0,1,2,3,4,5], "Test 4")
+    suite.report_results()
 
 test_remove_duplicates()
 test_intersect()
+test_merge()
