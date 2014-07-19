@@ -20,9 +20,7 @@ def remove_duplicates(list1):
 
     This function can be iterative.
     """
-    if len(list1) == 0:
-        return []
-    elif len(list1) == 1:
+    if len(list1)==0 or len(list1)==1:
         return list1
     elif list1[0] == list1[1]:
         return remove_duplicates(list1[1:])
