@@ -58,7 +58,17 @@ def merge(list1, list2):
 
     This function can be iterative.
     """   
-    return []
+    result = []
+    while len(list1)!=0 and len(list2)!=0:
+        if list1[0] <= list2[0]:
+            result.append(list1.pop(0))
+        else:
+            result.append(list2.pop(0))
+    if len(list1) == 0:
+        result += list2
+    else:
+        result += list1
+    return result
 
 def merge_sort(list1):
     """
