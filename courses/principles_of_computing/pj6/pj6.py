@@ -93,7 +93,9 @@ def gen_all_strings(word):
 
     This function should be recursive.
     """
-    if len(word)==1:
+    if len(word)==0:
+        return [""]
+    elif len(word)==1:
         return [word, ""]
     else:
         rest_strings = gen_all_strings(word[1:])
