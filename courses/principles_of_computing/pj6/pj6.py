@@ -111,7 +111,12 @@ def load_words(filename):
 
     Returns a list of strings.
     """
-    return []
+    url = codeskulptor.file2url("assets_scrabble_words3.txt")
+    word_lst = urllib2.urlopen(url)
+    result = []
+    for word in word_lst.readlines():
+        result.append(word[:-1])
+    return result
 
 def run():
     """
