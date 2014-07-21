@@ -47,3 +47,9 @@ sum1 xs = foldl (\acc x -> acc + x) 0 xs
 sum2 = foldl (+) 0
 
 elem' y ys = foldl (\acc x -> if x == y then True else acc) False ys
+
+-- an example invoving division and explicit type convertion
+-- It's also good to show where is the exact place of accumulator and iterator.
+-- Two places to refer: http://bit.ly/1mtqNN2, http://bit.ly/Wva2fr
+inconvenientType :: Integral a => [a] -> Float
+inconvenientType xs = foldl (\acc k -> acc / (fromIntegral k :: Float)) 1.0 xs
