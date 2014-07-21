@@ -84,3 +84,11 @@ last' = foldl1 (\_ x -> x)
 -- numbers to exceed 1000?
 -- it also takes advantage of lazy evaluation.
 sqrtSums = length (takeWhile (<1000) (scanl1 (+) (map sqrt [1..]))) + 1
+
+-- ($) could get rid of parentheses, as well as means that function
+-- application can be treated just like another function
+fancyDollar = map ($ 3) [(4+), (^2), (10*), (*8), sqrt]
+
+functionComp = map (negate . abs) [5, -3, -6, 7, 2, -3]
+
+addSquareSum = sum . takeWhile (<10000) . filter odd $ map (^2) [1..]
