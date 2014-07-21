@@ -78,3 +78,9 @@ filter2 p = foldr (\x acc -> if p x then x:acc else acc) []
 -- They also make no sense for empty list, so use foldr1/foldl1 instead.
 head' = foldr1 (\x _ -> x)
 last' = foldl1 (\_ x -> x)
+
+-- exmaple of scans
+-- How many elements are there for the sum of roots of all natrual
+-- numbers to exceed 1000?
+-- it also takes advantage of lazy evaluation.
+sqrtSums = length (takeWhile (<1000) (scanl1 (+) (map sqrt [1..]))) + 1
