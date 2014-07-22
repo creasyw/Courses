@@ -29,8 +29,7 @@ def mm_move(board, player):
         return SCORES[player], (-1, -1)
 
     # assign the worst case as initial value
-    val = -1
-    move = (-1, -1)
+    result = (-1, (-1, -1))
     # change player in the recursive calls
     another_player = provided.switch_player(player)
     # search best possible option among all subtrees
@@ -38,15 +37,16 @@ def mm_move(board, player):
         local_board = board.clone()
         local_board.move(choice[0], choice[1], player)
         temp = mm_move(local_board, another_player)
-        #print "Player:", player, "  Temp:", temp
+        #print "Player:", player, "  Choice:", choice, "  Temp:", temp
         #print local_board
         if temp[0]*SCORES[player] == 1:
             return temp[0], choice
-        elif temp[0]*SCORES[player] > val:
-            val = temp[0]*SCORES[player]
-        move = choice
-    #print "Come to the end:", val*SCORES[player], move
-    return val*SCORES[player], move
+        elif temp[0]*SCORES[player] > result[0]:
+            result = (temp[0], choice)
+        elif result[0] == -1:
+            result = (-1*SCORES[player], choice)
+        #print result, "\n"
+    return result[0]*SCORES[player], result[1]
 
 def move_wrapper(board, player, trials):
     """
@@ -83,5 +83,5 @@ def test_playero():
     suite.run_test(move_wrapper(board, provided.PLAYERO, 1), (0,2), "Test 2.")
     suite.report_results()
 
-#test_playerx()
+test_playerx()
 test_playero()
