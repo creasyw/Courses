@@ -22,7 +22,26 @@ def mm_move(board, player):
     of the given board and the second element is the desired move as a
     tuple, (row, col).
     """
-    return 0, (-1, -1)
+    result = board.check_win()
+    if result == provided.DRAW:
+        return 0, (-1, -1)
+    elif result == provided.PLAYERX:
+        return SCORES[provided.PLAYERX], (-1, -1)
+    elif result == provided.PLAYERO:
+        return SCORES[provided.PLAYERO], (-1, -1)
+
+    val = -1
+    move = (-1, -1)
+    for choice in board.get_empty_squares():
+        local_board = board.clone()
+        local_board.move(choice[0], choice[1], player)
+        temp = mm_move(local_board, player)*SCORES[player]
+        if temp == 1:
+            return 1*SCORES[player], choice
+        elif temp > val:
+            val = temp
+            move = choice    
+    return val, move
 
 def move_wrapper(board, player, trials):
     """
