@@ -25,17 +25,15 @@ def mm_move(board, player):
     result = board.check_win()
     if result == provided.DRAW:
         return 0, (-1, -1)
-    elif result == provided.PLAYERX:
-        return SCORES[provided.PLAYERX], (-1, -1)
-    elif result == provided.PLAYERO:
-        return SCORES[provided.PLAYERO], (-1, -1)
+    elif result == player:
+        return SCORES[player], (-1, -1)
 
+    # assign the worst case as initial value
     val = -1*SCORES[player]
     move = (-1, -1)
-    if player == provided.PLAYERX:
-        another_player = provided.PLAYERO
-    else:
-        another_player = provided.PLAYERX
+    # change player in the recursive calls
+    another_player = provided.switch_player(player)
+    # search best possible option among all subtrees
     for choice in board.get_empty_squares():
         local_board = board.clone()
         local_board.move(choice[0], choice[1], player)
