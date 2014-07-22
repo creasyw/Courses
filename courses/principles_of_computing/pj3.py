@@ -115,12 +115,6 @@ def mc_move(board, player, trials):
 # needs to be commented out for grading
 import poc_simpletest
 
-def set_board(board, arrangement):
-    """ Convenience function to set entire board """
-    for row in range(board.get_dim()):
-        for col in range(board.get_dim()):
-            board.move(row, col, arrangement[row][col])
-
 
 def test_trial(mc_trial):
     """ Test for mc_trial() """
@@ -147,8 +141,7 @@ def manual_scoring(mc_update_scores, mcmatch, mcother,
                    scores, player, arrangement):
     """ Perform one trial of scoring """
 
-    my_board = provided.TTTBoard(3)
-    set_board(my_board, arrangement)
+    my_board = provided.TTTBoard(3, board = arrangement)
     mc_update_scores(scores, my_board, player)
 
     print my_board
@@ -220,8 +213,7 @@ def test_best_move(get_best_move):
     # Create a TestSuite object
     suite = poc_simpletest.TestSuite()
 
-    my_board = provided.TTTBoard(3)
-    set_board(my_board, [[2, 3, 2], [1, 1, 1], [1, 2, 3]])
+    my_board = provided.TTTBoard(3, board = [[2, 3, 2], [1, 1, 1], [1, 2, 3]])
     scores = [[3.0, 5.0, -1.0], [3.0, 2.0, -8.0], [4.0, -2.0, 2.0]]
 
     print my_board
@@ -229,8 +221,7 @@ def test_best_move(get_best_move):
     suite.run_test(get_best_move(my_board, scores), (2, 0),
                    "Test 1: Best move")
 
-    my_board = provided.TTTBoard(3)
-    set_board(my_board, [[1, 1, 2], [1, 3, 1], [2, 3, 1]])
+    my_board = provided.TTTBoard(3, board = [[1, 1, 2], [1, 3, 1], [2, 3, 1]])
     scores = [[0.0, 2.0, 1.0], [0.0, 2.0, -1.0], [1.0, -2.0, 2.0]]
     move_set = set([])
     for dummy_idx in range(20):
