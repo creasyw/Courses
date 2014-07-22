@@ -64,3 +64,24 @@ def move_wrapper(board, player, trials):
 
 # provided.play_game(move_wrapper, 1, False)        
 # poc_ttt_gui.run_gui(3, provided.PLAYERO, move_wrapper, 1, False)
+
+import poc_simpletest
+
+def test_playerx():
+    suite = poc_simpletest.TestSuite()
+    print "Move PlayerX:"
+    board = provided.TTTBoard(3, board = [[3,2,1],[3,2,1],[1,3,2]])
+    print(board)
+    suite.run_test(move_wrapper(board, provided.PLAYERX, 1), (2,0), "Test 1.")
+    suite.report_results()
+
+def test_playero():
+    suite = poc_simpletest.TestSuite()
+    print "Move PlayerO:"
+    board = provided.TTTBoard(3, board = [[3,2,1],[3,2,1],[2,3,2]])    
+    print(board)
+    suite.run_test(move_wrapper(board, provided.PLAYERO, 1), (0,2), "Test 2.")
+    suite.report_results()
+
+#test_playerx()
+test_playero()
