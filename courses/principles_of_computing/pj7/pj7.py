@@ -29,7 +29,7 @@ def mm_move(board, player):
         return SCORES[player], (-1, -1)
 
     # assign the worst case as initial value
-    val = -1*SCORES[player]
+    val = -1
     move = (-1, -1)
     # change player in the recursive calls
     another_player = provided.switch_player(player)
@@ -37,12 +37,15 @@ def mm_move(board, player):
     for choice in board.get_empty_squares():
         local_board = board.clone()
         local_board.move(choice[0], choice[1], player)
-        temp = mm_move(local_board, another_player)*SCORES[player]
-        if temp == 1:
-            return 1*SCORES[player], choice
-        elif temp > val:
-            val = temp
-            move = choice
+        temp = mm_move(local_board, another_player)
+        #print "Player:", player, "  Temp:", temp
+        #print local_board
+        if temp[0]*SCORES[player] == 1:
+            return temp[0], choice
+        elif temp[0]*SCORES[player] > val:
+            val = temp[0]*SCORES[player]
+        move = choice
+    #print "Come to the end:", val*SCORES[player], move
     return val*SCORES[player], move
 
 def move_wrapper(board, player, trials):
