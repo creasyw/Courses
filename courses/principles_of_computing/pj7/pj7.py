@@ -30,18 +30,22 @@ def mm_move(board, player):
     elif result == provided.PLAYERO:
         return SCORES[provided.PLAYERO], (-1, -1)
 
-    val = -1
+    val = -1*SCORES[player]
     move = (-1, -1)
+    if player == provided.PLAYERX:
+        another_player = provided.PLAYERO
+    else:
+        another_player = provided.PLAYERX
     for choice in board.get_empty_squares():
         local_board = board.clone()
         local_board.move(choice[0], choice[1], player)
-        temp = mm_move(local_board, player)*SCORES[player]
+        temp = mm_move(local_board, another_player)*SCORES[player]
         if temp == 1:
             return 1*SCORES[player], choice
         elif temp > val:
             val = temp
-            move = choice    
-    return val, move
+            move = choice
+    return val*SCORES[player], move
 
 def move_wrapper(board, player, trials):
     """
