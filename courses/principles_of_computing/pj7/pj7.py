@@ -25,8 +25,10 @@ def mm_move(board, player):
     result = board.check_win()
     if result == provided.DRAW:
         return 0, (-1, -1)
-    elif result == player:
-        return SCORES[player], (-1, -1)
+    elif result == provided.PLAYERX:
+        return SCORES[provided.PLAYERX], (-1, -1)
+    elif result == provided.PLAYERO:
+        return SCORES[provided.PLAYERO], (-1, -1)
 
     # assign the worst case as initial value
     result = (-1, (-1, -1))
@@ -39,13 +41,14 @@ def mm_move(board, player):
         temp = mm_move(local_board, another_player)
         #print "Player:", player, "  Choice:", choice, "  Temp:", temp
         #print local_board
+        # return once it has a best possible choice
         if temp[0]*SCORES[player] == 1:
             return temp[0], choice
         elif temp[0]*SCORES[player] > result[0]:
             result = (temp[0], choice)
+        # update the choice of result if it keeps the worst
         elif result[0] == -1:
-            result = (-1*SCORES[player], choice)
-        #print result, "\n"
+            result = (-1, choice)
     return result[0]*SCORES[player], result[1]
 
 def move_wrapper(board, player, trials):
