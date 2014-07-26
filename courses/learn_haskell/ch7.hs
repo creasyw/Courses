@@ -23,3 +23,9 @@ search needle haystack =
 
 -- use genericlength so that the return type is not explicitly Int
 average xs = sum xs / genericLength xs
+
+-- the type signature is required, otherwise, the inference from the
+-- complier would deduce this fuction as:
+--         zeroCross :: [Integer] -> [[Integer]]
+zeroCross :: (Num a, Ord a) => [a] -> [[a]]
+zeroCross = groupBy (\x y -> (x>0) == (y>0))
