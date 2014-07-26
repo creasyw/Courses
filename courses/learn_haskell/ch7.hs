@@ -20,3 +20,6 @@ countDup = map (\l@(x:xs) -> (x, length l)) . group . sort
 search needle haystack =
   let nlen = length needle
   in foldl (\acc x -> if take nlen x == needle then True else acc) False (tails haystack)
+
+-- use genericlength so that the return type is not explicitly Int
+average xs = sum xs / genericLength xs
