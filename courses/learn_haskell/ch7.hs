@@ -13,7 +13,8 @@ tryout_buildin = do
 
 -- find how many times each element appears in the list
 -- this function needs EXPLICIT typeclass signature within the type declaration.
-countDup :: (Eq a, Ord a) => [a] -> [(a, Int)]
+-- To be a member of Ord, a type must first satisfy the class of Eq
+countDup :: (Ord a) => [a] -> [(a, Int)]
 countDup = map (\l@(x:xs) -> (x, length l)) . group . sort
 
 search needle haystack =
