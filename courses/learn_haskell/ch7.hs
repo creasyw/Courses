@@ -12,7 +12,8 @@ tryout_buildin = do
   putStrLn $ show $ sum $ takeWhile (<10000) $ map (^3) [1..]
 
 -- find how many times each element appears in the list
-countDup :: (Eq a0, Ord a0) => [a0] -> [(a0, Int)]
+-- this function needs EXPLICIT typeclass signature within the type declaration.
+countDup :: (Eq a, Ord a) => [a] -> [(a, Int)]
 countDup = map (\l@(x:xs) -> (x, length l)) . group . sort
 
 search needle haystack =
