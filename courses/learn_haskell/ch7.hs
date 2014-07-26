@@ -14,3 +14,7 @@ tryout_buildin = do
 -- find how many times each element appears in the list
 countDup :: (Eq a0, Ord a0) => [a0] -> [(a0, Int)]
 countDup = map (\l@(x:xs) -> (x, length l)) . group . sort
+
+search needle haystack =
+  let nlen = length needle
+  in foldl (\acc x -> if take nlen x == needle then True else acc) False (tails haystack)
