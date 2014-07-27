@@ -1,5 +1,5 @@
 import Data.List
-
+import Data.Function  -- use 'on'
 numUniques :: (Eq a) => [a] -> Int
 numUniques = length . nub
 
@@ -29,3 +29,6 @@ average xs = sum xs / genericLength xs
 --         zeroCross :: [Integer] -> [[Integer]]
 zeroCross :: (Num a, Ord a) => [a] -> [[a]]
 zeroCross = groupBy (\x y -> (x>0) == (y>0))
+
+zeroCross' :: (Num a, Ord a) => [a] -> [[a]]
+zeroCross' = groupBy ((==) `on` (>0))
