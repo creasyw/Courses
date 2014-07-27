@@ -1,5 +1,7 @@
 import Data.List
 import Data.Function  -- use 'on'
+import Data.Char
+
 numUniques :: (Eq a) => [a] -> Int
 numUniques = length . nub
 
@@ -32,3 +34,11 @@ zeroCross = groupBy (\x y -> (x>0) == (y>0))
 
 zeroCross' :: (Num a, Ord a) => [a] -> [[a]]
 zeroCross' = groupBy ((==) `on` (>0))
+
+sentenceToList = filter (not . any isSpace). groupBy ((==) `on` isSpace)
+
+-- Caesar cipher
+encode shift msg =
+  let ords = map ord msg
+      shifted = map (+ shift) ords
+  in map chr shifted
