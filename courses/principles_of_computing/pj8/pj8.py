@@ -163,9 +163,16 @@ class Puzzle:
         elif solved_col == target_col:
             movements = "u"*(target_row-solved_row)+"lddru"*(target_row-solved_row-1)+"ld"
         elif solved_col < target_col:
-            movements = "l"*(target_col-solved_col)+"u"*(target_row-solved_row)+"lddru"*(target_row-solved_row-1)+"rd"+"urrdl"*(target_col-solved_col-1)
+            if solved_col == 0:
+                movements = "l"*(target_col-solved_col)+"u"*(target_row-solved_row)+"rddlu"*(target_row-solved_row-1)+"rdl"+"urrdl"*(target_col-solved_col-1)
+            else:
+                movements = "l"*(target_col-solved_col)+"u"*(target_row-solved_row)+"lddru"*(target_row-solved_row-1)+"rd"+"urrdl"*(target_col-solved_col-1)
         elif solved_col > target_col:
-            movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"dllur"*(solved_col-target_col-1)+"dlu"+"lddru"*(target_row-solved_row-1)+"ld"
+            if solved_row == 0:
+                movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"dllur"*(solved_col-target_col-1)+"dlu"+"lddru"*(target_row-solved_row-1)+"ld"
+            else:
+                movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"ulldr"*(solved_col-target_col-1)+"ullddru"+"lddru"*(target_row-solved_row-1)+"ld"
+        #print movements
         self.update_puzzle(movements)
         return movements
 
