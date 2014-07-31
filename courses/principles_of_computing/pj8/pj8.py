@@ -125,6 +125,9 @@ class Puzzle:
     ##################################################################
     # Phase one methods
 
+    def right_number(self, row, col):
+        return self.get_number(row, col) == self.get_width()*row+col
+
     def lower_row_invariant(self, target_row, target_col):
         """
         Check whether the puzzle satisfies the specified invariant
