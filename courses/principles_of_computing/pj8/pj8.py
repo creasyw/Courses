@@ -222,4 +222,21 @@ class Puzzle:
         return ""
 
 # Start interactive simulation
-poc_fifteen_gui.FifteenGUI(Puzzle(4, 4))
+# poc_fifteen_gui.FifteenGUI(Puzzle(4, 4))
+
+import poc_simpletest
+
+def test_lower_row_invariant():
+    suite = poc_simpletest.TestSuite()
+    print("test_lower_row_invariant():"),
+    suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,0,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(1, 2), True, "Test 0: Zero in the middle.")
+    suite.run_test(Puzzle(4,4,[[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 0), True, "Test 1: Zero in the upper left.")
+    suite.run_test(Puzzle(4,4,[[3,1,2,0],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 3), True, "Test 2: Zero in the upper right.")
+    suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,12,7],[8,9,10,11],[0,13,14,15]]).lower_row_invariant(3, 0), True, "Test 3: Zero in the bottom left.")
+    suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,15,7],[8,9,10,11],[12,13,14,0]]).lower_row_invariant(3, 3), True, "Test 4: Zero in the bottom right.")
+    suite.run_test(Puzzle(4,4,[[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 3), False, "Test 5: Invalid.")
+    suite.run_test(Puzzle(4,4,[[1,0,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 0), False, "Test 6: Invalid.")
+    suite.run_test(Puzzle(4,4,[[0,3,2,1],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 0), False, "Test 7: Invalid.")
+    suite.report_results()
+
+test_lower_row_invariant()
