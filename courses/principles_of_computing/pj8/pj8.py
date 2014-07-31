@@ -83,7 +83,7 @@ class Puzzle:
         """
         Locate the current position of the tile that will be at
         position (solved_row, solved_col) when the puzzle is solved
-        Returns a tuple of two integers        
+        Returns a tuple of two integers
         """
         solved_value = (solved_col + self._width * solved_row)
 
@@ -251,4 +251,16 @@ def test_lower_row_invariant():
     suite.run_test(Puzzle(4,4,[[0,3,2,1],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 0), False, "Test 7: Invalid.")
     suite.report_results()
 
-test_lower_row_invariant()
+def test_solve_interior_tile():
+    suite = poc_simpletest.TestSuite()
+    print("test_solve_interior_tile():\n"),
+    puzzle = Puzzle(4,4,[[2,11,12,13],[9,4,6,1],[5,7,8,3],[10,0,14,15]])
+    suite.run_test(puzzle.lower_row_invariant(3, 1), True, "Test 0.0:")
+    print(puzzle)
+    puzzle.solve_interior_tile(3, 1)
+    print(puzzle)
+    suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 0.1:")
+    suite.report_results()
+
+#test_lower_row_invariant()
+test_solve_interior_tile()
