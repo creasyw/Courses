@@ -154,8 +154,20 @@ class Puzzle:
         Place correct tile at target position
         Updates puzzle and returns a move string
         """
-        # replace with your code
-        return ""
+        solved_row, solved_col = self.current_position(target_row, target_col)
+        movements = ""
+        if solved_row == target_row and solved_col == target_col:
+            return ""
+        if solved_row == target_row:
+            movements = "l"*(target_col-solved_col)+"urrdl"*(target_col-solved_col-1)
+        elif solved_col == target_col:
+            movements = "u"*(target_row-solved_row)+"lddru"*(target_row-solved_row-1)+"ld"
+        elif solved_col < target_col:
+            movements = "l"*(target_col-solved_col)+"u"*(target_row-solved_row)+"lddru"*(target_row-solved_row-1)+"rd"+"urrdl"*(target_col-solved_col-1)
+        elif solved_col > target_col:
+            movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"dllur"*(solved_col-target_col-1)+"dlu"+"lddru"*(target_row-solved_row-1)+"ld"
+        self.update_puzzle(movements)
+        return movements
 
     def solve_col0_tile(self, target_row):
         """
