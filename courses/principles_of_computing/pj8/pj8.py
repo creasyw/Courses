@@ -152,12 +152,12 @@ class Puzzle:
                 return False
         return True
 
-    def solve_interior_tile(self, target_row, target_col):
+    def move_tile(self, target_row, target_col, val):
         """
-        Place correct tile at target position
-        Updates puzzle and returns a move string
+        helper function only calculates the movements
         """
-        solved_row, solved_col = self.current_position(target_row, target_col)
+        # a little bit twisted here for the use of both solve_interior_tile and solve_col0_tile
+        solved_row, solved_col = self.current_position(0, val)
         movements = ""
         if solved_row == target_row and solved_col == target_col:
             return ""
@@ -175,7 +175,15 @@ class Puzzle:
                 movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"dllur"*(solved_col-target_col-1)+"dlu"+"lddru"*(target_row-solved_row-1)+"ld"
             else:
                 movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"ulldr"*(solved_col-target_col-1)+"ullddru"+"lddru"*(target_row-solved_row-1)+"ld"
-        #print movements
+        #print "In interior:", movements
+        return movements
+
+    def solve_interior_tile(self, target_row, target_col):
+        """
+        Place correct tile at target position
+        Updates puzzle and returns a move string
+        """
+        movements = self.move_tile(target_row, target_col, target_row*self.get_width()+target_col)
         self.update_puzzle(movements)
         return movements
 
