@@ -279,7 +279,7 @@ def test_lower_row_invariant():
 
 def test_solve_interior_tile():
     suite = poc_simpletest.TestSuite()
-    print("test_solve_interior_tile():\n"),
+    print("test_solve_interior_tile():")
 
     puzzle = Puzzle(4,4,[[2,11,12,13],[9,4,6,1],[5,7,8,3],[10,0,14,15]])
     suite.run_test(puzzle.lower_row_invariant(3, 1), True, "Test 0.0:")
@@ -312,5 +312,21 @@ def test_solve_interior_tile():
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 5.1:")
 
     suite.report_results()
+
+def test_solve_col0_tile():
+    suite = poc_simpletest.TestSuite()
+    print("test_solve_col0_tile():")
+
+    puzzle = Puzzle(4,4,[[2,11,12,10],[9,4,6,1],[5,7,8,3],[0,13,14,15]])
+    suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 0.0:")
+    print puzzle
+    puzzle.solve_col0_tile(3)
+    print puzzle
+    suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 0.1:")
+
+    suite.report_results()
+
+
 #test_lower_row_invariant()
-test_solve_interior_tile()
+#test_solve_interior_tile()
+test_solve_col0_tile()
