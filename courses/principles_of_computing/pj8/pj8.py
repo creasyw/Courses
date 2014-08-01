@@ -126,6 +126,9 @@ class Puzzle:
     # Phase one methods
 
     def right_number(self, row, col):
+        """
+        Check if the position has the right number.
+        """
         return self.get_number(row, col) == self.get_width()*row+col
 
     def lower_row_invariant(self, target_row, target_col):
