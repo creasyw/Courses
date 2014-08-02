@@ -227,8 +227,7 @@ class Puzzle:
         at the given column (col > 1)
         Returns a boolean
         """
-        # replace with your code
-        return False
+        return self.lower_row_invariant(1, target_col)
 
     def solve_row0_tile(self, target_col):
         """
