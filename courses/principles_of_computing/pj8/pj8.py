@@ -201,7 +201,9 @@ class Puzzle:
         if solved_row == target_row-1 and solved_col == 0:
             movements = "u"
         else:
-            movements = "ur" + self.move_tile(target_row-1, 1, target_row*self.get_width()) + "ruldrdlurdluurddlu"
+            local_board = self.clone()
+            local_board.update_puzzle("ur")
+            movements = "ur" + local_board.move_tile(target_row-1, 1, target_row*self.get_width()) + "ruldrdlurdluurddlu"
         movements += "r"*(self.get_width()-1)
         #print movements
         self.update_puzzle(movements)
