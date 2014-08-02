@@ -159,10 +159,14 @@ class Puzzle:
         # a little bit twisted here for the use of both solve_interior_tile and solve_col0_tile
         solved_row, solved_col = self.current_position(0, val)
         movements = ""
+        #print solved_row, solved_col, target_row, target_col, val
         if solved_row == target_row and solved_col == target_col:
             return ""
         if solved_row == target_row:
-            movements = "l"*(target_col-solved_col)+"urrdl"*(target_col-solved_col-1)
+            if target_col > solved_col:
+                movements = "l"*(target_col-solved_col)+"urrdl"*(target_col-solved_col-1)
+            else:
+                movements = "r"*(solved_col-target_col)+"ulldr"*(solved_col-target_col-1)+"ulld"
         elif solved_col == target_col:
             movements = "u"*(target_row-solved_row)+"lddru"*(target_row-solved_row-1)+"ld"
         elif solved_col < target_col:
