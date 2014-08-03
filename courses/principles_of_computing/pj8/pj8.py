@@ -390,7 +390,19 @@ def test_row1_invariant():
     suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,7,0],[8,9,10,11],[15,13,14,12]]).row1_invariant(3), False, "Test 3: Invalid.")
     suite.report_results()
 
+def test_row0_invariant():
+    suite = poc_simpletest.TestSuite()
+    print "\n==========="
+    print("test_row0_invariant():"),
+    suite.run_test(Puzzle(4,4,[[2,4,0,3],[5,1,6,7],[8,9,10,11],[12,13,14,15]]).row0_invariant(2), True, "Test 0")
+    suite.run_test(Puzzle(4,4,[[3,4,2,0],[5,1,6,7],[8,9,10,11],[12,13,14,15]]).row0_invariant(3), True, "Test 1")
+    suite.run_test(Puzzle(4,4,[[3,4,0,2],[5,1,6,7],[8,9,10,11],[12,13,14,15]]).row0_invariant(3), False, "Test 2: Invalid.")
+    suite.run_test(Puzzle(4,4,[[3,4,2,0],[5,1,7,6],[8,9,10,11],[12,13,14,15]]).row0_invariant(3), False, "Test 3: Invalid.")
+    suite.run_test(Puzzle(4,4,[[3,4,2,0],[5,1,6,7],[8,9,10,11],[12,13,15,14]]).row0_invariant(3), False, "Test 4: Invalid.")
+    suite.report_results()
+
 test_lower_row_invariant()
 test_solve_interior_tile()
 test_solve_col0_tile()
 test_row1_invariant()
+test_row0_invariant()
