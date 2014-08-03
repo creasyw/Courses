@@ -242,8 +242,7 @@ class Puzzle:
         Solve the tile in row one at the specified column
         Updates puzzle and returns a move string
         """
-        # replace with your code
-        return ""
+        return self.solve_interior_tile(1, target_col)
 
     ###########################################################
     # Phase 3 methods
