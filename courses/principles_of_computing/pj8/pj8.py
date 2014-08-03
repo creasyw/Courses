@@ -141,8 +141,9 @@ class Puzzle:
         if self.get_number(target_row, target_col) != 0:
             return False
         # All tiles in rows i+1 or below are positioned at their solved location.
+        start_col = (target_col if target_row==0 else 0)
         for row in range(target_row+1, self.get_height()):
-            for col in range(self.get_width()):
+            for col in range(start_col, self.get_width()):
                 if not self.right_number(row, col):
                     return False
         # All tiles in row i to the right of position (i,j) are positioned at
@@ -218,8 +219,7 @@ class Puzzle:
         at the given column (col > 1)
         Returns a boolean
         """
-        # replace with your code
-        return False
+        return self.lower_row_invariant(0, target_col)
 
     def row1_invariant(self, target_col):
         """
