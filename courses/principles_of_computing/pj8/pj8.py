@@ -283,6 +283,7 @@ def test_lower_row_invariant():
 
 def test_solve_interior_tile():
     suite = poc_simpletest.TestSuite()
+    print "\n==========="
     print("test_solve_interior_tile():"),
 
     puzzle = Puzzle(4,4,[[2,11,12,13],[9,4,6,1],[5,7,8,3],[10,0,14,15]])
@@ -319,62 +320,47 @@ def test_solve_interior_tile():
 
 def test_solve_col0_tile():
     suite = poc_simpletest.TestSuite()
-    print("test_solve_col0_tile():")
+    print "\n==========="
+    print("test_solve_col0_tile():"),
 
     puzzle = Puzzle(4,4,[[2,11,12,10],[9,4,6,1],[5,7,8,3],[0,13,14,15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 0.0:")
-    print puzzle
     puzzle.solve_col0_tile(3)
-    print puzzle
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 0.1:")
 
     puzzle = Puzzle(4,4,[[2,11,3,10],[9,4,6,1],[5,7,8,12],[0,13,14,15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 1.0:")
-    print puzzle
     puzzle.solve_col0_tile(3)
-    print puzzle
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 1.1:")
 
     puzzle = Puzzle(4,4,[[12,11,2,10],[9,4,6,1],[5,7,8,3],[0,13,14,15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 2.0:")
-    print puzzle
     puzzle.solve_col0_tile(3)
-    print puzzle
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 2.1:")
 
     puzzle = Puzzle(4,4,[[10,11,2,12],[9,4,6,1],[5,7,8,3],[0,13,14,15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 3.0:")
-    print puzzle
     puzzle.solve_col0_tile(3)
-    print puzzle
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 3.1:")
 
     puzzle = Puzzle(4,4,[[10,11,2,5],[9,4,6,1],[12,7,8,3],[0,13,14,15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 4.0:")
-    print puzzle
     puzzle.solve_col0_tile(3)
-    print puzzle
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 4.1:")
 
     puzzle = Puzzle(4,4,[[10,11,2,5],[9,4,6,1],[7,12,8,3],[0,13,14,15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 5.0:")
-    print puzzle
     puzzle.solve_col0_tile(3)
-    print puzzle
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 5.1:")
 
     puzzle = Puzzle(4,4,[[8,3,2,5],[7,4,6,1],[0,9,10,11],[12,13,14,15]])
     suite.run_test(puzzle.lower_row_invariant(2, 0), True, "Test 6.0:")
-    print puzzle
     puzzle.solve_col0_tile(2)
-    print puzzle
     suite.run_test(puzzle.lower_row_invariant(1, 3), True, "Test 6.1:")
 
     puzzle = Puzzle(4,4,[[1,3,2,5],[7,4,6,8],[0,9,10,11],[12,13,14,15]])
     suite.run_test(puzzle.lower_row_invariant(2, 0), True, "Test 7.0:")
-    print puzzle
     puzzle.solve_col0_tile(2)
-    print puzzle
     suite.run_test(puzzle.lower_row_invariant(1, 3), True, "Test 7.1:")
 
     suite.report_results()
