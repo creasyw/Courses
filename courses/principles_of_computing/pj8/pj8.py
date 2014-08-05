@@ -279,8 +279,38 @@ class Puzzle:
         Generate a solution string for a puzzle
         Updates the puzzle and returns a move string
         """
-        # replace with your code
-        return ""
+        # move zero tile to the lower right corner
+        row, col = self.current_position(0, 0)
+        movements = "d"*(self.get_height()-1-row)+"r"*(self.get_width()-1-col)
+        self.update_puzzle(movements)
+        # solve rowid from 2 by row
+        for row in range(self.get_height()-1, 1, -1):
+            for col in range(self.get_width()-1, -1, -1):
+                #print row, col
+                #print self, "\n"
+                assert self.lower_row_invariant(row, col)
+                if col == 0:
+                    movements += self.solve_col0_tile(row)
+                    assert self.lower_row_invariant(row-1, self.get_width()-1)
+                else:
+                    #print row, col
+                    #print self
+                    movements += self.solve_interior_tile(row, col)
+                    #print self
+                    assert self.lower_row_invariant(row, col-1)
+        # solve the uppermost two rows by column
+        for col in range(self.get_width()-1, 1, -1):
+            for row in range(1, -1, -1):
+                if row == 0:
+                    assert self.row0_invariant(col)
+                    movements += self.solve_row0_tile(col)
+                    assert self.row1_invariant(col-1)
+                else:
+                    assert self.row1_invariant(col)
+                    movements += self.solve_row1_tile(col)
+                    assert self.row0_invariant(col)
+        movements += self.solve_2x2()
+        return movements
 
 # Start interactive simulation
 # poc_fifteen_gui.FifteenGUI(Puzzle(4, 4))
