@@ -520,10 +520,28 @@ def test_solve_puzzle():
     print("test_solve_puzzle():"),
 
     puzzle = Puzzle(4,4,[[2,11,12,13],[9,4,6,1],[5,7,8,3],[10,0,14,15]])
-    #print puzzle
     puzzle.solve_puzzle()
-    #print puzzle
     suite.run_test(puzzle.row0_invariant(0), True, "Test 0:")
+
+    puzzle = Puzzle(4,4,[[2,11,0,13],[9,4,6,15],[5,7,8,3],[10,12,14,1]])
+    puzzle.solve_puzzle()
+    suite.run_test(puzzle.row0_invariant(0), True, "Test 1:")
+
+    puzzle = Puzzle(4,4,[[15,14,13,12],[11,10,9,8],[7,6,5,4],[3,2,1,0]])
+    puzzle.solve_puzzle()
+    suite.run_test(puzzle.row0_invariant(0), True, "Test 2:")
+
+    puzzle = Puzzle(4,4,[[5,1,4,2],[13,12,15,3],[10,0,6,14],[8,7,9,11]])
+    puzzle.solve_puzzle()
+    suite.run_test(puzzle.row0_invariant(0), True, "Test 3:")
+
+    puzzle = Puzzle(4,4,[[5,12,15,2],[8,1,0,3],[13,4,6,11],[7,10,14,9]])
+    puzzle.solve_puzzle()
+    suite.run_test(puzzle.row0_invariant(0), True, "Test 4:")
+
+    puzzle = Puzzle(4,4,[[14,12,8,5],[0,2,15,6],[4,13,7,9],[10,11,3,1]])
+    puzzle.solve_puzzle()
+    suite.run_test(puzzle.row0_invariant(0), True, "Test 5:")
 
     suite.report_results()
 
