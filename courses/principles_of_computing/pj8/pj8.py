@@ -242,7 +242,9 @@ class Puzzle:
         Solve the tile in row one at the specified column
         Updates puzzle and returns a move string
         """
-        return self.solve_interior_tile(1, target_col)
+        movements = self.solve_interior_tile(1, target_col)
+        self.update_puzzle("ur")
+        return movements+"ur"
 
     ###########################################################
     # Phase 3 methods
