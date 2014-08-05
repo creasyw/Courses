@@ -234,8 +234,17 @@ class Puzzle:
         Solve the tile in row zero at the specified column
         Updates puzzle and returns a move string
         """
-        # replace with your code
-        return ""
+        solved_row, solved_col = self.current_position(0, target_col)
+        movements = ""
+        if solved_col == target_col-1 and solved_row == 0:
+            movements = "ld"
+        else:
+            local_board = self.clone()
+            local_board.update_puzzle("ld")
+            movements = "ld" + local_board.move_tile(1, target_col-1, target_col) + "urdlurrdluldrruld"
+        #print movements
+        self.update_puzzle(movements)
+        return movements
 
     def solve_row1_tile(self, target_col):
         """
