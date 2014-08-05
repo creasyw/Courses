@@ -160,7 +160,6 @@ class Puzzle:
         # a little bit twisted here for the use of both solve_interior_tile and solve_col0_tile
         solved_row, solved_col = self.current_position(0, val)
         movements = ""
-        #print solved_row, solved_col, target_row, target_col, val
         if solved_row == target_row and solved_col == target_col:
             return ""
         if solved_row == target_row:
@@ -180,8 +179,6 @@ class Puzzle:
                 movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"dllur"*(solved_col-target_col-1)+"dlu"+"lddru"*(target_row-solved_row-1)+"ld"
             else:
                 movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"ulldr"*(solved_col-target_col-1)+"ullddru"+"lddru"*(target_row-solved_row-1)+"ld"
-        #print "In interior:", movements
-        #print solved_row, solved_col, target_row, target_col
         return movements
 
     def solve_interior_tile(self, target_row, target_col):
@@ -207,7 +204,6 @@ class Puzzle:
             local_board.update_puzzle("ur")
             movements = "ur" + local_board.move_tile(target_row-1, 1, target_row*self.get_width()) + "ruldrdlurdluurddlu"
         movements += "r"*(self.get_width()-1)
-        #print movements
         self.update_puzzle(movements)
         return movements
 
@@ -243,7 +239,6 @@ class Puzzle:
             local_board = self.clone()
             local_board.update_puzzle("ld")
             movements = "ld" + local_board.move_tile(1, target_col-1, target_col) + "urdlurrdluldrruld"
-        #print movements
         self.update_puzzle(movements)
         return movements
 
@@ -287,17 +282,12 @@ class Puzzle:
         # solve rowid from 2 by row
         for row in range(self.get_height()-1, 1, -1):
             for col in range(self.get_width()-1, -1, -1):
-                #print row, col
-                #print self, "\n"
                 assert self.lower_row_invariant(row, col)
                 if col == 0:
                     movements += self.solve_col0_tile(row)
                     assert self.lower_row_invariant(row-1, self.get_width()-1)
                 else:
-                    #print row, col
-                    #print self
                     movements += self.solve_interior_tile(row, col)
-                    #print self
                     assert self.lower_row_invariant(row, col-1)
         # solve the uppermost two rows by column
         for col in range(self.get_width()-1, 1, -1):
