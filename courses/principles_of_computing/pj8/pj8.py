@@ -263,7 +263,15 @@ class Puzzle:
         Solve the upper left 2x2 part of the puzzle
         Updates the puzzle and returns a move string
         """
-        # replace with your code
+        # move zero tile to the left-up corner
+        self.update_puzzle("lu")
+        movements = "rdlu"
+        for _ in range(2):
+            self.update_puzzle("rdlu")
+            if self.row0_invariant(0):
+                return "lu" + movements
+            movements += "rdlu"
+        # the final 2x2 cannot be solved
         return ""
 
     def solve_puzzle(self):
