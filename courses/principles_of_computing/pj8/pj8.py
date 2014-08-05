@@ -267,7 +267,7 @@ class Puzzle:
         # move zero tile to the left-up corner
         self.update_puzzle("lu")
         movements = "rdlu"
-        for _ in range(2):
+        for _ in range(3):
             self.update_puzzle("rdlu")
             if self.row0_invariant(0):
                 return "lu" + movements
