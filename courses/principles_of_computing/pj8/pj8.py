@@ -518,6 +518,20 @@ def test_solve_2x2():
     suite.run_test(puzzle.row1_invariant(1), True, "Test 3.0:")
     puzzle.solve_2x2()
     suite.run_test(puzzle.row0_invariant(0), True, "Test 3.1:")
+
+    suite.report_results()
+
+def test_solve_puzzle():
+    suite = poc_simpletest.TestSuite()
+    print "\n==========="
+    print("test_solve_puzzle():"),
+
+    puzzle = Puzzle(4,4,[[2,11,12,13],[9,4,6,1],[5,7,8,3],[10,0,14,15]])
+    #print puzzle
+    puzzle.solve_puzzle()
+    #print puzzle
+    suite.run_test(puzzle.row0_invariant(0), True, "Test 0:")
+
     suite.report_results()
 
 test_lower_row_invariant()
@@ -528,3 +542,4 @@ test_row0_invariant()
 test_solve_row1_tile()
 test_solve_row0_tile()
 test_solve_2x2()
+test_solve_puzzle()
