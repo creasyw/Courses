@@ -424,6 +424,8 @@ def test_row0_invariant():
     suite.run_test(Puzzle(4,4,[[3,4,0,2],[5,1,6,7],[8,9,10,11],[12,13,14,15]]).row0_invariant(3), False, "Test 2: Invalid.")
     suite.run_test(Puzzle(4,4,[[3,4,2,0],[5,1,7,6],[8,9,10,11],[12,13,14,15]]).row0_invariant(3), False, "Test 3: Invalid.")
     suite.run_test(Puzzle(4,4,[[3,4,2,0],[5,1,6,7],[8,9,10,11],[12,13,15,14]]).row0_invariant(3), False, "Test 4: Invalid.")
+    suite.run_test(Puzzle(4,5,[[15,16,0,3,4],[5,6,7,8,9],[10,11,12,13,14],[1,2,17,18,19]]).row0_invariant(2), False, "Test 4: Invalid.")
+
     suite.report_results()
 
 def test_solve_row1_tile():
