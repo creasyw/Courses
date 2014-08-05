@@ -396,25 +396,24 @@ def test_solve_row1_tile():
     puzzle = Puzzle(4,4,[[7,4,2,1],[6,5,3,0],[8,9,10,11],[12,13,14,15]])
     suite.run_test(puzzle.row1_invariant(3), True, "Test 0.0:")
     puzzle.solve_row1_tile(3)
-    suite.run_test(puzzle.row1_invariant(2), True, "Test 0.1:")
+    suite.run_test(puzzle.row0_invariant(3), True, "Test 0.1:")
 
     puzzle = Puzzle(4,4,[[6,4,2,1],[7,5,3,0],[8,9,10,11],[12,13,14,15]])
     suite.run_test(puzzle.row1_invariant(3), True, "Test 0.0:")
     puzzle.solve_row1_tile(3)
-    suite.run_test(puzzle.row1_invariant(2), True, "Test 0.1:")
+    suite.run_test(puzzle.row0_invariant(3), True, "Test 0.1:")
 
     puzzle = Puzzle(4,4,[[6,4,2,3],[1,5,0,7],[8,9,10,11],[12,13,14,15]])
     suite.run_test(puzzle.row1_invariant(2), True, "Test 0.0:")
     puzzle.solve_row1_tile(2)
-    suite.run_test(puzzle.row1_invariant(1), True, "Test 0.1:")
+    suite.run_test(puzzle.row0_invariant(2), True, "Test 0.1:")
 
     puzzle = Puzzle(4,4,[[1,4,2,3],[6,5,0,7],[8,9,10,11],[12,13,14,15]])
     suite.run_test(puzzle.row1_invariant(2), True, "Test 0.0:")
     puzzle.solve_row1_tile(2)
-    suite.run_test(puzzle.row1_invariant(1), True, "Test 0.1:")
+    suite.run_test(puzzle.row0_invariant(2), True, "Test 0.1:")
 
     suite.report_results()
-
 
 test_lower_row_invariant()
 test_solve_interior_tile()
