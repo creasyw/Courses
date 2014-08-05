@@ -420,7 +420,39 @@ def test_solve_row1_tile():
     puzzle = Puzzle(4,4,[[1,4,2,3],[6,5,0,7],[8,9,10,11],[12,13,14,15]])
     suite.run_test(puzzle.row1_invariant(2), True, "Test 3.0:")
     puzzle.solve_row1_tile(2)
-    suite.run_test(puzzle.row0_invariant(2), True, "Test 0.1:")
+    suite.run_test(puzzle.row0_invariant(2), True, "Test 3.1:")
+
+    suite.report_results()
+
+def test_solve_row0_tile():
+    suite = poc_simpletest.TestSuite()
+    print "\n==========="
+    print("test_solve_row0_tile():"),
+
+    puzzle = Puzzle(4,4,[[5,4,2,0],[6,1,3,7],[8,9,10,11],[12,13,14,15]])
+    suite.run_test(puzzle.row0_invariant(3), True, "Test 0.0:")
+    puzzle.solve_row0_tile(3)
+    suite.run_test(puzzle.row1_invariant(2), True, "Test 0.1:")
+
+    puzzle = Puzzle(4,4,[[5,4,2,0],[3,1,6,7],[8,9,10,11],[12,13,14,15]])
+    suite.run_test(puzzle.row0_invariant(3), True, "Test 1.0:")
+    puzzle.solve_row0_tile(3)
+    suite.run_test(puzzle.row1_invariant(2), True, "Test 1.1:")
+
+    puzzle = Puzzle(4,4,[[3,4,2,0],[5,1,6,7],[8,9,10,11],[12,13,14,15]])
+    suite.run_test(puzzle.row0_invariant(3), True, "Test 2.0:")
+    puzzle.solve_row0_tile(3)
+    suite.run_test(puzzle.row1_invariant(2), True, "Test 2.1:")
+
+    puzzle = Puzzle(4,4,[[2,4,0,3],[5,1,6,7],[8,9,10,11],[12,13,14,15]])
+    suite.run_test(puzzle.row0_invariant(2), True, "Test 3.0:")
+    puzzle.solve_row0_tile(2)
+    suite.run_test(puzzle.row1_invariant(1), True, "Test 3.1:")
+
+    puzzle = Puzzle(4,4,[[5,4,0,3],[2,1,6,7],[8,9,10,11],[12,13,14,15]])
+    suite.run_test(puzzle.row0_invariant(2), True, "Test 4.0:")
+    puzzle.solve_row0_tile(2)
+    suite.run_test(puzzle.row1_invariant(1), True, "Test 4.1:")
 
     suite.report_results()
 
@@ -430,3 +462,4 @@ test_solve_col0_tile()
 test_row1_invariant()
 test_row0_invariant()
 test_solve_row1_tile()
+test_solve_row0_tile()
