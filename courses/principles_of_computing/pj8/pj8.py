@@ -174,13 +174,14 @@ class Puzzle:
             if solved_col == 0:
                 movements = "l"*(target_col-solved_col)+"u"*(target_row-solved_row)+"rddlu"*(target_row-solved_row-1)+"rdl"+"urrdl"*(target_col-solved_col-1)
             else:
-                movements = "l"*(target_col-solved_col)+"u"*(target_row-solved_row)+"lddru"*(target_row-solved_row-1)+"rd"+"urrdl"*(target_col-solved_col-1)+"l"
+                movements = "l"*(target_col-solved_col)+"u"*(target_row-solved_row)+"lddru"*(target_row-solved_row-1)+"rdl"+"urrdl"*(target_col-solved_col-1)
         elif solved_col > target_col:
             if solved_row == 0:
                 movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"dllur"*(solved_col-target_col-1)+"dlu"+"lddru"*(target_row-solved_row-1)+"ld"
             else:
                 movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"ulldr"*(solved_col-target_col-1)+"ullddru"+"lddru"*(target_row-solved_row-1)+"ld"
         #print "In interior:", movements
+        #print solved_row, solved_col, target_row, target_col
         return movements
 
     def solve_interior_tile(self, target_row, target_col):
