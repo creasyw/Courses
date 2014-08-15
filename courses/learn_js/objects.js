@@ -1,5 +1,6 @@
 var friends = new Object();
 
+// construct using "literal notation"
 friends.bill = {
     firstName: "Bill",
     lastName:"Gates",
@@ -29,5 +30,25 @@ var search = function(name) {
     }
 }
 
-list(friends);
-search("Steve");
+// another way to construct object -- General Constructor
+var susan2 = new Object();
+// two ways to set/access properties:
+// 1. dot notation; 2.bracket notation
+susan2["name"] = "Susan Jordan";
+susan2.age = 24;
+
+// -----------------
+// another way of constructing object is "customized constructor"
+// 3 lines required to make harry_potter
+var harry_potter = new Object();
+harry_potter.pages = 350;
+harry_potter.author = "J.K. Rowling";
+
+// A custom constructor for book
+function Book (pages, author) {
+    this.pages = pages;
+    this.author = author;
+}
+
+// Use our new constructor to make the_hobbit in one line
+var the_hobbit = new Book(320, "J.R.R. Tolkien");
