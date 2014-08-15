@@ -52,3 +52,32 @@ function Book (pages, author) {
 
 // Use our new constructor to make the_hobbit in one line
 var the_hobbit = new Book(320, "J.R.R. Tolkien");
+
+// -----------------
+// There are two approaches declearing methods of object
+
+// 1. within the literal notation
+function Circle (radius) {
+    this.radius = radius;
+    this.area = function () {
+        return Math.PI * this.radius * this.radius;
+
+    };
+    // define a perimeter method here
+    this.perimeter = function () {
+        return Math.PI * this.radius * 2;
+    }
+};
+
+// 2. declear general function working for objects
+// here we define our method using "this", before we even introduce bob
+var setAge = function (newAge) {
+  this.age = newAge;
+};
+// now we make bob
+var bob = new Object();
+bob.age = 30;
+// and down here we just use the method we already made
+bob.setAge = setAge;
+// change bob's age to 50 here
+bob.setAge(50);
