@@ -174,6 +174,11 @@ by Prelude.")
 ;; show line number
 (global-linum-mode t)
 
+;; switch among multiple windows
+(global-set-key (kbd "C-x <up>") 'windmove-up)
+(global-set-key (kbd "C-x <down>") 'windmove-down)
+(global-set-key (kbd "C-x <right>") 'windmove-right)
+(global-set-key (kbd "C-x <left>") 'windmove-left)
 
 ;; disable the original color theme for Prelude
 (disable-theme 'zenburn)
