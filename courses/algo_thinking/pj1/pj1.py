@@ -22,3 +22,36 @@ def make_complete_graph(num_nodes):
     for index in range(num_nodes):
         result[index] = set([node for node in range(num_nodes) if node!=index])
     return result
+
+def compute_in_degrees(digraph):
+    """
+    Takes a directed graph digraph (represented as a dictionary) and computes
+    the in-degrees for the nodes in the graph.
+    """
+    result = {}
+    for key in digraph:
+        result[key] = 0
+    for key in digraph:
+        for val in digraph[key]:
+            result[val] += 1
+    return result
+
+def in_degree_distribution(digraph):
+    """
+    Takes a directed graph digraph (represented as a resultionary) and computes
+    the unnormalized distribution of the in-degrees of the graph.
+    """
+    in_degree = compute_in_degrees(digraph)
+    result = {}
+    for _, val in in_degree.iteritems():
+        if val in result:
+            result[val] += 1
+        else:
+            result[val] = 1
+    return result
+
+#print compute_in_degrees(EX_GRAPH0)
+#print compute_in_degrees(EX_GRAPH1)
+#print in_degree_distribution(EX_GRAPH0)
+#print in_degree_distribution(EX_GRAPH1)
+#print in_degree_distribution(alg_module1_graphs.GRAPH0)
