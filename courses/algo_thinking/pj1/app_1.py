@@ -6,6 +6,8 @@ Imports physics citation graph
 
 # general imports
 import urllib2
+import matplotlib.pyplot as plt
+import pj1
 
 ###################################
 # Code for loading citation graph
@@ -35,3 +37,21 @@ def load_graph(graph_url):
             answer_graph[node].add(int(neighbor))
 
     return answer_graph
+
+def main():
+    #citation_graph = load_graph(CITATION_URL)
+    # calculate the nomialized in-degree distribution
+    distr = pj1.in_degree_distribution(load_graph(CITATION_URL))
+    total = sum(distr[key] for key in distr)
+    for key in distr:
+        distr[key] = distr[key]/float(total)
+    plt.loglog(distr.keys(), distr.values(), ".")
+    plt.xlabel("Value of the in-degree")
+    plt.ylabel("Possibilities for corresponding in-degree value")
+    plt.title("In-degree Distribution for Citation Graph")
+    plt.grid(True)
+    plt.savefig("In-degree_distribution.pdf", format='pdf')
+    plt.show()
+
+if __name__ == "__main__":
+    main()
