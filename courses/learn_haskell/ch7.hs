@@ -1,6 +1,7 @@
 import Data.List
 import Data.Function  -- use 'on'
 import Data.Char
+import qualified Data.Map as Map
 
 numUniques :: (Eq a) => [a] -> Int
 numUniques = length . nub
@@ -44,3 +45,6 @@ encode shift msg =
   in map chr shifted
 
 decode shift msg = encode (negate shift) msg
+
+fromList' :: (Ord k) => [(k, v)] -> Map.Map k v
+fromList' = foldr (\(k, v) acc -> Map.insert k v acc) Map.empty
