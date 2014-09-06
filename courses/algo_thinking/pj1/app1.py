@@ -8,6 +8,7 @@ Imports physics citation graph
 import urllib2
 import matplotlib.pyplot as plt
 import pj1
+import numpy as np
 
 ###################################
 # Code for loading citation graph
@@ -44,6 +45,19 @@ def normailized_distr_graph(graph):
     for key in distr:
         distr[key] = distr[key]/float(total)
     return distr
+
+def directed_random_graph(num_nodes, prob):
+    graph = {}
+    if num_nodes <= 0:
+        return graph
+    for i in range(num_nodes):
+        graph[i] = set([])
+        for j in range(num_nodes):
+            if i == j:
+                continue
+            if np.random.random() < prob:
+                graph[i].add(j)
+    return graph
 
 def problem1():
     distr = normailized_distr_graph(load_graph(CITATION_URL))
