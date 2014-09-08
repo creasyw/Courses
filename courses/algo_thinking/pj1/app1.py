@@ -69,5 +69,18 @@ def problem1():
     plt.savefig("In-degree_distribution.pdf", format='pdf')
     plt.show()
 
+def problem2():
+    num_nodes = 200
+    prob = 0.8
+    distr = normailized_distr_graph(directed_random_graph(num_nodes, prob))
+    plt.loglog(distr.keys(), distr.values(), ".")
+    plt.xlabel("Value of the in-degree")
+    plt.ylabel("Possibilities for corresponding in-degree value")
+    plt.title("In-degree Distribution for Random Graph")
+    plt.grid(True)
+    plt.savefig("In-degree_distribution_ER.pdf", format='pdf')
+    plt.show()
+
+
 if __name__ == "__main__":
-    problem1()
+    problem2()
