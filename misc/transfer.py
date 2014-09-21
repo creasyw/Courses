@@ -1,3 +1,7 @@
+"""
+Transfer .html files from blogspot to Jekyll markdown
+"""
+
 import re, sys
 from subprocess import call
 
