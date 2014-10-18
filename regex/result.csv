@@ -1,4 +1,4 @@
 .*foo.*
-ick$
-^[a-f]*$
+ick$                # anchors
+^[a-f]*$            # ranges
 
