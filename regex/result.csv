@@ -1,4 +1,4 @@
 .*foo.*
 ick$                # anchors
-^[a-f]*$            # ranges
+^[a-f]*$            # ranges: start from, a to f, repeat 0 or more times, end.
 
