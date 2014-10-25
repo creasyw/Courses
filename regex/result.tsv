@@ -1,0 +1,4 @@
+.*foo.* # warming up
+ick$    # anchors
+^[a-f]*$    # ranges: start from (a to f) repeat 0 or more times then end
+^([a-z]{3,}).*\1    # backrefs: start from a pattern with at least three chars and repeat once
