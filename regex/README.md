@@ -1,1 +1,1 @@
-answers for the (Regex Golf)[http://regex.alf.nu/]
+answers for the [Regex Golf](http://regex.alf.nu/)
