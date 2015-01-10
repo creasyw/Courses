@@ -27,27 +27,6 @@ def fib_math(n):
     return int(phi**n/np.sqrt(5)+0.5)
 
 # Matrix Algebra
-def matrix_multiply(A, B):
-    BT = list(zip(*B))
-    return [[sum(a * b
-                 for a, b in zip(row_a, col_b))
-            for col_b in BT]
-            for row_a in A]
-
-def identity_power(n):
-    i = [[1, 1], [1, 0]]
-    def helper(acc, count):
-        if count == 0:
-            return i
-        elif count == 1:
-            return acc
-        else:
-            result = helper(acc, count/2)
-            result = matrix_multiply(result, result)
-            if count % 2:
-                result = matrix_multiply(result, acc)
-            return result
-    return helper(i, n)
-
 def fib_matrix(n):
-    return matrix_multiply(identity_power(n-1), [[1, 0]])[0][0]
+    return np.dot(np.linalg.matrix_power(np.array([[1,1],[1,0]], dtype=object),\
+            (n-1)), np.array([1,0], dtype=object))[0]
