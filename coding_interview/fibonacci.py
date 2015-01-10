@@ -30,3 +30,5 @@ def fib_math(n):
 def fib_matrix(n):
     return np.dot(np.linalg.matrix_power(np.array([[1,1],[1,0]], dtype=object),\
             (n-1)), np.array([1,0], dtype=object))[0]
+# The dtype=object is necessary in order to force numpy to use python integers.
+# Refer to http://bit.ly/1tURmVR for more info.
