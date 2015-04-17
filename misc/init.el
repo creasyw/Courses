@@ -99,8 +99,8 @@ by Prelude.")
 
 ;; the core stuff
 (require 'prelude-packages)
+(require 'prelude-custom)  ;; Needs to be loaded before core, editor and ui
 (require 'prelude-ui)
-(require 'prelude-custom)  ;; Needs to be loaded before core and editor
 (require 'prelude-core)
 (require 'prelude-mode)
 (require 'prelude-editor)
@@ -113,8 +113,10 @@ by Prelude.")
 (message "Loading Prelude's modules...")
 
 ;; the modules
-(when (file-exists-p prelude-modules-file)
-  (load prelude-modules-file))
+(if (file-exists-p prelude-modules-file)
+    (load prelude-modules-file)
+  (message "Missing modules file %s" prelude-modules-file)
+  (message "You can get started by copying the bundled example file"))
 
 ;; config changes made through the customize UI will be store here
 (setq custom-file (expand-file-name "custom.el" prelude-personal-dir))
@@ -140,16 +142,16 @@ by Prelude.")
 ;(package-initialize)
 
 ;; for haskell
-;(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
 
 ;; hslint on the command line only likes this indentation mode;
 ;; alternatives commented out below.
-;(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
 
 ;; Ignore compiled Haskell files in filename completions
-;(add-to-list 'completion-ignored-extensions ".hi")
+(add-to-list 'completion-ignored-extensions ".hi")
 
 
 ;; add for racket-mode
@@ -190,4 +192,14 @@ by Prelude.")
 (set-face-foreground 'highlight nil)
 ;; disable the limitations of guru-mode for arrow keys
 (setq guru-warn-only t)
+;;;
+(set-keyboard-coding-system nil)
+
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("melpa-stable" . "http://melpa.milkbox.net/packages/")))
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (package-initialize)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t))
 ;;; init.el ends here
