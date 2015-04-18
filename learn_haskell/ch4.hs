@@ -14,9 +14,11 @@ length' (x:xs) = 1 + length' xs
 length1 lst = case lst of [] -> 0
                           (x:xs) -> 1 + length1 xs
 
+-- inline pattern matching with bars
 max' a b | a > b = a | otherwise = b
 
-
+-- much more expressive in the expression, and gather all details at
+-- one block which is also convenient to read and modify
 bmiTell :: (RealFloat a) => a -> a -> String
 bmiTell weight height
   | bmi <= skinny = "You're underweight, you emo, you!"

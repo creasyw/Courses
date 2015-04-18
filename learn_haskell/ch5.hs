@@ -9,6 +9,10 @@ maximum' (x:xs) = max x (maximum' xs)
 reverse' [] = []
 reverse' (x:xs) = reverse' xs ++ [x]
 
+take' n _ | n<=0 = []
+take' _ [] = []
+take' n (x:xs) = x : take' (n-1) xs
+
 quicksort [] = []
 quicksort (x:xs) =
   let small = quicksort [a | a <- xs, a <= x]
