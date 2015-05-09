@@ -1,0 +1,21 @@
+A FP has higher-order function, which either (or both) take functions
+as parameters and return functions as return values. It is critical
+for defining the computation processes.
+
+ALL Haskell functions only take one argument a time, then apply curry
+to complete all partially applied function step by step.
+
+If a function is fed with too few parameters, it becomes a "partially
+applied" function. If is a neat way to create functions on the fly so
+it can be passed into another function, or just to seed them with some
+basic data.
+
+Infix functions make the curry even more flexible. Surrounded the
+expression with parentheses and only supply a parameter on one side
+
+The `map` functions could also be performed by list comprehension, but
+the former method is more readable to apply a complicated function to
+a list. In some cases, map a map to a list of list is awesome:) The
+same rule of thumb also applies to "filter versus list
+comprehension". When it deals with multiple predicates (such as mixing
+logical and function predicates), the filter is better than the LC.
