@@ -15,6 +15,14 @@ zipWith' _ [] _ = []
 zipWith' _ _ [] = []
 zipWith' f (x:xs) (y:ys) = f x y : zipWith' f xs ys
 
+-- flip the FIRST two arguments of a function
+-- Because all functions are curry from the first to the last, so for
+-- functions with more than two arguments, "flip'" only has effect on
+-- the first two.
+flip' :: (a -> b -> c) -> (b -> a -> c)
+flip' f = g
+  where g x y = f y x
+
 map' _ [] = []
 map' f (x:xs) = f x : map f xs
 
