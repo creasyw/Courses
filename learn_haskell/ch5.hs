@@ -6,6 +6,12 @@ maximum' [] = error "Maximum of empty list"
 maximum' [x] = x
 maximum' (x:xs) = max x (maximum' xs)
 
+-- case might be a better way to do input pattern matching
+max1 lst =
+  case lst of [] -> error "Maximum of empty list"
+              [x] -> x
+              (x:xs)-> max x (max1 xs)
+
 reverse' [] = []
 reverse' (x:xs) = reverse' xs ++ [x]
 
