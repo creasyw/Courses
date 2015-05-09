@@ -31,6 +31,14 @@ filter' p (x:xs)
   | p x = x : filter p xs
   | otherwise = filter p xs
 
+-- the same quicksort functionality as in the ch5
+quicksort :: Ord a => [a] -> [a]
+quicksort [] = []
+quicksort (x:xs) =
+  let smaller = quicksort (filter (<=x) xs)
+      larger = quicksort (filter (>=x) xs)
+  in smaller ++ [x] ++ larger
+
 -- dealing with nested list with "map"
 testMap =
   let x = [[1,2],[3,4,5,6], [7,8]]
