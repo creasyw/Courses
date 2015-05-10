@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 -- curry function
 -- regular curry
 compareWithHundred :: Integer -> Ordering
@@ -38,6 +39,14 @@ quicksort (x:xs) =
   let smaller = quicksort (filter (<=x) xs)
       larger = quicksort (filter (>=x) xs)
   in smaller ++ [x] ++ larger
+
+-- find the largest number under 100000 that's divisible by 3829. The
+-- `head` will make the iteration perform until it finds the first
+-- value that meets the criterion. LAZINESS!! Besides, the definition
+-- of the array is also a good example of defining infinite
+-- array. Another side note, the anonymous function could be replaced
+-- by a variable and use `where` to define it latter in the code
+largestDivisible1 = head (filter (\x -> x `mod` 3829 == 0) [100000, 99999..])
 
 -- dealing with nested list with "map"
 testMap =
