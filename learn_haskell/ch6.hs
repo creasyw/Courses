@@ -67,6 +67,10 @@ chain n
 -- functions piplined to derive the final result
 numLongChains = length (filter (\xs-> length xs > 15) (map chain [1..100]))
 
+-- use lazy evaluation and curry to generate a list of functions
+listOfFuns = map (*) [0..]
+twenty = (listOfFuns !! 4) 5
+
 -- reduce list to a single value with pattern matching of empty list
 -- encapsulated into higher order function (folds)
 sum1 xs = foldl (\acc x -> acc + x) 0 xs
