@@ -23,6 +23,8 @@ zipWith' f (x:xs) (y:ys) = f x y : zipWith' f xs ys
 flip' :: (a -> b -> c) -> (b -> a -> c)
 flip' f = g
   where g x y = f y x
+-- another flip with lambda function
+flip1 f = \x y -> f y x
 
 map' _ [] = []
 map' f (x:xs) = f x : map f xs
@@ -74,7 +76,8 @@ twenty = (listOfFuns !! 4) 5
 -- reduce list to a single value with pattern matching of empty list
 -- encapsulated into higher order function (folds)
 sum1 xs = foldl (\acc x -> acc + x) 0 xs
--- using curry to make it even more concise
+-- 1. the input variable can be eliminated, and only define the function
+-- 2. using curry to make it even more concise
 sum2 = foldl (+) 0
 
 elem' y ys = foldl (\acc x -> if x == y then True else acc) False ys
