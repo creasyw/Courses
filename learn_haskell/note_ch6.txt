@@ -19,3 +19,28 @@ a list. In some cases, map a map to a list of list is awesome:) The
 same rule of thumb also applies to "filter versus list
 comprehension". When it deals with multiple predicates (such as mixing
 logical and function predicates), the filter is better than the LC.
+
+For the purpose of feeding higher-order function an anonymous
+function, the 1st thing to consider is curry rather than the
+lambda. For example, the following two function are the same and the
+former one is better.
+
+map (+3) [1..10]
+map (\x -> x+3) [1..10]
+
+Lambda can also perform pattern matching.
+
+foldl has (\acc x -> ...) and the foldr has (\x acc -> ...). It is
+"kind of" making sense because foldl is folding the list from left, so
+the accumulator is in the left, and vice versa for folding from
+right. A more interesting usage is to operate foldr towards an
+infinite list. Apply the foldr to this list at SOME POINT, and then
+fold them from the right.
+
+Folds can be used to implement any function where you traverse a list
+once, element by element, and then return something based on
+that. Whenever you want to traverse a list to return something,
+chances are you want a fold.
+
+For list operation, the concatenation ++ is much more expensive than
+the append :. They are just the opposite to the Python implementation.
