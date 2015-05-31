@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 -- curry function
 -- regular curry
 compareWithHundred :: Integer -> Ordering
