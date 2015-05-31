@@ -1,3 +1,4 @@
+{-# LANGUAGE NoMonomorphismRestriction #-}
 import Data.List
 import Data.Function  -- use 'on'
 import Data.Char
@@ -5,6 +6,11 @@ import qualified Data.Map as Map
 
 numUniques :: (Eq a) => [a] -> Int
 numUniques = length . nub
+
+-- Returns the first stock whose value is no less than 1000. It could
+-- deal with infinite list since there is a `head`. Another
+-- interesting spot is the pattern matching in lambda function.
+firstStock stock = head (dropWhile (\(val, y, m, d) -> val < 1000) stock)
 
 tryout_buildin = do
   putStrLn $ intercalate " " ["hey","there","guys"]
@@ -15,9 +21,8 @@ tryout_buildin = do
   putStrLn $ show $ sum $ takeWhile (<10000) $ map (^3) [1..]
 
 -- find how many times each element appears in the list
--- this function needs EXPLICIT typeclass signature within the type declaration.
 -- To be a member of Ord, a type must first satisfy the class of Eq
-countDup :: (Ord a) => [a] -> [(a, Int)]
+-- countDup :: (Ord a) => [a] -> [(a, Int)]
 countDup = map (\l@(x:xs) -> (x, length l)) . group . sort
 
 search needle haystack =

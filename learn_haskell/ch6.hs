@@ -122,6 +122,7 @@ sqrtSums = length (takeWhile (<1000) (scanl1 (+) (map sqrt [1..]))) + 1
 -- application can be treated just like another function
 fancyDollar = map ($ 3) [(4+), (^2), (10*), (*8), sqrt]
 
+-- The (negate. abs) is equal to (\x-> negate (abs x))
 functionComp = map (negate . abs) [5, -3, -6, 7, 2, -3]
 
 addSquareSum = sum . takeWhile (<10000) . filter odd $ map (^2) [1..]

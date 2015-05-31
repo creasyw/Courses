@@ -1,0 +1,34 @@
+To import a module, it is different in the file from in the repl. In a
+script, it is similar to what Python dose `import <module name>`, and
+in the repl `ghci> :m + <module name>`.
+
+A useful tip to deal with name collision is that `import qualified
+<module name> as <abbreviation>`. In this manner, if we call a
+function `foo`, it is locally defined, while the `<abbreviation>.foo`
+is defined in the module.
+
+"A great way to pick up new Haskell knowledge is to just click through
+the standard library reference and explore the modules and their
+functions. You can also view the Haskell source code for each
+module. Reading the source code of some modules is a really good way
+to learn Haskell and get a solid feel for it. -- To search for
+functions or to find out where they're located, use Hoogle."
+
+foldl' and foldl1' are stricter versions of their respective lazy
+incarnations. When using lazy folds on really big lists, you might
+often get a stack overflow error. The culprit for that is that due to
+the lazy nature    of the folds, the accumulator value isn't actually
+updated as the folding happens. What actually happens is that the
+accumulator kind of makes a  promise that it will compute its value
+when asked to actually produce the result (also called a thunk). That
+happens for every intermediate accumulator and all those thunks
+overflow your stack. The strict folds aren't lazy buggers and actually
+compute the intermediate values as they go along instead of filling up
+your stack with thunks. So if you ever get stack overflow errors when
+doing lazy folds, try switching to their strict versions.
+
+Concatenation `concat` only remove one level of nesting.
+
+There are also functions generating infinite list, such as
+`iterate`. As a result, it is supposed to run with other functions to
+truncate the resulting list, such as `take` or `takeWhile`.

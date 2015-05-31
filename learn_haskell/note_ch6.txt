@@ -42,5 +42,24 @@ once, element by element, and then return something based on
 that. Whenever you want to traverse a list to return something,
 chances are you want a fold.
 
+Scan is similar to fold, but is able to monitor the intermediate
+results. This is another function **facilitates** lazy evaluation,
+which mean "it will fold until a certain point". The similar
+alternatives involves filter and takeWhile.
+
 For list operation, the concatenation ++ is much more expensive than
 the append :. They are just the opposite to the Python implementation.
+
+Another important concept is the '$' function application, which makes
+the default left-associative function to right-associative. Besides,
+it also means that function application can be treated as another
+function, which can be `map` over a list of functions.
+
+The counterpart is the dot '.' as function composition. It works as
+the function composition in the math derivation. One of the uses is to
+create new function on the fly. It should be more concise and clearer
+semantically than the anonymous function. If we want to apply function
+composition to the function requires several input parameters, the
+curry comes handy, That is, we have to partially apply the function to
+only accept one input parameter, then it can be put into the chain of
+function composition.
