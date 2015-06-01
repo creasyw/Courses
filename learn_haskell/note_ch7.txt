@@ -27,6 +27,11 @@ compute the intermediate values as they go along instead of filling up
 your stack with thunks. So if you ever get stack overflow errors when
 doing lazy folds, try switching to their strict versions.
 
+-- It reveals a pros/cons for lazy evaluation. That is, it will save
+   the computation resources and apply it only when necessary; but on
+   the ohter hand, it requires more memory to store the intermediate
+   stages so that the program could remember where to start.
+
 Concatenation `concat` only remove one level of nesting.
 
 There are also functions generating infinite list, such as
