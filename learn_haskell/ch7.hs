@@ -25,9 +25,16 @@ tryout_buildin = do
 -- countDup :: (Ord a) => [a] -> [(a, Int)]
 countDup = map (\l@(x:xs) -> (x, length l)) . group . sort
 
+-- It will fold the entire list and return the accumulator whose
+-- initial value is False. The takeWhile is arguably better since it
+-- could also deal with infinite lists
 search needle haystack =
   let nlen = length needle
-  in foldl (\acc x -> if take nlen x == needle then True else acc) False (tails haystack)
+  in dropWhile (\lst -> take nlen lst /= needle) $ tails haystack
+
+searchInf needle haystack =
+  let nlen = length needle
+  in foldl (\acc lst -> if take nlen lst == needle then True else acc) False $ tails haystack
 
 -- use genericlength so that the return type is not explicitly Int
 average xs = sum xs / genericLength xs
