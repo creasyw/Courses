@@ -116,7 +116,7 @@ set sw=2
 " useful packages: Syntatic, NERDTree
 execute pathogen#infect()
 
-" Syntatic settings (use Pathongen to install)
+" Syntatic settings (use Pathegen to install)
 "set statusline+=%#warningmsg#
 "set statusline+=%{SyntasticStatuslineFlag()}
 "set statusline+=%*
