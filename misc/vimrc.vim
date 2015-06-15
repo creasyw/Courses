@@ -113,10 +113,11 @@ set sw=2
 " set iskeyword+=:
 
 " load Pathegen
-" useful packages: Syntatic, NERDTree
 execute pathogen#infect()
 
-" Syntatic settings (use Pathegen to install)
+" Syntatic settings
+" It is also useful to install [unimpaired](
+" https://github.com/tpope/vim-unimpaired) for short key bindings
 "set statusline+=%#warningmsg#
 "set statusline+=%{SyntasticStatuslineFlag()}
 "set statusline+=%*
@@ -125,8 +126,16 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
+let g:syntastic_mode_map = {'mode': 'passive'}
 let g:syntastic_python_checkers = ['pylint']
 let g:syntastic_python_python_exec = '~/.pyenv/versions/3.4.3/bin/python3.4'
+
+" Use Ctrl + <Direction Key> to move around split windows
+" -- to better cope with NERDTree
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
 
 
 " " Calculate the word frequency
