@@ -25,16 +25,23 @@ tryout_buildin = do
 -- countDup :: (Ord a) => [a] -> [(a, Int)]
 countDup = map (\l@(x:xs) -> (x, length l)) . group . sort
 
+-- concatMap comes to handy when the function that is about to apply
+-- to a list will generate another list, but we still prefer to have
+-- only one level of the list after the map
+-- rep 4 [1..3] ==> [[1,1,1,1,2,2,2,2,3,3,3,3]]
+rep n = concatMap (replicate n)
+
 -- It will fold the entire list and return the accumulator whose
 -- initial value is False. The takeWhile is arguably better since it
 -- could also deal with infinite lists
 search needle haystack =
   let nlen = length needle
-  in dropWhile (\lst -> take nlen lst /= needle) $ tails haystack
+  in  foldl (\acc x -> if take nlen x == needle then True else acc) False (tails haystack)
 
-searchInf needle haystack =
-  let nlen = length needle
-  in foldl (\acc lst -> if take nlen lst == needle then True else acc) False $ tails haystack
+-- neither the "takeWhile" nor the "dropWhile" serve the purpose more
+-- efficient than the "any"! This is actually the implementation of
+-- "isInfixOf" in the source code, which take full advantage of laziness
+searchInf needle haystack = any (isPrefixOf needle) (tails haystack)
 
 -- use genericlength so that the return type is not explicitly Int
 average xs = sum xs / genericLength xs

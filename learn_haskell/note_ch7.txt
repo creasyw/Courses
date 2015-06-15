@@ -37,3 +37,7 @@ Concatenation `concat` only remove one level of nesting.
 There are also functions generating infinite list, such as
 `iterate`. As a result, it is supposed to run with other functions to
 truncate the resulting list, such as `take` or `takeWhile`.
+
+The `span` and `break` will break a list into two parts at the 1st
+time that the requirement is fulfilled, while the `partition` will
+scan through the entire list.
