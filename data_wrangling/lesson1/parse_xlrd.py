@@ -10,8 +10,11 @@ Please see the test function for the expected return format
 """
 
 import xlrd
+
 from zipfile import ZipFile
+
 datafile = "2013_ERCOT_Hourly_Load_Data.xls"
+KEYWORD = "COAST"
 
 
 def open_zip(datafile):
@@ -23,30 +26,6 @@ def parse_file(datafile):
     workbook = xlrd.open_workbook(datafile)
     sheet = workbook.sheet_by_index(0)
 
-    ### example on how you can get the data
-    #sheet_data = [[sheet.cell_value(r, col) for col in range(sheet.ncols)] for r in range(sheet.nrows)]
-
-    ### other useful methods:
-    # print "\nROWS, COLUMNS, and CELLS:"
-    # print "Number of rows in the sheet:", 
-    # print sheet.nrows
-    # print "Type of data in cell (row 3, col 2):", 
-    # print sheet.cell_type(3, 2)
-    # print "Value in cell (row 3, col 2):", 
-    # print sheet.cell_value(3, 2)
-    # print "Get a slice of values in column 3, from rows 1-3:"
-    # print sheet.col_values(3, start_rowx=1, end_rowx=4)
-
-    # print "\nDATES:"
-    # print "Type of data in cell (row 1, col 0):", 
-    # print sheet.cell_type(1, 0)
-    # exceltime = sheet.cell_value(1, 0)
-    # print "Time in Excel format:",
-    # print exceltime
-    # print "Convert time to a Python datetime tuple, from the Excel float:",
-    # print xlrd.xldate_as_tuple(exceltime, 0)
-    
-    
     data = {
             'maxtime': (0, 0, 0, 0, 0, 0),
             'maxvalue': 0,
@@ -54,6 +33,21 @@ def parse_file(datafile):
             'minvalue': 0,
             'avgcoast': 0
     }
+    column_index = -1
+    
+    for index, row_name in enumerate(sheet.row_values(0)):
+        if row_name == KEYWORD:
+            column_index = index
+    # sanity check
+    assert column_index != -1, "The keyword {0} is not contained in the given table".format(KEYWORD)
+    
+    vals = sheet.col_values(column_index)[1:]
+    data["maxvalue"], index = max((v, i) for i, v in enumerate(vals))
+    data["maxtime"] = xlrd.xldate_as_tuple(sheet.cell_value(index+1, 0), 0)
+    data["minvalue"], index = min((v, i) for i, v in enumerate(vals))
+    data["mintime"] = xlrd.xldate_as_tuple(sheet.cell_value(index+1, 0), 0)
+    data["avgcoast"] = sum(vals)/len(vals)
+
     return data
 
 
