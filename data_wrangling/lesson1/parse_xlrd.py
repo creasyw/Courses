@@ -40,8 +40,10 @@ def parse_file(datafile):
             column_index = index
     # sanity check
     assert column_index != -1, "The keyword {0} is not contained in the given table".format(KEYWORD)
-    
+
     vals = sheet.col_values(column_index)[1:]
+    # return both index and value a given list. Also taking advantage of the
+    # max/min defaultly measuring the 1st item for each tuple
     data["maxvalue"], index = max((v, i) for i, v in enumerate(vals))
     data["maxtime"] = xlrd.xldate_as_tuple(sheet.cell_value(index+1, 0), 0)
     data["minvalue"], index = min((v, i) for i, v in enumerate(vals))
