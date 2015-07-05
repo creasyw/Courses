@@ -47,7 +47,19 @@ def main():
 
     results = filter_results("Queen")
     results = filter(lambda k: k.get("begin-area", None) is not None, results)
-    print "The begin-area name for Queen is: ", results[0]["begin-area"]["name"]
+    print "The begin-area for Queen is: ", results[0]["begin-area"]["name"]
+
+    results = filter_results("The Beatles")
+    # The 'es' stands for spanish
+    alias = [k for k in results[0]["aliases"] if k["locale"] == 'es']
+    print "Spanish alias for beatles is: ", alias[0]["name"]
+
+    results = filter_results("Nirvana")
+    print "Nirvana disambiguation is: ", results[0]["disambiguation"]
+
+    results = filter_results("One Direction")
+    print "The form time of One Direction is: ", results[0]["life-span"]["begin"]
+
 
 if __name__ == '__main__':
     main()
