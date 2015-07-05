@@ -35,21 +35,17 @@ def pretty_print(data, indent=4):
     else:
         print data
 
-def filter_results(key, results):
-    return filter(lambda k: k["name"].lower() == key.lower(), results)
+def filter_results(key):
+    return filter(lambda k: k["name"].lower() == key.lower(),
+                  query_by_name(ARTIST_URL,
+                                query_type["simple"],
+                                key)["artists"])
 
 def main():
-    results = filter_results("First Aid Kit", 
-                              query_by_name(ARTIST_URL,
-                                            query_type["simple"],
-                                            "First Aid Kit")["artists"])
+    results = filter_results("First Aid Kit")
     print "The bands called \"First Aid Kit\": ", len(results)
 
-    key = "Queen"
-    results = filter_results("Queen",
-                             query_by_name(ARTIST_URL,
-                                           query_type["simple"],
-                                           "Queen")["artists"])
+    results = filter_results("Queen")
     results = filter(lambda k: k.get("begin-area", None) is not None, results)
     print "The begin-area name for Queen is: ", results[0]["begin-area"]["name"]
 
