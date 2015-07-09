@@ -43,10 +43,21 @@ search needle haystack =
   let nlen = length needle
   in  foldl (\acc x -> if take nlen x == needle then True else acc) False (tails haystack)
 
+
+-- check how many times each element appears in a list
+-- the "l" is used to represent the pattern (here is a list) as a
+-- whole. It transforms a list into a tuple. The `map` maps every
+-- sub-list in the list into a list of tuples.
+-- occurance [1,1,1,1,2,2,2,2,3,3,2,2,2,5,6,7]
+-- ==> [(1,4),(2,7),(3,2),(5,1),(6,1),(7,1)]
+occurance = map (\l@(x:xs) -> (x, length l)) . group . sort
+
+
 -- neither the "takeWhile" nor the "dropWhile" serve the purpose more
 -- efficient than the "any"! This is actually the implementation of
--- "isInfixOf" in the source code, which take full advantage of laziness
+-- "isInfixOf" in the source code, which takes full advantage of laziness
 searchInf needle haystack = any (isPrefixOf needle) (tails haystack)
+
 
 -- use genericlength so that the return type is not explicitly Int
 average xs = sum xs / genericLength xs
