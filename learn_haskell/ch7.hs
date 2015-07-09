@@ -7,10 +7,12 @@ import qualified Data.Map as Map
 numUniques :: (Eq a) => [a] -> Int
 numUniques = length . nub
 
+
 -- Returns the first stock whose value is no less than 1000. It could
 -- deal with infinite list since there is a `head`. Another
 -- interesting spot is the pattern matching in lambda function.
 firstStock stock = head (dropWhile (\(val, y, m, d) -> val < 1000) stock)
+
 
 tryout_buildin = do
   putStrLn $ intercalate " " ["hey","there","guys"]
@@ -20,16 +22,19 @@ tryout_buildin = do
   putStrLn $ show $ transpose [[1,2,3],[4,5,6],[7,8,9]]
   putStrLn $ show $ sum $ takeWhile (<10000) $ map (^3) [1..]
 
+
 -- find how many times each element appears in the list
 -- To be a member of Ord, a type must first satisfy the class of Eq
 -- countDup :: (Ord a) => [a] -> [(a, Int)]
 countDup = map (\l@(x:xs) -> (x, length l)) . group . sort
+
 
 -- concatMap comes to handy when the function that is about to apply
 -- to a list will generate another list, but we still prefer to have
 -- only one level of the list after the map
 -- rep 4 [1..3] ==> [[1,1,1,1,2,2,2,2,3,3,3,3]]
 rep n = concatMap (replicate n)
+
 
 -- It will fold the entire list and return the accumulator whose
 -- initial value is False. The takeWhile is arguably better since it
