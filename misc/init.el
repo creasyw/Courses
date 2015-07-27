@@ -133,6 +133,7 @@ by Prelude.")
  (run-at-time 5 nil 'prelude-tip-of-the-day))
 
 ;; added by qiongwu
+;; For Mac: `brew install aspell --with-lang=en` to enable spell check on the fly
 
 ;; ruby-mode
 ;(add-to-list 'auto-mode-alist
@@ -153,6 +154,8 @@ by Prelude.")
 ;; Ignore compiled Haskell files in filename completions
 (add-to-list 'completion-ignored-extensions ".hi")
 
+;; for LaTeX via AUCTeX
+(setq TeX-PDF-mode t)
 
 ;; add for racket-mode
 (add-hook 'racket-mode-hook
