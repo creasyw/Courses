@@ -64,9 +64,12 @@ average xs = sum xs / genericLength xs
 
 -- the type signature is required, otherwise, the inference from the
 -- complier would deduce this fuction as:
---         zeroCross :: [Integer] -> [[Integer]]
+-- zeroCross :: [Integer] -> [[Integer]]
 zeroCross :: (Num a, Ord a) => [a] -> [[a]]
-zeroCross = groupBy (\x y -> (x>0) == (y>0))
+-- The condition below is much better than
+-- `\x y -> (x>0) && (y>0) || (x<=0) && (y<=0)`
+-- A better solution: zeroCross = groupBy (\x y -> (x>0) == (y>0))
+zeroCross = groupBy ((==) `on` (>0))
 
 zeroCross' :: (Num a, Ord a) => [a] -> [[a]]
 zeroCross' = groupBy ((==) `on` (>0))
