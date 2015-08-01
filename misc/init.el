@@ -157,6 +157,18 @@ by Prelude.")
 ;; for LaTeX via AUCTeX
 (setq TeX-PDF-mode t)
 
+;; for the Markdown mode
+(autoload 'markdown-mode "markdown-mode"
+             "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+;; enforce parentheses check (maybe used for soemthing else)
+(add-hook 'markdown-mode-hook
+          (lambda () (when buffer-file-name
+                       (add-hook 'after-save-hook 'check-parens nil t))))
+
+
 ;; add for racket-mode
 (add-hook 'racket-mode-hook
           '(lambda ()
