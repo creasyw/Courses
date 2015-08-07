@@ -17,3 +17,10 @@
 > x[!bad]         # !bad: [TRUE  TRUE FALSE  TRUE  TRUE FALSE]
 [1] 1 2 4 5
 ```
+
+#### Logic operators
+
+- ! indicates logical negation (NOT).
+- & and && indicate logical AND and | and || indicate logical OR. The shorter form performs elementwise comparisons in much the same way as arithmetic operators. The longer form evaluates left to right examining only the first element of each vector. Evaluation proceeds only until the result is determined. The longer form is appropriate for programming control-flow and typically preferred in if clauses.
+- xor indicates elementwise exclusive OR.
+- isTRUE(x) is an abbreviation of identical(TRUE, x), and so is true if and only if x is a length-one logical vector with no attributes (not even names).
