@@ -3,7 +3,7 @@ from collections import defaultdict
 import heapq
 
 
-def heap_update (heap, index, node, cost):
+def heap_update(heap, index, node, cost):
     """ The data in the heap is [cost, node]
     so that the heap is aranged according to the cost"""
     if node in index and cost < index[node]:
@@ -14,6 +14,7 @@ def heap_update (heap, index, node, cost):
     elif node not in index:
         heapq.heappush(heap, [cost, node])
         index[node] = cost
+
 
 def heap_pop(heap, index):
     cost, node = heapq.heappop(heap)
@@ -31,7 +32,7 @@ def dijkstras(graph, start):
     heapq.heapify(heap)
     #will be used to trace the path of the sjortest distance to each node
     distance[start] = 0
-    if start in graph and type(graph[start])==dict:
+    if start in graph and type(graph[start]) == dict:
         for (node, cost) in graph[start].items():
             heap_update(heap, index, node, cost)
     else:
@@ -43,13 +44,14 @@ def dijkstras(graph, start):
         # store the node into known graph
         distance[node] = cost
         # update the knowledge according to existing node
-        if node in graph and type(graph[node])==dict:
+        if node in graph and type(graph[node]) == dict:
             for (node, localcost) in graph[node].items():
                 if node not in distance:
-                    heap_update(heap, index, node, localcost+cost)
+                    heap_update(heap, index, node, localcost + cost)
     return distance
 
-def buildgraph (data):
+
+def buildgraph(data):
     """ data is a dictionary { st1: [[st1, end1, cost1]... [st1, endn, costn]] ....
                                stn: [[stn, end1, costn]... [stn, endn, costn]]}
         the output is a matrix represented as 2-levels dictionary
@@ -63,5 +65,3 @@ def buildgraph (data):
         for j in temp:
             data[i][j[1]] = j[2]
     return data
-
-
