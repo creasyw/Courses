@@ -24,3 +24,4 @@ column_mean <- function(y, removena=True) {
   # Just for return the results
   means
 }
+
