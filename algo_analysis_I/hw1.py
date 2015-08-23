@@ -5,18 +5,18 @@
 #So if your answer is 1198233847, then just type 1198233847 in the space provided without any space / commas / any other punctuation marks. You can make up to 5 attempts, and we'll use the best one for grading.
 #(We do not require you to submit your code, so feel free to use any programming language you want --- just type the final numeric answer in the following space.)
 
-
 from inversion_array import inversion_array
 import os
 
-def main ():
+
+def main():
     arr = []
-    with open(os.path.join(os.path.dirname(__file__), "IntegerArray.txt")) as datafile:
+    with open(os.path.join(
+        os.path.dirname(__file__), "IntegerArray.txt")) as datafile:
         for row in datafile:
             arr.append(int(row))
     print inversion_array(arr)
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()
-
-
