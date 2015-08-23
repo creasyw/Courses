@@ -19,7 +19,6 @@
 #            So if your answer is 1198233847, then just type 1198233847 in the space provided without any space / commas / other punctuation marks. You have 5 attempts to get the correct answer.
 #            (We do not require you to submit your code, so feel free to use the programming language of your choice, just type the numeric answer in the following space.)
 
-
 # Question 2
 # Compute the number of comparisons (as in Problem 1), always using the final element of the given array as the pivot element. Again, be sure to implement the Partition subroutine exactly as it is described in the video lectures. Recall from the lectures that, just before the main Partition subroutine, you should exchange the pivot element (i.e., the last element) with the first element.
 
@@ -30,33 +29,32 @@
 #
 #SUBTLE POINT: A careful analysis would keep track of the comparisons made in identifying the median of the three candidate elements. You should NOT do this. That is, as in the previous two problems, you should simply add m−1 to your running total of comparisons every time you recurse on a subarray with length m.
 
-
-
 import os
 from quick_sort import quick_sort_count
 
-def run_quicksort (arr, index, median):
-    _,result = quick_sort_count(arr, index, median)
+
+def run_quicksort(arr, index, median):
+    _, result = quick_sort_count(arr, index, median)
     print result
 
 
-def main ():
+def main():
     arr = []
-    with open(os.path.join(os.path.dirname(__file__), "QuickSort.txt")) as datafile:
+    with open(os.path.join(
+        os.path.dirname(__file__), "QuickSort.txt")) as datafile:
         for row in datafile:
             arr.append(int(row))
     # Because the quick_sort is in-place sorting,
     # arr should be duplicated for different pivot choices
     arr2 = list(arr)
     arr3 = list(arr)
-    _,result = quick_sort_count(arr, 0)
+    _, result = quick_sort_count(arr, 0)
     print "Assign the 1st element as pivot:", result
-    _,result = quick_sort_count(arr2, -1)
+    _, result = quick_sort_count(arr2, -1)
     print "Assign the last element as pivot:", result
-    _,result = quick_sort_count(arr3, 0, True)
+    _, result = quick_sort_count(arr3, 0, True)
     print "Assign the 'median' element as pivot:", result
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
-
