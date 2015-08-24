@@ -4,7 +4,6 @@
 #
 #OPTIONAL EXERCISE: Compare the performance achieved by heap-based and search-tree-based implementations of the algorithm.
 
-
 import numpy as np
 arrayseq = []
 medianseq = []
@@ -14,6 +13,5 @@ for number in open("Median.txt").read().strip().split("\n"):
         medianseq = medianseq + [np.median(arrayseq)]
     else:
         medianseq = medianseq + [np.median(arrayseq + [-1])]
-        
 
-print sum(medianseq)%10000
+print sum(medianseq) % 10000

@@ -8,9 +8,6 @@
 #
 #IMPLEMENTATION NOTES: This graph is small enough that the straightforward O(mn) time implementation of Dijkstra's algorithm should work fine. OPTIONAL: For those of you seeking an additional challenge, try implementing the heap-based version. Note this requires a heap that supports deletions, and you'll probably need to maintain some kind of mapping between vertices and their positions in the heap.
 
-
-
-
 #given program demonstrates the working model of Dijkstras algorithm
 from collections import defaultdict
 distance = {}
@@ -23,6 +20,7 @@ for line in file_handle:
         edge = int(i.split(",")[0])
         weight = int(i.split(",")[1])
         graph[node][edge] = weight
+
 
 def dijkstras(graph, start):
     global distance
@@ -55,8 +53,8 @@ def dijkstras(graph, start):
         #removing the node with the lowest weight
         for (child, value) in graph[node].items():
             #will give the edge and weight of the path in the form of tupple 
-#here for each of the neighbors of the node we are relaxing the 
-#edges and giving the distance dict their respective weight value
+            #here for each of the neighbors of the node we are relaxing the 
+            #edges and giving the distance dict their respective weight value
             if (distance[child] > distance[node] + value):
                 distance[child] = distance[node] + value
                 parent[child] = node
@@ -64,7 +62,7 @@ def dijkstras(graph, start):
 dijkstras(graph, 1)
 
 answer = []
-question = [7,37,59,82,99,115,133,165,188,197]
+question = [7, 37, 59, 82, 99, 115, 133, 165, 188, 197]
 for value in question:
     answer.append(distance[value])
-print answer    
+print answer

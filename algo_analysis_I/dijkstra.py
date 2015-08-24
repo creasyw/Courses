@@ -61,8 +61,9 @@ def dijkstra(graph, candidates):
             if node in visited:
                 continue
             elif node in candidates:
-                candidates[node] = min(candidates[node], visited[candidate] +
-                                       graph[candidate][node])
+                candidates[node] = min(
+                    candidates[node],
+                    visited[candidate] + graph[candidate][node])
             else:
                 candidates[node] = visited[candidate] + graph[candidate][node]
     return visited[candidate]
