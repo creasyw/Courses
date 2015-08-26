@@ -86,7 +86,7 @@ set expandtab
 
 " added by qiong
 " --------------------------
-set tw=80
+"set tw=80
 set formatoptions+=cr  " check :help fo-table for more info
 " --------------------------
 
