@@ -2,22 +2,25 @@ import os, re
 import numpy as np
 finder = re.compile("\d+")
 
+
 def q1(v, dt):
-    data = np.array([(k[0],k[1],k[0]-k[1]) for k in v], dtype = dt)
+    data = np.array([(k[0], k[1], k[0] - k[1]) for k in v], dtype=dt)
     data = np.sort(data, order=['diff', 'weight'])[::-1]
     return weighted_completion(np.array([list(k) for k in data]))
+
 
 def q2(v, dt):
-    data = np.array([(k[0],k[1],float(k[0])/k[1]) for k in v], dtype = dt)
+    data = np.array([(k[0], k[1], float(k[0]) / k[1]) for k in v], dtype=dt)
     data = np.sort(data, order=['diff', 'weight'])[::-1]
     return weighted_completion(np.array([list(k) for k in data]))
 
+
 def weighted_completion(lst):
-    lst[0,2] = lst[0,1]
+    lst[0, 2] = lst[0, 1]
     for i in range(1, len(lst)):
-        lst[i,2] = lst[i-1,2]+lst[i,1]
-    return int(sum(lst[:,0]*lst[:,2]))
-        
+        lst[i, 2] = lst[i - 1, 2] + lst[i, 1]
+    return int(sum(lst[:, 0] * lst[:, 2]))
+
 
 def main():
     dt = [('weight', int), ('length', int), ('diff', float)]
@@ -32,8 +35,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-            
-
-
-
-
