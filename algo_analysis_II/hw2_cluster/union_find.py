@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+
 class union_find:
     def __init__(self):
         """For the union find, the key is vertex 
@@ -9,7 +10,7 @@ class union_find:
 
     def init_dataset(self, npar):
         """ initialize the dataset with ndarray """
-        vertex = set(list(npar[:,0])+list(npar[:,1]))
+        vertex = set(list(npar[:, 0]) + list(npar[:, 1]))
         for i in vertex:
             self.cluster[i] = [i]
             self.alldata[i] = i
@@ -19,13 +20,13 @@ class union_find:
             return self.alldata[k]
         else:
             return False
-    
+
     def merge(self, c1, c2):
         lst = self.cluster.pop(c2)
         self.cluster[c1] += lst
         for i in lst:
             self.alldata[i] = c1
-    
+
     def union(self, c1, c2):
         l1 = len(self.cluster[c1])
         l2 = len(self.cluster[c2])
@@ -33,7 +34,7 @@ class union_find:
             self.merge(c1, c2)
         else:
             self.merge(c2, c1)
-    
+
     def is_circle(self, v1, v2):
         return self.alldata[v1] and self.alldata[v2] \
                 and self.alldata[v1]==self.alldata[v2]
@@ -43,7 +44,7 @@ class union_find:
         f0 = self.find(edge[0])
         f1 = self.find(edge[1])
         if f0 and f1:
-            if f1==f0:
+            if f1 == f0:
                 return
             else:
                 self.union(f0, f1)
@@ -66,6 +67,6 @@ class union_find:
 
     def num_of_nodes(self):
         return len(self.alldata)
-    
+
     def all_keys(self):
         return [k for k in self.alldata]
