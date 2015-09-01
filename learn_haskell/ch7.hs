@@ -77,6 +77,9 @@ zeroCross' = groupBy ((==) `on` (>0))
 sentenceToList = filter (not . any isSpace). groupBy ((==) `on` isSpace)
 
 -- Caesar cipher
+-- It basically does three times of mapping: from msg to the list of
+-- ASCII numbers, then to the shifted (coded) ASCII numbers, and
+-- finally mapping back to the characters
 encode shift msg =
   let ords = map ord msg
       shifted = map (+ shift) ords
