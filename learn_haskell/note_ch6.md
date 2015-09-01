@@ -63,3 +63,62 @@ composition to the function requires several input parameters, the
 curry comes handy, That is, we have to partially apply the function to
 only accept one input parameter, then it can be put into the chain of
 function composition.
+
+# `foldl`, `foldr`, and `folds`
+
+Because of GHC's lazy reduction strategy -- expressions are reduced
+only when they are actually needed -- both `foldl` and `foldr` will
+suffer the stack overflow if evaluates a list too large for the
+current memory of the system, **if the evaluation function cannot be
+_lazy_**. In this case, the outer-left-most
+redexes are reduced first. In this case it's the outer foldl (+)
+... [1..10000] redexes which are repeatedly reduced. So the inner z1,
+z2, z3, ... redexes only get reduced when the foldl is completely gone.
+
+Usually the choice is between foldr and foldl', since foldl and foldl'
+are the same except for their strictness properties, so if both return
+a result, it must be the same. foldl' is the more efficient way to
+arrive at that result because it doesn't build a huge thunk. However,
+**if the combining function is lazy in its first argument, foldl may
+happily return a result where foldl' hits an exception.**
+
+The other very useful fold is `foldl'`. It can be thought of as a foldr
+with these differences:
+
+- foldl' conceptually reverses the order of the list. One consequence is
+that a foldl' (unlike foldr) applied to an infinite list will be
+bottom; it will not produce any usable results, just as an express
+reverse would not. Note that foldl' (flip cons) []==reverse.
+- foldl' often has much better time and space performance than a foldr
+would for the reasons explained in the previous sections.
+
+You should pick foldl' principally in two cases:
+
+- When the list to which it is applied is large, but definitely finite,
+you do not care about the implicit reversal (for example, because your
+combining function is commutative like (+), (*), or Set.union), and
+you seek to improve the performance of your code.
+- When you actually do want to reverse the order of the list, in
+addition to possibly performing some other transformation to the
+elements. In particular, if you find that you precede or follow your
+fold with a reverse, it is quite likely that you could improve your
+code by using the other fold and taking advantage of the implicit
+reverse.
+
+Foldl is rarely the right choice. It gives you the implicit reverse of
+fold, but without the performance gains of foldl'. Only in rare, or
+specially constructed cases like in the previous section, will it
+yield better results than foldl'.
+
+Another reason that foldr is often the better choice is that the
+folding function can short-circuit, that is, terminate early by
+yielding a result which does not depend on the value of the
+accumulating parameter. When such possibilities arise with some
+frequency in your problem, short-circuiting can greatly improve your
+program's performance. Left folds can never short-circuit.
+
+To illustrate this consider writing a fold that computes the product
+of the last digits of a list of integers. One might think that foldl'
+is the superior fold in this situation as the result does not depend
+on the order of the list and is generally not computable on infinite
+lists anyway.
