@@ -168,7 +168,8 @@ by Prelude.")
           (lambda () (when buffer-file-name
                        (add-hook 'after-save-hook 'check-parens nil t))))
 
-;; paste from clipboard
+;; paste from clipboard -- FOR Mac OSX
+;; NOTE: the following block needs to comment out for linux
 (defun copy-from-osx ()
 (shell-command-to-string "pbpaste"))
 
@@ -180,7 +181,6 @@ by Prelude.")
 
 (setq interprogram-cut-function 'paste-to-osx)
 (setq interprogram-paste-function 'copy-from-osx) 
-
 
 ;; add for racket-mode
 (add-hook 'racket-mode-hook
