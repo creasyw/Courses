@@ -30,18 +30,6 @@ map (\x -> x+3) [1..10]
 
 Lambda can also perform pattern matching.
 
-foldl has (\acc x -> ...) and the foldr has (\x acc -> ...). It is
-"kind of" making sense because foldl is folding the list from left, so
-the accumulator is in the left, and vice versa for folding from
-right. A more interesting usage is to operate foldr towards an
-infinite list. Apply the foldr to this list at SOME POINT, and then
-fold them from the right.
-
-Folds can be used to implement any function where you traverse a list
-once, element by element, and then return something based on
-that. Whenever you want to traverse a list to return something,
-chances are you want a fold.
-
 Scan is similar to fold, but is able to monitor the intermediate
 results. This is another function **facilitates** lazy evaluation,
 which mean "it will fold until a certain point". The similar
@@ -64,7 +52,19 @@ curry comes handy, That is, we have to partially apply the function to
 only accept one input parameter, then it can be put into the chain of
 function composition.
 
-# `foldl`, `foldr`, and `folds`
+# [`foldl`, `foldr`, and `folds`](https://wiki.haskell.org/Foldr_Foldl_Foldl')
+
+foldl has (\acc x -> ...) and the foldr has (\x acc -> ...). It is
+"kind of" making sense because foldl is folding the list from left, so
+the accumulator is in the left, and vice versa for folding from
+right. A more interesting usage is to operate foldr towards an
+infinite list. Apply the foldr to this list at SOME POINT, and then
+fold them from the right.
+
+Folds can be used to implement any function where you traverse a list
+once, element by element, and then return something based on
+that. Whenever you want to traverse a list to return something,
+chances are you want a fold.
 
 Because of GHC's lazy reduction strategy -- expressions are reduced
 only when they are actually needed -- both `foldl` and `foldr` will
