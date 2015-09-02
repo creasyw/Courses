@@ -82,17 +82,22 @@ arrive at that result because it doesn't build a huge thunk. However,
 **if the combining function is lazy in its first argument, foldl may
 happily return a result where foldl' hits an exception.**
 
-The other very useful fold is `foldl'`. It can be thought of as a foldr
+In general, the `foldr` is most commonly used when transforming lists
+(or other foldables) into lists with related elements in the same
+order. It is also effective to transform infinite lists into other
+infinite lists (*TODO* example needed...).
+
+The other very useful fold is `foldl'`. It can be thought of as a `foldr`
 with these differences:
 
-- foldl' conceptually reverses the order of the list. One consequence is
-that a foldl' (unlike foldr) applied to an infinite list will be
+- `foldl'` conceptually reverses the order of the list. One consequence is
+that a `foldl'` (unlike `foldr`) applied to an infinite list will be
 bottom; it will not produce any usable results, just as an express
-reverse would not. Note that foldl' (flip cons) []==reverse.
-- foldl' often has much better time and space performance than a foldr
+reverse would not. Note that `foldl' (flip cons) []==reverse`.
+- `foldl'` often has much better time and space performance than a `foldr`
 would for the reasons explained in the previous sections.
 
-You should pick foldl' principally in two cases:
+`foldl'` should be picked principally in two cases:
 
 - When the list to which it is applied is large, but definitely finite,
 you do not care about the implicit reversal (for example, because your
@@ -105,20 +110,18 @@ fold with a reverse, it is quite likely that you could improve your
 code by using the other fold and taking advantage of the implicit
 reverse.
 
-Foldl is rarely the right choice. It gives you the implicit reverse of
-fold, but without the performance gains of foldl'. Only in rare, or
-specially constructed cases like in the previous section, will it
-yield better results than foldl'.
+**`foldl` is rarely the right choice. It gives you the implicit reverse of
+fold, but without the performance gains of `foldl'`.** (really?!)
 
-Another reason that foldr is often the better choice is that the
-folding function can short-circuit, that is, terminate early by
+Another reason that `foldr` is often the better choice is that the
+folding function can **short-circuit**, that is, terminate early by
 yielding a result which does not depend on the value of the
 accumulating parameter. When such possibilities arise with some
 frequency in your problem, short-circuiting can greatly improve your
 program's performance. Left folds can never short-circuit.
 
 To illustrate this consider writing a fold that computes the product
-of the last digits of a list of integers. One might think that foldl'
+of the last digits of a list of integers. One might think that `foldl'`
 is the superior fold in this situation as the result does not depend
 on the order of the list and is generally not computable on infinite
 lists anyway.
