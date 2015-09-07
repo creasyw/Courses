@@ -7,6 +7,7 @@ Simplifications:  only allow discard and roll, only score against upper level
 import codeskulptor
 codeskulptor.set_timeout(20)
 
+
 def gen_all_sequences(outcomes, length):
     """
     Iterative function that enumerates the set of all sequences of
@@ -24,6 +25,7 @@ def gen_all_sequences(outcomes, length):
         answer_set = temp_set
     return answer_set
 
+
 def score(hand):
     """
     Compute the maximal score for a Yahtzee hand according to the
@@ -34,10 +36,11 @@ def score(hand):
     Returns an integer score 
     """
     max_dice = max(hand)
-    result = [ 0 for _ in range(max_dice)]
+    result = [0 for _ in range(max_dice)]
     for dice in hand:
-        result[dice-1] += dice
+        result[dice - 1] += dice
     return max(result)
+
 
 def expected_value(held_dice, num_die_sides, num_free_dice):
     """
@@ -50,9 +53,12 @@ def expected_value(held_dice, num_die_sides, num_free_dice):
 
     Returns a floating point expected value
     """
-    outcomes = [item+held_dice for item in gen_all_sequences(range(1, num_die_sides+1), num_free_dice)]
+    outcomes = [item + held_dice
+                for item in gen_all_sequences(
+                    range(1, num_die_sides + 1), num_free_dice)]
     scores = [score(hand) for hand in outcomes]
-    return float(sum(scores))/len(scores)
+    return float(sum(scores)) / len(scores)
+
 
 def combinations(iterable, leng):
     """
@@ -73,9 +79,10 @@ def combinations(iterable, leng):
         else:
             return
         indices[counter] += 1
-        for index_1 in range(counter+1, leng):
-            indices[index_1] = indices[index_1-1] + 1
+        for index_1 in range(counter + 1, leng):
+            indices[index_1] = indices[index_1 - 1] + 1
         yield tuple(pool[index] for index in indices)
+
 
 def gen_all_holds(hand):
     """
@@ -87,11 +94,12 @@ def gen_all_holds(hand):
     """
     result = set([()])
     # the number of cards left
-    for length in range(1, len(hand)+1):
+    for length in range(1, len(hand) + 1):
         # all possible combinations given the length
         for item in combinations(hand, length):
             result.add(item)
     return result
+
 
 def strategy(hand, num_die_sides):
     """
@@ -107,11 +115,12 @@ def strategy(hand, num_die_sides):
     hold = tuple()
     expect_value = 0.0
     for choice in gen_all_holds(hand):
-        value = expected_value(choice, num_die_sides, len(hand)-len(choice))
+        value = expected_value(choice, num_die_sides, len(hand) - len(choice))
         if value > expect_value:
             expect_value = value
             hold = choice
     return (expect_value, hold)
+
 
 def run_example():
     """
@@ -123,7 +132,6 @@ def run_example():
     print "Best strategy for hand", hand, "is to hold", hold, "with expected score", hand_score
 
 #run_example()
-
 
 #import poc_holds_testsuite
 #poc_holds_testsuite.run_suite(gen_all_holds)
