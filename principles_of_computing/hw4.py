@@ -3,6 +3,7 @@ Function to generate permutations of outcomes
 Repetition of outcomes not allowed
 """
 
+
 def gen_permutations(outcomes, length):
     """
     Iterative function that generates set of permutations of
@@ -13,20 +14,19 @@ def gen_permutations(outcomes, length):
         "GEN_PERMUTATIONS -- It's nonsense to build permutation with length no larger than zero."
     assert len(outcomes) >= length, \
         "GEN_PERMUTATIONS -- The number of candidates should be no less than the length of permutation."
-    
+
     def helper(items, num_picks):
         if num_picks == 1:
-            return [(item,) for item in items]
+            return [(item, ) for item in items]
         result = []
         for item in items:
             temp = list(items)
             temp.remove(item)
-            for tup in helper(temp, num_picks-1):
-                result.append((item,)+tup)
+            for tup in helper(temp, num_picks - 1):
+                result.append((item, ) + tup)
         return result
-        
-    return set(helper(outcomes, length))
 
+    return set(helper(outcomes, length))
 
 
 def run_example():
@@ -35,7 +35,7 @@ def run_example():
     outcome = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     #outcome = ["Red", "Green", "Blue"]
     #outcome = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    
+
     length = 2
     permtutations = gen_permutations(outcome, length)
     print "Computed", len(permtutations), "permutations of length", str(length)
