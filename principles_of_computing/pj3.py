@@ -8,11 +8,12 @@ import poc_ttt_provided as provided
 
 # Constants for Monte Carlo simulator
 # Change as desired
-NTRIALS = 1    # Number of trials to run
+NTRIALS = 1  # Number of trials to run
 MCMATCH = 1.0  # Score for squares played by the machine player
 MCOTHER = 1.0  # Score for squares played by the other player
 
 # Add your functions here.
+
 
 def mc_trial(board, player):
     """
@@ -24,13 +25,14 @@ def mc_trial(board, player):
     """
     empties = board.get_empty_squares()
     random.shuffle(empties)
-    local_player = player    
-    while len(empties)!=0:
+    local_player = player
+    while len(empties) != 0:
         loc = empties.pop()
         board.move(loc[0], loc[1], local_player)
         if board.check_win() is not None:
             break
         local_player = provided.switch_player(local_player)
+
 
 def mc_update_scores(scores, board, player):
     """
@@ -45,7 +47,8 @@ def mc_update_scores(scores, board, player):
         return
     price = penalty = 0
     if result is None:
-        raise ValueError("The board should have a final result! -- MC_UPDATE_SCORES")
+        raise ValueError(
+            "The board should have a final result! -- MC_UPDATE_SCORES")
     elif result == player:
         price = MCMATCH
         penalty = -MCOTHER
@@ -61,6 +64,7 @@ def mc_update_scores(scores, board, player):
             # add score for the other player, if that slot is not empty
             elif status != provided.EMPTY:
                 scores[row][col] += penalty
+
 
 def get_best_move(board, scores):
     """
@@ -81,6 +85,7 @@ def get_best_move(board, scores):
             elif scores[row][col] == maximum:
                 candidates.append((row, col))
     return candidates[random.randrange(len(candidates))]
+
 
 def mc_move(board, player, trials):
     """
@@ -111,7 +116,6 @@ def mc_move(board, player, trials):
 # provided.play_game(mc_move, NTRIALS, False)        
 # poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
 
-
 # needs to be commented out for grading
 import poc_simpletest
 
@@ -137,11 +141,11 @@ def test_trial(mc_trial):
     suite.report_results()
 
 
-def manual_scoring(mc_update_scores, mcmatch, mcother,
-                   scores, player, arrangement):
+def manual_scoring(mc_update_scores, mcmatch, mcother, scores, player,
+                   arrangement):
     """ Perform one trial of scoring """
 
-    my_board = provided.TTTBoard(3, board = arrangement)
+    my_board = provided.TTTBoard(3, board=arrangement)
     mc_update_scores(scores, my_board, player)
 
     print my_board
@@ -163,43 +167,38 @@ def test_update_scores(mc_update_scores, mcmatch, mcother):
 
     manual_scoring(mc_update_scores, mcmatch, mcother, scores,
                    provided.PLAYERX, [[2, 1, 3], [3, 2, 1], [2, 3, 2]])
-    suite.run_test(scores,
-                   [[mcmatch, 0.0, -mcother], [-mcother, mcmatch, 0.0],
-                    [mcmatch, -mcother, mcmatch]],
+    suite.run_test(scores, [[mcmatch, 0.0, -mcother], [-mcother, mcmatch, 0.0],
+                            [mcmatch, -mcother, mcmatch]],
                    "Test 1: X won, player is X")
 
     manual_scoring(mc_update_scores, mcmatch, mcother, scores,
                    provided.PLAYERO, [[2, 1, 3], [3, 2, 1], [2, 3, 2]])
-    suite.run_test(scores,
-                   [[mcmatch + mcother, 0.0, -mcother - mcmatch],
-                    [-mcother - mcmatch, mcmatch + mcother, 0.0],
-                    [mcmatch + mcother, -mcother - mcmatch,
-                     mcmatch + mcother]],
+    suite.run_test(scores, [[mcmatch + mcother, 0.0, -mcother - mcmatch
+                             ], [-mcother - mcmatch, mcmatch + mcother, 0.0],
+                            [mcmatch + mcother, -mcother - mcmatch,
+                             mcmatch + mcother]],
                    "Test 2: Same game, X won, player is O")
 
     manual_scoring(mc_update_scores, mcmatch, mcother, scores,
                    provided.PLAYERX, [[2, 3, 2], [3, 3, 2], [3, 2, 3]])
-    suite.run_test(scores,
-                   [[mcmatch + mcother, 0.0, -mcother - mcmatch],
-                    [-mcother - mcmatch, mcmatch + mcother, 0.0],
-                    [mcmatch + mcother, -mcother - mcmatch,
-                     mcmatch + mcother]],
-                   "Test 3: Tied game")
+    suite.run_test(scores, [[mcmatch + mcother, 0.0, -mcother - mcmatch
+                             ], [-mcother - mcmatch, mcmatch + mcother, 0.0],
+                            [mcmatch + mcother, -mcother - mcmatch,
+                             mcmatch + mcother]], "Test 3: Tied game")
 
     manual_scoring(mc_update_scores, mcmatch, mcother, scores,
                    provided.PLAYERX, [[1, 3, 2], [2, 3, 1], [1, 3, 2]])
-    suite.run_test(scores,
-                   [[mcmatch + mcother, mcother, -mcother - 2 * mcmatch],
-                    [-mcother - 2 * mcmatch, mcmatch + 2 * mcother, 0.0],
-                    [mcmatch + mcother, -mcmatch, mcother]],
+    suite.run_test(scores, [[mcmatch + mcother, mcother, -mcother - 2 * mcmatch
+                             ], [-mcother - 2 * mcmatch, mcmatch + 2 * mcother,
+                                 0.0], [mcmatch + mcother, -mcmatch, mcother]],
                    "Test 4: O won, player is X")
 
     manual_scoring(mc_update_scores, mcmatch, mcother, scores,
                    provided.PLAYERO, [[1, 2, 2], [3, 3, 3], [3, 2, 2]])
-    suite.run_test(scores,
-                   [[mcmatch + mcother, 0.0, -2 * mcother - 2 * mcmatch],
-                    [-mcother - mcmatch, 2 * mcmatch + 2 * mcother, mcmatch],
-                    [2 * mcmatch + mcother, -mcmatch - mcother, 0.0]],
+    suite.run_test(scores, [[mcmatch + mcother, 0.0, -2 * mcother - 2 * mcmatch
+                             ], [-mcother - mcmatch, 2 * mcmatch + 2 * mcother,
+                                 mcmatch], [2 * mcmatch + mcother,
+                                            -mcmatch - mcother, 0.0]],
                    "Test 5: O won, player is O")
 
     suite.report_results()
@@ -213,15 +212,15 @@ def test_best_move(get_best_move):
     # Create a TestSuite object
     suite = poc_simpletest.TestSuite()
 
-    my_board = provided.TTTBoard(3, board = [[2, 3, 2], [1, 1, 1], [1, 2, 3]])
+    my_board = provided.TTTBoard(3, board=[[2, 3, 2], [1, 1, 1], [1, 2, 3]])
     scores = [[3.0, 5.0, -1.0], [3.0, 2.0, -8.0], [4.0, -2.0, 2.0]]
 
     print my_board
     print "scores:", scores
-    suite.run_test(get_best_move(my_board, scores), (2, 0),
-                   "Test 1: Best move")
+    suite.run_test(
+        get_best_move(my_board, scores), (2, 0), "Test 1: Best move")
 
-    my_board = provided.TTTBoard(3, board = [[1, 1, 2], [1, 3, 1], [2, 3, 1]])
+    my_board = provided.TTTBoard(3, board=[[1, 1, 2], [1, 3, 1], [2, 3, 1]])
     scores = [[0.0, 2.0, 1.0], [0.0, 2.0, -1.0], [1.0, -2.0, 2.0]]
     move_set = set([])
     for dummy_idx in range(20):
@@ -233,6 +232,7 @@ def test_best_move(get_best_move):
                    "Test 2: Two possible best moves")
 
     suite.report_results()
+
 
 test_trial(mc_trial)
 test_update_scores(mc_update_scores, MCMATCH, MCOTHER)
