@@ -74,6 +74,7 @@ zeroCross = groupBy ((==) `on` (>0))
 zeroCross' :: (Num a, Ord a) => [a] -> [[a]]
 zeroCross' = groupBy ((==) `on` (>0))
 
+-- this function performs the same as `words`
 sentenceToList = filter (not . any isSpace). groupBy ((==) `on` isSpace)
 
 -- Caesar cipher
@@ -83,6 +84,24 @@ encode shift msg =
   in map chr shifted
 
 decode shift msg = encode (negate shift) msg
+
+
+-- sample data for list/map example
+phoneBook =  [("betty","555-2938") ,("bonnie","452-2928") ,("patsy","493-2928") ,("lucille","205-2928") ,("wendy","939-8282") ,("penny","853-2492")]
+
+-- `snd` and its counterpart `fst` are similar to `car` and `cdr` in
+-- the Racket. `head` will terminate the following evaluation once it
+-- find the first match.
+findKey key [] = Nothing
+findKey key xs = snd. head . filter (\(k, v) -> key == k) $ xs
+
+-- It can also be written as revursive function with edge case as an
+-- empty list. Then, splitting a list into a head and a tail,
+-- recursive calls -- this is the classic fold pattern!!It's usually
+-- better to use folds for this standard list recursion pattern
+-- instead of explicitly writing the recursion because they're easier
+-- to read and identify.
+findKey' key = foldr (\(k, v) acc -> if key == k then Just v else acc) Nothing
 
 fromList' :: (Ord k) => [(k, v)] -> Map.Map k v
 fromList' = foldr (\(k, v) acc -> Map.insert k v acc) Map.empty
