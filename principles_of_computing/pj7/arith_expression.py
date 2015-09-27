@@ -8,12 +8,12 @@ import poc_tree
 
 # Use dictionary of lambdas to abstract function definitions
 
-OPERATORS = {"+" : (lambda x, y : x + y), 
-            "-" : (lambda x, y : x - y),
-            "*" : (lambda x, y : x * y),
-            "/" : (lambda x, y : x / y),
-            "//" : (lambda x, y : x // y),
-            "%" : (lambda x, y : x % y)}
+OPERATORS = {"+": (lambda x, y: x + y),
+             "-": (lambda x, y: x - y),
+             "*": (lambda x, y: x * y),
+             "/": (lambda x, y: x / y),
+             "//": (lambda x, y: x // y),
+             "%": (lambda x, y: x % y)}
 
 
 class ArithmeticExpression(poc_tree.Tree):
@@ -21,12 +21,11 @@ class ArithmeticExpression(poc_tree.Tree):
     Basic operations on arithmetic expressions
     """
 
-    def __init__(self, value, children, parent = None):
+    def __init__(self, value, children, parent=None):
         """
         Create an arithmetic expression as a tree
         """
         poc_tree.Tree.__init__(self, value, children)
-
 
     def __str__(self):
         """
@@ -42,7 +41,6 @@ class ArithmeticExpression(poc_tree.Tree):
         ans += ")"
         return ans
 
-
     def evaluate(self):
         """
         Evaluate the arithmetic expression
@@ -57,7 +55,8 @@ class ArithmeticExpression(poc_tree.Tree):
             function = OPERATORS[self._value]
             left_value = self._children[0].evaluate()
             right_value = self._children[1].evaluate()
-            return function(left_value, right_value) 
+            return function(left_value, right_value)
+
 
 def run_example():
     """
@@ -80,5 +79,6 @@ def run_example():
     import poc_draw_tree
     poc_draw_tree.TreeDisplay(one_plus_two_times_three)
     print one_plus_two_times_three.evaluate()
+
 
 run_example()

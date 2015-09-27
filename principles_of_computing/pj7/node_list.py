@@ -15,7 +15,6 @@ class NodeList:
         self._value = val
         self._next = None
 
-
     def append(self, val):
         """
         Append a node to an existing list of nodes
@@ -26,7 +25,6 @@ class NodeList:
         else:
             self._next.append(val)
 
-
     def __str__(self):
         """
         Build standard string representation for list
@@ -35,8 +33,9 @@ class NodeList:
             return "[" + str(self._value) + "]"
         else:
             rest_str = str(self._next)
-            rest_str = rest_str[1 :]
+            rest_str = rest_str[1:]
             return "[" + str(self._value) + ", " + rest_str
+
 
 def run_example():
     """
@@ -52,5 +51,6 @@ def run_example():
 
     node_list.append(sub_list)
     print node_list
+
 
 run_example()

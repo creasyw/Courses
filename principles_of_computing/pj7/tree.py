@@ -6,6 +6,7 @@ always have a single parent (or no parent for the root). See problem #8
 on homework #6 for more details.
 """
 
+
 class Tree:
     """
     Recursive definition for trees plus various tree methods
@@ -19,7 +20,6 @@ class Tree:
         self._value = value
         self._children = children
 
-
     def __str__(self):
         """
         Generate a string representation of the tree
@@ -29,8 +29,8 @@ class Tree:
         ans += str(self._value)
 
         for child in self._children:
-             ans += ", "
-             ans += str(child)
+            ans += ", "
+            ans += str(child)
         return ans + "]"
 
     def get_value(self):
@@ -76,6 +76,7 @@ class Tree:
             height = max(height, child.height() + 1)
         return height
 
+
 def run_examples():
     """
     Create some trees and apply various methods to these trees
@@ -90,17 +91,20 @@ def run_examples():
 
     tree_dcabe = Tree("d", [tree_cab, Tree("e", [])])
     print "Tree consisting of five nodes", tree_dcabe
-    print 
+    print
 
-    my_tree = Tree("a", [Tree("b", [Tree("c", []), Tree("d", [])]), 
-                         Tree("e", [Tree("f", [Tree("g", [])]), Tree("h", []), Tree("i", [])])])
+    my_tree = Tree(
+        "a",
+        [Tree("b", [Tree("c", []), Tree("d", [])]),
+         Tree("e", [Tree("f", [Tree("g", [])]), Tree("h", []), Tree("i", [])])
+         ])
     print "Tree with nine nodes", my_tree
 
-    print "The tree has", my_tree.num_nodes(), "nodes,", 
+    print "The tree has", my_tree.num_nodes(), "nodes,",
     print my_tree.num_leaves(), "leaves and height",
     print my_tree.height()
 
     #import poc_draw_tree
     #poc_draw_tree.TreeDisplay(my_tree)
 
-#run_examples()
+    #run_examples()
