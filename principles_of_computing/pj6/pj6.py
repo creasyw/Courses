@@ -8,8 +8,8 @@ import poc_wrangler_provided as provided
 
 WORDFILE = "assets_scrabble_words3.txt"
 
-
 # Functions to manipulate ordered word lists
+
 
 def remove_duplicates(list1):
     """
@@ -20,12 +20,13 @@ def remove_duplicates(list1):
 
     This function can be iterative.
     """
-    if len(list1)==0 or len(list1)==1:
+    if len(list1) == 0 or len(list1) == 1:
         return list1
     elif list1[0] == list1[1]:
         return remove_duplicates(list1[1:])
     else:
         return [list1[0]] + remove_duplicates(list1[1:])
+
 
 def intersect(list1, list2):
     """
@@ -36,7 +37,7 @@ def intersect(list1, list2):
 
     This function can be iterative.
     """
-    if len(list1)==0 or len(list2)==0:
+    if len(list1) == 0 or len(list2) == 0:
         return []
     elif list1[0] < list2[0]:
         return intersect(list1[1:], list2)
@@ -47,6 +48,7 @@ def intersect(list1, list2):
 
 # Functions to perform merge sort
 
+
 def merge(list1, list2):
     """
     Merge two sorted lists.
@@ -55,10 +57,10 @@ def merge(list1, list2):
     are in either list1 and list2.
 
     This function can be iterative.
-    """   
+    """
     result = []
     index1 = index2 = 0
-    while len(list1)!=index1 and len(list2)!=index2:
+    while len(list1) != index1 and len(list2) != index2:
         if list1[index1] <= list2[index2]:
             result.append(list1[index1])
             index1 += 1
@@ -71,6 +73,7 @@ def merge(list1, list2):
         result += list1[index1:]
     return result
 
+
 def merge_sort(list1):
     """
     Sort the elements of list1.
@@ -79,12 +82,15 @@ def merge_sort(list1):
 
     This function should be recursive.
     """
-    if len(list1) == 1 or len(list1)==0:
+    if len(list1) == 1 or len(list1) == 0:
         return list1
     else:
-        return merge(merge_sort(list1[:len(list1)/2]), merge_sort(list1[len(list1)/2:]))
+        return merge(
+            merge_sort(list1[:len(list1) / 2]),
+            merge_sort(list1[len(list1) / 2:]))
 
 # Function to generate all strings for the word wrangler game
+
 
 def gen_all_strings(word):
     """
@@ -96,19 +102,20 @@ def gen_all_strings(word):
 
     This function should be recursive.
     """
-    if len(word)==0:
+    if len(word) == 0:
         return [""]
-    elif len(word)==1:
+    elif len(word) == 1:
         return [word, ""]
     else:
         rest_strings = gen_all_strings(word[1:])
         this_round = []
         for item in rest_strings:
-            for index in range(len(item)+1):
-                this_round.append(item[0:index]+word[0]+item[index:])
+            for index in range(len(item) + 1):
+                this_round.append(item[0:index] + word[0] + item[index:])
         return this_round + rest_strings
 
 # Function to load words from a file
+
 
 def load_words(filename):
     """
@@ -123,14 +130,14 @@ def load_words(filename):
         result.append(word[:-1])
     return result
 
+
 def run():
     """
     Run game.
     """
     words = load_words(WORDFILE)
-    wrangler = provided.WordWrangler(words, remove_duplicates, 
-                                     intersect, merge_sort, 
-                                     gen_all_strings)
+    wrangler = provided.WordWrangler(words, remove_duplicates, intersect,
+                                     merge_sort, gen_all_strings)
     provided.run_game(wrangler)
 
 # Uncomment when you are ready to try the game

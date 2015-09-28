@@ -3,7 +3,6 @@ Examples of recursive functions and recurrences derived
 from those functions
 """
 
-
 # First example with binary numbers of a given length
 
 
@@ -24,6 +23,7 @@ def make_binary(length):
         answer.append("1" + bits)
     return answer
 
+
 def run_bin_example(num):
     """
     print out example of binary representations
@@ -34,7 +34,6 @@ def run_bin_example(num):
 
 
 run_bin_example(4)
-
 
 
 def binary_length(length):
@@ -51,8 +50,6 @@ def binary_length(length):
 #for length in range(10):
 #    print binary_length(length)
 
-
-
 # Second example for running time of binary search
 
 
@@ -62,13 +59,12 @@ def binary_search(ordered_list, item):
     """
 
     if len(ordered_list) == 1:
-        return item == ordered_list[0]    
+        return item == ordered_list[0]
     mid = len(ordered_list) / 2
     if item < ordered_list[mid]:
-        return rec1_binary_search(ordered_list[: mid], item)
+        return rec1_binary_search(ordered_list[:mid], item)
     else:
-        return rec1_binary_search(ordered_list[mid :], item)
-
+        return rec1_binary_search(ordered_list[mid:], item)
 
 
 def search_time(length):
@@ -84,4 +80,3 @@ def search_time(length):
 #for value in range(10):
 #    print "Searching a sorted list of length", 2 ** value, "in time", \
 #           search_time(2 ** value)
-
