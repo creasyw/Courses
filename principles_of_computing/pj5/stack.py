@@ -2,6 +2,7 @@
 Stack class
 """
 
+
 class Stack:
     """
     A simple implementation of a FILO stack.
@@ -28,7 +29,7 @@ class Stack:
     def push(self, item):
         """
         Push item onto the stack.
-        """        
+        """
         self._items.append(item)
 
     def pop(self):

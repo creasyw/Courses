@@ -8,7 +8,7 @@ import poc_queue
 import poc_wildfire_gui
 
 # constants
-EMPTY = 0 
+EMPTY = 0
 FULL = 1
 
 
@@ -19,7 +19,7 @@ class WildFire(poc_grid.Grid):
     The queue stores the cells on the boundary of the fire
     """
 
-    def __init__(self, grid_height, grid_width, queue = poc_queue.Queue()):
+    def __init__(self, grid_height, grid_width, queue=poc_queue.Queue()):
         """
         Override initializer for Grid, add queue to store boundary of fire
         """
@@ -31,21 +31,20 @@ class WildFire(poc_grid.Grid):
         Set cells to be unburned and the fire boundary to be empty
         """
         poc_grid.Grid.clear(self)
-        self._fire_boundary.clear()  
-
+        self._fire_boundary.clear()
 
     def enqueue_boundary(self, row, col):
         """
         Add cell with index (row, col) the boundary of the fire
         """
         self._fire_boundary.enqueue((row, col))
-    
+
     def dequeue_boundary(self):
         """
         Remove an element from the boundary of the fire
         """
         return self._fire_boundary.dequeue()
-    
+
     def boundary_size(self):
         """
         Return the size of the boundary of the fire
@@ -60,7 +59,7 @@ class WildFire(poc_grid.Grid):
             yield cell
         # alternative syntax
         #return (cell for cell in self._fire_boundary)
-    
+
     def update_boundary(self):
         """
         Function that spreads the wild fire using one step of BFS
@@ -74,7 +73,7 @@ class WildFire(poc_grid.Grid):
                 self.set_full(neighbor[0], neighbor[1])
                 self._fire_boundary.enqueue(neighbor)
 
-                
-# run gui to visualize wildfire                
-poc_wildfire_gui.run_gui(WildFire(30, 40))
+                # run gui to visualize wildfire
 
+
+poc_wildfire_gui.run_gui(WildFire(30, 40))

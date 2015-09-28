@@ -8,7 +8,7 @@ import poc_queue
 import poc_zombie_gui
 
 # global constants
-EMPTY = 0 
+EMPTY = 0
 FULL = 1
 FOUR_WAY = 0
 EIGHT_WAY = 1
@@ -23,8 +23,12 @@ class Zombie(poc_grid.Grid):
     obstacles
     """
 
-    def __init__(self, grid_height, grid_width, obstacle_list = None, 
-                 zombie_list = None, human_list = None):
+    def __init__(self,
+                 grid_height,
+                 grid_width,
+                 obstacle_list=None,
+                 zombie_list=None,
+                 human_list=None):
         """
         Create a simulation of given size with given obstacles,
         humans, and zombies
@@ -38,7 +42,7 @@ class Zombie(poc_grid.Grid):
         else:
             self._zombie_list = []
         if human_list != None:
-            self._human_list = list(human_list)  
+            self._human_list = list(human_list)
         else:
             self._human_list = []
 
@@ -99,9 +103,14 @@ class Zombie(poc_grid.Grid):
         Distance at member of entity_queue is zero
         Shortest paths avoid obstacles and use distance_type distances
         """
-        visited = poc_grid.Grid(poc_grid.Grid.get_grid_height(self), poc_grid.Grid.get_grid_width(self))
-        product = poc_grid.Grid.get_grid_height(self)*poc_grid.Grid.get_grid_width(self)
-        distance_field = [[product for _ in range(poc_grid.Grid.get_grid_width(self))] for _ in range(poc_grid.Grid.get_grid_height(self))]
+        visited = poc_grid.Grid(
+            poc_grid.Grid.get_grid_height(self),
+            poc_grid.Grid.get_grid_width(self))
+        product = poc_grid.Grid.get_grid_height(
+            self) * poc_grid.Grid.get_grid_width(self)
+        distance_field = [[product
+                           for _ in range(poc_grid.Grid.get_grid_width(self))]
+                          for _ in range(poc_grid.Grid.get_grid_height(self))]
         boundary = poc_queue.Queue()
         # initialize related variables
         if entity_type == ZOMBIE:
@@ -109,7 +118,8 @@ class Zombie(poc_grid.Grid):
         elif entity_type == HUMAN:
             lst = self._human_list
         else:
-            raise ValueError("The entity_type should be either ZOMBIE or HUMAN -- COMPUTE_DISTANCE_FIELD")
+            raise ValueError(
+                "The entity_type should be either ZOMBIE or HUMAN -- COMPUTE_DISTANCE_FIELD")
 
         for item in lst:
             boundary.enqueue(item)
@@ -121,7 +131,9 @@ class Zombie(poc_grid.Grid):
             neighbors = self.four_neighbors(cell[0], cell[1])
             for neighbor in neighbors:
                 # omit any visited cell and only check the passable cells
-                if visited.is_empty(neighbor[0], neighbor[1]) and self.is_empty(neighbor[0], neighbor[1]):
+                if visited.is_empty(neighbor[0],
+                                    neighbor[1]) and self.is_empty(
+                                        neighbor[0], neighbor[1]):
                     # BES only visit each cell once
                     visited.set_full(neighbor[0], neighbor[1])
                     boundary.enqueue(neighbor)
@@ -173,4 +185,3 @@ class Zombie(poc_grid.Grid):
 # before this will work without errors
 
 # poc_zombie_gui.run_gui(Zombie(30, 40))
-

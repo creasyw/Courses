@@ -2,6 +2,7 @@
 Queue class
 """
 
+
 class Queue:
     """
     A simple implementation of a FIFO queue.
@@ -18,7 +19,7 @@ class Queue:
         Return the number of items in the queue.
         """
         return len(self._items)
-    
+
     def __iter__(self):
         """
         Create an iterator for the queue.
@@ -35,7 +36,7 @@ class Queue:
     def enqueue(self, item):
         """
         Add item to the queue.
-        """        
+        """
         self._items.append(item)
 
     def dequeue(self):
@@ -49,5 +50,3 @@ class Queue:
         Remove all items from the queue.
         """
         self._items = []
-        
-
