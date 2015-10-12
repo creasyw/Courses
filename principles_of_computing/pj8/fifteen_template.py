@@ -6,6 +6,7 @@ Use the arrows key to swap this tile with its neighbors
 
 import poc_fifteen_gui
 
+
 class Puzzle:
     """
     Class representation for the Fifteen puzzle
@@ -18,8 +19,7 @@ class Puzzle:
         """
         self._height = puzzle_height
         self._width = puzzle_width
-        self._grid = [[col + puzzle_width * row
-                       for col in range(self._width)]
+        self._grid = [[col + puzzle_width * row for col in range(self._width)]
                       for row in range(self._height)]
 
         if initial_grid != None:
@@ -101,22 +101,26 @@ class Puzzle:
         for direction in move_string:
             if direction == "l":
                 assert zero_col > 0, "move off grid: " + direction
-                self._grid[zero_row][zero_col] = self._grid[zero_row][zero_col - 1]
+                self._grid[zero_row][zero_col] = self._grid[zero_row][zero_col
+                                                                      - 1]
                 self._grid[zero_row][zero_col - 1] = 0
                 zero_col -= 1
             elif direction == "r":
                 assert zero_col < self._width - 1, "move off grid: " + direction
-                self._grid[zero_row][zero_col] = self._grid[zero_row][zero_col + 1]
+                self._grid[zero_row][zero_col] = self._grid[zero_row][zero_col
+                                                                      + 1]
                 self._grid[zero_row][zero_col + 1] = 0
                 zero_col += 1
             elif direction == "u":
                 assert zero_row > 0, "move off grid: " + direction
-                self._grid[zero_row][zero_col] = self._grid[zero_row - 1][zero_col]
+                self._grid[zero_row][zero_col] = self._grid[zero_row - 1][
+                    zero_col]
                 self._grid[zero_row - 1][zero_col] = 0
                 zero_row -= 1
             elif direction == "d":
                 assert zero_row < self._height - 1, "move off grid: " + direction
-                self._grid[zero_row][zero_col] = self._grid[zero_row + 1][zero_col]
+                self._grid[zero_row][zero_col] = self._grid[zero_row + 1][
+                    zero_col]
                 self._grid[zero_row + 1][zero_col] = 0
                 zero_row += 1
             else:

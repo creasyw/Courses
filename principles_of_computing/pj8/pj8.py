@@ -6,6 +6,7 @@ Use the arrows key to swap this tile with its neighbors
 
 import poc_fifteen_gui
 
+
 class Puzzle:
     """
     Class representation for the Fifteen puzzle
@@ -18,8 +19,7 @@ class Puzzle:
         """
         self._height = puzzle_height
         self._width = puzzle_width
-        self._grid = [[col + puzzle_width * row
-                       for col in range(self._width)]
+        self._grid = [[col + puzzle_width * row for col in range(self._width)]
                       for row in range(self._height)]
 
         if initial_grid != None:
@@ -101,22 +101,26 @@ class Puzzle:
         for direction in move_string:
             if direction == "l":
                 assert zero_col > 0, "move off grid: " + direction
-                self._grid[zero_row][zero_col] = self._grid[zero_row][zero_col - 1]
+                self._grid[zero_row][zero_col] = self._grid[zero_row][zero_col
+                                                                      - 1]
                 self._grid[zero_row][zero_col - 1] = 0
                 zero_col -= 1
             elif direction == "r":
                 assert zero_col < self._width - 1, "move off grid: " + direction
-                self._grid[zero_row][zero_col] = self._grid[zero_row][zero_col + 1]
+                self._grid[zero_row][zero_col] = self._grid[zero_row][zero_col
+                                                                      + 1]
                 self._grid[zero_row][zero_col + 1] = 0
                 zero_col += 1
             elif direction == "u":
                 assert zero_row > 0, "move off grid: " + direction
-                self._grid[zero_row][zero_col] = self._grid[zero_row - 1][zero_col]
+                self._grid[zero_row][zero_col] = self._grid[zero_row - 1][
+                    zero_col]
                 self._grid[zero_row - 1][zero_col] = 0
                 zero_row -= 1
             elif direction == "d":
                 assert zero_row < self._height - 1, "move off grid: " + direction
-                self._grid[zero_row][zero_col] = self._grid[zero_row + 1][zero_col]
+                self._grid[zero_row][zero_col] = self._grid[zero_row + 1][
+                    zero_col]
                 self._grid[zero_row + 1][zero_col] = 0
                 zero_row += 1
             else:
@@ -129,7 +133,7 @@ class Puzzle:
         """
         Check if the position has the right number.
         """
-        return self.get_number(row, col) == self.get_width()*row+col
+        return self.get_number(row, col) == self.get_width() * row + col
 
     def lower_row_invariant(self, target_row, target_col):
         """
@@ -141,14 +145,14 @@ class Puzzle:
         if self.get_number(target_row, target_col) != 0:
             return False
         # All tiles in rows i+1 or below are positioned at their solved location.
-        for row in range(target_row+1, self.get_height()):
-            start_col = (target_col if row<=1 else 0)
+        for row in range(target_row + 1, self.get_height()):
+            start_col = (target_col if row <= 1 else 0)
             for col in range(start_col, self.get_width()):
                 if not self.right_number(row, col):
                     return False
         # All tiles in row i to the right of position (i,j) are positioned at
         # their solved location.
-        for col in range(target_col+1, self.get_width()):
+        for col in range(target_col + 1, self.get_width()):
             if not self.right_number(target_row, col):
                 return False
         return True
@@ -164,21 +168,36 @@ class Puzzle:
             return ""
         if solved_row == target_row:
             if target_col > solved_col:
-                movements = "l"*(target_col-solved_col)+"urrdl"*(target_col-solved_col-1)
+                movements = "l" * (target_col - solved_col) + "urrdl" * (
+                    target_col - solved_col - 1)
             else:
-                movements = "r"*(solved_col-target_col)+"ulldr"*(solved_col-target_col-1)+"ulld"
+                movements = "r" * (solved_col - target_col) + "ulldr" * (
+                    solved_col - target_col - 1) + "ulld"
         elif solved_col == target_col:
-            movements = "u"*(target_row-solved_row)+"lddru"*(target_row-solved_row-1)+"ld"
+            movements = "u" * (target_row - solved_row) + "lddru" * (
+                target_row - solved_row - 1) + "ld"
         elif solved_col < target_col:
             if solved_col == 0:
-                movements = "l"*(target_col-solved_col)+"u"*(target_row-solved_row)+"rddlu"*(target_row-solved_row-1)+"rdl"+"urrdl"*(target_col-solved_col-1)
+                movements = "l" * (target_col - solved_col) + "u" * (
+                    target_row - solved_row) + "rddlu" * (
+                        target_row - solved_row - 1) + "rdl" + "urrdl" * (
+                            target_col - solved_col - 1)
             else:
-                movements = "l"*(target_col-solved_col)+"u"*(target_row-solved_row)+"lddru"*(target_row-solved_row-1)+"rdl"+"urrdl"*(target_col-solved_col-1)
+                movements = "l" * (target_col - solved_col) + "u" * (
+                    target_row - solved_row) + "lddru" * (
+                        target_row - solved_row - 1) + "rdl" + "urrdl" * (
+                            target_col - solved_col - 1)
         elif solved_col > target_col:
             if solved_row == 0:
-                movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"dllur"*(solved_col-target_col-1)+"dlu"+"lddru"*(target_row-solved_row-1)+"ld"
+                movements = "u" * (target_row - solved_row) + "r" * (
+                    solved_col - target_col) + "dllur" * (
+                        solved_col - target_col - 1) + "dlu" + "lddru" * (
+                            target_row - solved_row - 1) + "ld"
             else:
-                movements = "u"*(target_row-solved_row)+"r"*(solved_col-target_col)+"ulldr"*(solved_col-target_col-1)+"ullddru"+"lddru"*(target_row-solved_row-1)+"ld"
+                movements = "u" * (target_row - solved_row) + "r" * (
+                    solved_col - target_col) + "ulldr" * (
+                        solved_col - target_col - 1) + "ullddru" + "lddru" * (
+                            target_row - solved_row - 1) + "ld"
         return movements
 
     def solve_interior_tile(self, target_row, target_col):
@@ -186,7 +205,8 @@ class Puzzle:
         Place correct tile at target position
         Updates puzzle and returns a move string
         """
-        movements = self.move_tile(target_row, target_col, target_row*self.get_width()+target_col)
+        movements = self.move_tile(target_row, target_col,
+                                   target_row * self.get_width() + target_col)
         self.update_puzzle(movements)
         return movements
 
@@ -197,13 +217,15 @@ class Puzzle:
         """
         solved_row, solved_col = self.current_position(target_row, 0)
         movements = ""
-        if solved_row == target_row-1 and solved_col == 0:
+        if solved_row == target_row - 1 and solved_col == 0:
             movements = "u"
         else:
             local_board = self.clone()
             local_board.update_puzzle("ur")
-            movements = "ur" + local_board.move_tile(target_row-1, 1, target_row*self.get_width()) + "ruldrdlurdluurddlu"
-        movements += "r"*(self.get_width()-1)
+            movements = "ur" + local_board.move_tile(
+                target_row - 1, 1, target_row *
+                self.get_width()) + "ruldrdlurdluurddlu"
+        movements += "r" * (self.get_width() - 1)
         self.update_puzzle(movements)
         return movements
 
@@ -233,12 +255,13 @@ class Puzzle:
         """
         solved_row, solved_col = self.current_position(0, target_col)
         movements = ""
-        if solved_col == target_col-1 and solved_row == 0:
+        if solved_col == target_col - 1 and solved_row == 0:
             movements = "ld"
         else:
             local_board = self.clone()
             local_board.update_puzzle("ld")
-            movements = "ld" + local_board.move_tile(1, target_col-1, target_col) + "urdlurrdluldrruld"
+            movements = "ld" + local_board.move_tile(
+                1, target_col - 1, target_col) + "urdlurrdluldrruld"
         self.update_puzzle(movements)
         return movements
 
@@ -249,7 +272,7 @@ class Puzzle:
         """
         movements = self.solve_interior_tile(1, target_col)
         self.update_puzzle("ur")
-        return movements+"ur"
+        return movements + "ur"
 
     ###########################################################
     # Phase 3 methods
@@ -277,25 +300,27 @@ class Puzzle:
         """
         # move zero tile to the lower right corner
         row, col = self.current_position(0, 0)
-        movements = "d"*(self.get_height()-1-row)+"r"*(self.get_width()-1-col)
+        movements = "d" * (self.get_height() - 1 - row) + "r" * (
+            self.get_width() - 1 - col)
         self.update_puzzle(movements)
         # solve rowid from 2 by row
-        for row in range(self.get_height()-1, 1, -1):
-            for col in range(self.get_width()-1, -1, -1):
+        for row in range(self.get_height() - 1, 1, -1):
+            for col in range(self.get_width() - 1, -1, -1):
                 assert self.lower_row_invariant(row, col)
                 if col == 0:
                     movements += self.solve_col0_tile(row)
-                    assert self.lower_row_invariant(row-1, self.get_width()-1)
+                    assert self.lower_row_invariant(row - 1,
+                                                    self.get_width() - 1)
                 else:
                     movements += self.solve_interior_tile(row, col)
-                    assert self.lower_row_invariant(row, col-1)
+                    assert self.lower_row_invariant(row, col - 1)
         # solve the uppermost two rows by column
-        for col in range(self.get_width()-1, 1, -1):
+        for col in range(self.get_width() - 1, 1, -1):
             for row in range(1, -1, -1):
                 if row == 0:
                     assert self.row0_invariant(col)
                     movements += self.solve_row0_tile(col)
-                    assert self.row1_invariant(col-1)
+                    assert self.row1_invariant(col - 1)
                 else:
                     assert self.row1_invariant(col)
                     movements += self.solve_row1_tile(col)
@@ -308,201 +333,285 @@ class Puzzle:
 
 import poc_simpletest
 
+
 def test_lower_row_invariant():
     suite = poc_simpletest.TestSuite()
     print("test_lower_row_invariant():"),
-    suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,0,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(1, 2), True, "Test 0: Zero in the middle.")
-    suite.run_test(Puzzle(4,4,[[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 0), True, "Test 1: Zero in the upper left.")
-    suite.run_test(Puzzle(4,4,[[3,1,2,0],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 3), True, "Test 2: Zero in the upper right.")
-    suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,12,7],[8,9,10,11],[0,13,14,15]]).lower_row_invariant(3, 0), True, "Test 3: Zero in the bottom left.")
-    suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,15,7],[8,9,10,11],[12,13,14,0]]).lower_row_invariant(3, 3), True, "Test 4: Zero in the bottom right.")
-    suite.run_test(Puzzle(4,4,[[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 3), False, "Test 5: Invalid.")
-    suite.run_test(Puzzle(4,4,[[1,0,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 0), False, "Test 6: Invalid.")
-    suite.run_test(Puzzle(4,4,[[0,3,2,1],[4,5,6,7],[8,9,10,11],[12,13,14,15]]).lower_row_invariant(0, 0), False, "Test 7: Invalid.")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 2, 1], [6, 5, 0, 7], [8, 9, 10, 11],
+                      [12, 13, 14, 15]]).lower_row_invariant(
+                          1, 2), True, "Test 0: Zero in the middle.")
+    suite.run_test(
+        Puzzle(4, 4, [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11],
+                      [12, 13, 14, 15]]).lower_row_invariant(
+                          0, 0), True, "Test 1: Zero in the upper left.")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 1, 2, 0], [4, 5, 6, 7], [8, 9, 10, 11],
+                      [12, 13, 14, 15]]).lower_row_invariant(
+                          0, 3), True, "Test 2: Zero in the upper right.")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 2, 1], [6, 5, 12, 7], [8, 9, 10, 11],
+                      [0, 13, 14, 15]]).lower_row_invariant(
+                          3, 0), True, "Test 3: Zero in the bottom left.")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 2, 1], [6, 5, 15, 7], [8, 9, 10, 11],
+                      [12, 13, 14, 0]]).lower_row_invariant(
+                          3, 3), True, "Test 4: Zero in the bottom right.")
+    suite.run_test(
+        Puzzle(4, 4, [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11],
+                      [12, 13, 14, 15]]).lower_row_invariant(
+                          0, 3), False, "Test 5: Invalid.")
+    suite.run_test(
+        Puzzle(4, 4, [[1, 0, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11],
+                      [12, 13, 14, 15]]).lower_row_invariant(
+                          0, 0), False, "Test 6: Invalid.")
+    suite.run_test(
+        Puzzle(4, 4, [[0, 3, 2, 1], [4, 5, 6, 7], [8, 9, 10, 11],
+                      [12, 13, 14, 15]]).lower_row_invariant(
+                          0, 0), False, "Test 7: Invalid.")
     suite.report_results()
+
 
 def test_solve_interior_tile():
     suite = poc_simpletest.TestSuite()
     print "\n==========="
     print("test_solve_interior_tile():"),
 
-    puzzle = Puzzle(4,4,[[2,11,12,13],[9,4,6,1],[5,7,8,3],[10,0,14,15]])
+    puzzle = Puzzle(4, 4, [[2, 11, 12, 13], [9, 4, 6, 1], [5, 7, 8, 3],
+                           [10, 0, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 1), True, "Test 0.0:")
     puzzle.solve_interior_tile(3, 1)
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 0.1:")
 
-    puzzle = Puzzle(4,4,[[2,11,12,10],[9,4,6,1],[5,7,8,3],[15,13,14,0]])
+    puzzle = Puzzle(4, 4, [[2, 11, 12, 10], [9, 4, 6, 1], [5, 7, 8, 3],
+                           [15, 13, 14, 0]])
     suite.run_test(puzzle.lower_row_invariant(3, 3), True, "Test 1.0:")
     puzzle.solve_interior_tile(3, 3)
     suite.run_test(puzzle.lower_row_invariant(3, 2), True, "Test 1.1:")
 
-    puzzle = Puzzle(4,4,[[2,11,12,10],[9,4,6,1],[5,7,8,3],[13,0,14,15]])
+    puzzle = Puzzle(4, 4, [[2, 11, 12, 10], [9, 4, 6, 1], [5, 7, 8, 3],
+                           [13, 0, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 1), True, "Test 2.0:")
     puzzle.solve_interior_tile(3, 1)
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 2.1:")
 
-    puzzle = Puzzle(4,4,[[13,11,12,2],[9,4,6,1],[5,7,8,3],[10,0,14,15]])
+    puzzle = Puzzle(4, 4, [[13, 11, 12, 2], [9, 4, 6, 1], [5, 7, 8, 3],
+                           [10, 0, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 1), True, "Test 3.0:")
     puzzle.solve_interior_tile(3, 1)
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 3.1:")
 
-    puzzle = Puzzle(4,4,[[3,11,12,2],[9,4,6,1],[5,7,8,13],[10,0,14,15]])
+    puzzle = Puzzle(4, 4, [[3, 11, 12, 2], [9, 4, 6, 1], [5, 7, 8, 13],
+                           [10, 0, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 1), True, "Test 4.0:")
     puzzle.solve_interior_tile(3, 1)
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 4.1:")
 
-    puzzle = Puzzle(4,4,[[3,13,12,2],[9,4,6,1],[5,7,8,11],[10,0,14,15]])
+    puzzle = Puzzle(4, 4, [[3, 13, 12, 2], [9, 4, 6, 1], [5, 7, 8, 11],
+                           [10, 0, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 1), True, "Test 5.0:")
     puzzle.solve_interior_tile(3, 1)
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 5.1:")
 
     suite.report_results()
 
+
 def test_solve_col0_tile():
     suite = poc_simpletest.TestSuite()
     print "\n==========="
     print("test_solve_col0_tile():"),
 
-    puzzle = Puzzle(4,4,[[2,11,12,10],[9,4,6,1],[5,7,8,3],[0,13,14,15]])
+    puzzle = Puzzle(4, 4, [[2, 11, 12, 10], [9, 4, 6, 1], [5, 7, 8, 3],
+                           [0, 13, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 0.0:")
     puzzle.solve_col0_tile(3)
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 0.1:")
 
-    puzzle = Puzzle(4,4,[[2,11,3,10],[9,4,6,1],[5,7,8,12],[0,13,14,15]])
+    puzzle = Puzzle(4, 4, [[2, 11, 3, 10], [9, 4, 6, 1], [5, 7, 8, 12],
+                           [0, 13, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 1.0:")
     puzzle.solve_col0_tile(3)
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 1.1:")
 
-    puzzle = Puzzle(4,4,[[12,11,2,10],[9,4,6,1],[5,7,8,3],[0,13,14,15]])
+    puzzle = Puzzle(4, 4, [[12, 11, 2, 10], [9, 4, 6, 1], [5, 7, 8, 3],
+                           [0, 13, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 2.0:")
     puzzle.solve_col0_tile(3)
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 2.1:")
 
-    puzzle = Puzzle(4,4,[[10,11,2,12],[9,4,6,1],[5,7,8,3],[0,13,14,15]])
+    puzzle = Puzzle(4, 4, [[10, 11, 2, 12], [9, 4, 6, 1], [5, 7, 8, 3],
+                           [0, 13, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 3.0:")
     puzzle.solve_col0_tile(3)
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 3.1:")
 
-    puzzle = Puzzle(4,4,[[10,11,2,5],[9,4,6,1],[12,7,8,3],[0,13,14,15]])
+    puzzle = Puzzle(4, 4, [[10, 11, 2, 5], [9, 4, 6, 1], [12, 7, 8, 3],
+                           [0, 13, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 4.0:")
     puzzle.solve_col0_tile(3)
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 4.1:")
 
-    puzzle = Puzzle(4,4,[[10,11,2,5],[9,4,6,1],[7,12,8,3],[0,13,14,15]])
+    puzzle = Puzzle(4, 4, [[10, 11, 2, 5], [9, 4, 6, 1], [7, 12, 8, 3],
+                           [0, 13, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(3, 0), True, "Test 5.0:")
     puzzle.solve_col0_tile(3)
     suite.run_test(puzzle.lower_row_invariant(2, 3), True, "Test 5.1:")
 
-    puzzle = Puzzle(4,4,[[8,3,2,5],[7,4,6,1],[0,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[8, 3, 2, 5], [7, 4, 6, 1], [0, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(2, 0), True, "Test 6.0:")
     puzzle.solve_col0_tile(2)
     suite.run_test(puzzle.lower_row_invariant(1, 3), True, "Test 6.1:")
 
-    puzzle = Puzzle(4,4,[[1,3,2,5],[7,4,6,8],[0,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[1, 3, 2, 5], [7, 4, 6, 8], [0, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.lower_row_invariant(2, 0), True, "Test 7.0:")
     puzzle.solve_col0_tile(2)
     suite.run_test(puzzle.lower_row_invariant(1, 3), True, "Test 7.1:")
 
     suite.report_results()
 
+
 def test_row1_invariant():
     suite = poc_simpletest.TestSuite()
     print "\n==========="
     print("test_row1_invariant():"),
-    suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,0,7],[8,9,10,11],[12,13,14,15]]).row1_invariant(2), True, "Test 0")
-    suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,7,0],[8,9,10,11],[12,13,14,15]]).row1_invariant(3), True, "Test 1")
-    suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,0,7],[8,9,10,11],[12,13,14,15]]).row1_invariant(3), False, "Test 2: Invalid.")
-    suite.run_test(Puzzle(4,4,[[3,4,2,1],[6,5,7,0],[8,9,10,11],[15,13,14,12]]).row1_invariant(3), False, "Test 3: Invalid.")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 2, 1], [6, 5, 0, 7], [8, 9, 10, 11],
+                      [12, 13, 14, 15]]).row1_invariant(2), True, "Test 0")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 2, 1], [6, 5, 7, 0], [8, 9, 10, 11],
+                      [12, 13, 14, 15]]).row1_invariant(3), True, "Test 1")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 2, 1], [6, 5, 0, 7], [8, 9, 10, 11], [12, 13, 14,
+                                                                   15]
+                      ]).row1_invariant(3), False, "Test 2: Invalid.")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 2, 1], [6, 5, 7, 0], [8, 9, 10, 11], [15, 13, 14,
+                                                                   12]
+                      ]).row1_invariant(3), False, "Test 3: Invalid.")
     suite.report_results()
+
 
 def test_row0_invariant():
     suite = poc_simpletest.TestSuite()
     print "\n==========="
     print("test_row0_invariant():"),
-    suite.run_test(Puzzle(4,4,[[2,4,0,3],[5,1,6,7],[8,9,10,11],[12,13,14,15]]).row0_invariant(2), True, "Test 0")
-    suite.run_test(Puzzle(4,4,[[3,4,2,0],[5,1,6,7],[8,9,10,11],[12,13,14,15]]).row0_invariant(3), True, "Test 1")
-    suite.run_test(Puzzle(4,4,[[3,4,0,2],[5,1,6,7],[8,9,10,11],[12,13,14,15]]).row0_invariant(3), False, "Test 2: Invalid.")
-    suite.run_test(Puzzle(4,4,[[3,4,2,0],[5,1,7,6],[8,9,10,11],[12,13,14,15]]).row0_invariant(3), False, "Test 3: Invalid.")
-    suite.run_test(Puzzle(4,4,[[3,4,2,0],[5,1,6,7],[8,9,10,11],[12,13,15,14]]).row0_invariant(3), False, "Test 4: Invalid.")
-    suite.run_test(Puzzle(4,5,[[15,16,0,3,4],[5,6,7,8,9],[10,11,12,13,14],[1,2,17,18,19]]).row0_invariant(2), False, "Test 4: Invalid.")
+    suite.run_test(
+        Puzzle(4, 4, [[2, 4, 0, 3], [5, 1, 6, 7], [8, 9, 10, 11],
+                      [12, 13, 14, 15]]).row0_invariant(2), True, "Test 0")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 2, 0], [5, 1, 6, 7], [8, 9, 10, 11],
+                      [12, 13, 14, 15]]).row0_invariant(3), True, "Test 1")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 0, 2], [5, 1, 6, 7], [8, 9, 10, 11], [12, 13, 14,
+                                                                   15]
+                      ]).row0_invariant(3), False, "Test 2: Invalid.")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 2, 0], [5, 1, 7, 6], [8, 9, 10, 11], [12, 13, 14,
+                                                                   15]
+                      ]).row0_invariant(3), False, "Test 3: Invalid.")
+    suite.run_test(
+        Puzzle(4, 4, [[3, 4, 2, 0], [5, 1, 6, 7], [8, 9, 10, 11], [12, 13, 15,
+                                                                   14]
+                      ]).row0_invariant(3), False, "Test 4: Invalid.")
+    suite.run_test(
+        Puzzle(4, 5, [[15, 16, 0, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 13, 14],
+                      [1, 2, 17, 18, 19
+                       ]]).row0_invariant(2), False, "Test 4: Invalid.")
 
     suite.report_results()
+
 
 def test_solve_row1_tile():
     suite = poc_simpletest.TestSuite()
     print "\n==========="
     print("test_solve_row1_tile():"),
 
-    puzzle = Puzzle(4,4,[[7,4,2,1],[6,5,3,0],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[7, 4, 2, 1], [6, 5, 3, 0], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row1_invariant(3), True, "Test 0.0:")
     puzzle.solve_row1_tile(3)
     suite.run_test(puzzle.row0_invariant(3), True, "Test 0.1:")
 
-    puzzle = Puzzle(4,4,[[6,4,2,1],[7,5,3,0],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[6, 4, 2, 1], [7, 5, 3, 0], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row1_invariant(3), True, "Test 1.0:")
     puzzle.solve_row1_tile(3)
     suite.run_test(puzzle.row0_invariant(3), True, "Test 1.1:")
 
-    puzzle = Puzzle(4,4,[[6,4,2,3],[1,5,0,7],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[6, 4, 2, 3], [1, 5, 0, 7], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row1_invariant(2), True, "Test 2.0:")
     puzzle.solve_row1_tile(2)
     suite.run_test(puzzle.row0_invariant(2), True, "Test 2.1:")
 
-    puzzle = Puzzle(4,4,[[1,4,2,3],[6,5,0,7],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[1, 4, 2, 3], [6, 5, 0, 7], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row1_invariant(2), True, "Test 3.0:")
     puzzle.solve_row1_tile(2)
     suite.run_test(puzzle.row0_invariant(2), True, "Test 3.1:")
 
     suite.report_results()
 
+
 def test_solve_row0_tile():
     suite = poc_simpletest.TestSuite()
     print "\n==========="
     print("test_solve_row0_tile():"),
 
-    puzzle = Puzzle(4,4,[[5,4,2,0],[6,1,3,7],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[5, 4, 2, 0], [6, 1, 3, 7], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row0_invariant(3), True, "Test 0.0:")
     puzzle.solve_row0_tile(3)
     suite.run_test(puzzle.row1_invariant(2), True, "Test 0.1:")
 
-    puzzle = Puzzle(4,4,[[5,4,2,0],[3,1,6,7],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[5, 4, 2, 0], [3, 1, 6, 7], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row0_invariant(3), True, "Test 1.0:")
     puzzle.solve_row0_tile(3)
     suite.run_test(puzzle.row1_invariant(2), True, "Test 1.1:")
 
-    puzzle = Puzzle(4,4,[[3,4,2,0],[5,1,6,7],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[3, 4, 2, 0], [5, 1, 6, 7], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row0_invariant(3), True, "Test 2.0:")
     puzzle.solve_row0_tile(3)
     suite.run_test(puzzle.row1_invariant(2), True, "Test 2.1:")
 
-    puzzle = Puzzle(4,4,[[2,4,0,3],[5,1,6,7],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[2, 4, 0, 3], [5, 1, 6, 7], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row0_invariant(2), True, "Test 3.0:")
     puzzle.solve_row0_tile(2)
     suite.run_test(puzzle.row1_invariant(1), True, "Test 3.1:")
 
-    puzzle = Puzzle(4,4,[[5,4,0,3],[2,1,6,7],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[5, 4, 0, 3], [2, 1, 6, 7], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row0_invariant(2), True, "Test 4.0:")
     puzzle.solve_row0_tile(2)
     suite.run_test(puzzle.row1_invariant(1), True, "Test 4.1:")
 
     suite.report_results()
 
+
 def test_solve_2x2():
     suite = poc_simpletest.TestSuite()
     print "\n==========="
     print("test_solve_2x2():"),
 
-    puzzle = Puzzle(4,4,[[5,4,2,3],[1,0,6,7],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[5, 4, 2, 3], [1, 0, 6, 7], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row1_invariant(1), True, "Test 0.0:")
     puzzle.solve_2x2()
     suite.run_test(puzzle.row0_invariant(0), True, "Test 0.1:")
 
-    puzzle = Puzzle(4,4,[[1,5,2,3],[4,0,6,7],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[1, 5, 2, 3], [4, 0, 6, 7], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row1_invariant(1), True, "Test 1.0:")
     puzzle.solve_2x2()
     suite.run_test(puzzle.row0_invariant(0), True, "Test 1.1:")
 
-    puzzle = Puzzle(4,4,[[4,5,2,3],[1,0,6,7],[8,9,10,11],[12,13,14,15]])
+    puzzle = Puzzle(4, 4, [[4, 5, 2, 3], [1, 0, 6, 7], [8, 9, 10, 11],
+                           [12, 13, 14, 15]])
     suite.run_test(puzzle.row1_invariant(1), True, "Test 2.0:")
     puzzle.solve_2x2()
     suite.run_test(puzzle.row0_invariant(0), False, "Test 2.1: Unsolved")
@@ -514,36 +623,44 @@ def test_solve_2x2():
 
     suite.report_results()
 
+
 def test_solve_puzzle():
     suite = poc_simpletest.TestSuite()
     print "\n==========="
     print("test_solve_puzzle():"),
 
-    puzzle = Puzzle(4,4,[[2,11,12,13],[9,4,6,1],[5,7,8,3],[10,0,14,15]])
+    puzzle = Puzzle(4, 4, [[2, 11, 12, 13], [9, 4, 6, 1], [5, 7, 8, 3],
+                           [10, 0, 14, 15]])
     puzzle.solve_puzzle()
     suite.run_test(puzzle.row0_invariant(0), True, "Test 0:")
 
-    puzzle = Puzzle(4,4,[[2,11,0,13],[9,4,6,15],[5,7,8,3],[10,12,14,1]])
+    puzzle = Puzzle(4, 4, [[2, 11, 0, 13], [9, 4, 6, 15], [5, 7, 8, 3],
+                           [10, 12, 14, 1]])
     puzzle.solve_puzzle()
     suite.run_test(puzzle.row0_invariant(0), True, "Test 1:")
 
-    puzzle = Puzzle(4,4,[[15,14,13,12],[11,10,9,8],[7,6,5,4],[3,2,1,0]])
+    puzzle = Puzzle(4, 4, [[15, 14, 13, 12], [11, 10, 9, 8], [7, 6, 5, 4],
+                           [3, 2, 1, 0]])
     puzzle.solve_puzzle()
     suite.run_test(puzzle.row0_invariant(0), True, "Test 2:")
 
-    puzzle = Puzzle(4,4,[[5,1,4,2],[13,12,15,3],[10,0,6,14],[8,7,9,11]])
+    puzzle = Puzzle(4, 4, [[5, 1, 4, 2], [13, 12, 15, 3], [10, 0, 6, 14],
+                           [8, 7, 9, 11]])
     puzzle.solve_puzzle()
     suite.run_test(puzzle.row0_invariant(0), True, "Test 3:")
 
-    puzzle = Puzzle(4,4,[[5,12,15,2],[8,1,0,3],[13,4,6,11],[7,10,14,9]])
+    puzzle = Puzzle(4, 4, [[5, 12, 15, 2], [8, 1, 0, 3], [13, 4, 6, 11],
+                           [7, 10, 14, 9]])
     puzzle.solve_puzzle()
     suite.run_test(puzzle.row0_invariant(0), True, "Test 4:")
 
-    puzzle = Puzzle(4,4,[[14,12,8,5],[0,2,15,6],[4,13,7,9],[10,11,3,1]])
+    puzzle = Puzzle(4, 4, [[14, 12, 8, 5], [0, 2, 15, 6], [4, 13, 7, 9],
+                           [10, 11, 3, 1]])
     puzzle.solve_puzzle()
     suite.run_test(puzzle.row0_invariant(0), True, "Test 5:")
 
     suite.report_results()
+
 
 test_lower_row_invariant()
 test_solve_interior_tile()

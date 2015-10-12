@@ -4,8 +4,8 @@ Examples of invariants
 
 import math
 
-
 # Invariants for loops
+
 
 def iterative_factorial(num):
     """
@@ -22,8 +22,6 @@ def iterative_factorial(num):
     return answer
 
 
-
-
 def merge(list1, list2):
     """
     Merge two sorted lists.
@@ -32,7 +30,7 @@ def merge(list1, list2):
     are in both list1 and list2.
 
     This function can be iterative.
-    """   
+    """
     answer = []
     assert answer == sorted(answer)
 
@@ -43,7 +41,7 @@ def merge(list1, list2):
             answer.append(list1[idx1])
             idx1 += 1
         elif list1[idx1] > list2[idx2]:
-            answer.append(list2[idx2])            
+            answer.append(list2[idx2])
             idx2 += 1
         else:
             answer.append(list1[idx1])
@@ -52,14 +50,11 @@ def merge(list1, list2):
             idx2 += 1
         assert answer == sorted(answer)
 
-    answer.extend(list1[idx1 :])
-    answer.extend(list2[idx2 :])
+    answer.extend(list1[idx1:])
+    answer.extend(list2[idx2:])
 
     assert answer == sorted(answer)
     return answer
-
-
-
 
 ############################################
 # Invariants for recursive functions
@@ -80,7 +75,6 @@ def recursive_factorial(num):
         return answer
 
 
-
 def merge_sort(list1):
     """
     Sort the elements of list1.
@@ -96,15 +90,12 @@ def merge_sort(list1):
 
     mid = len(list1) // 2
 
-    list_low = merge_sort(list1[0 : mid])    
-    list_high = merge_sort(list1[mid :])
+    list_low = merge_sort(list1[0:mid])
+    list_high = merge_sort(list1[mid:])
 
-    answer =  merge(list_low, list_high)
+    answer = merge(list_low, list_high)
     assert answer == sorted(answer)
     return answer
-
-
-
 
 ########################################################
 # Class invariant
@@ -114,8 +105,9 @@ import poc_queue
 import poc_wildfire_gui
 
 # constants
-EMPTY = 0 
+EMPTY = 0
 FULL = 1
+
 
 class WildFire(poc_grid.Grid):
     """
@@ -136,8 +128,7 @@ class WildFire(poc_grid.Grid):
         Set cells to be unburned and the fire boundary to be empty
         """
         poc_grid.Grid.clear(self)
-        self._fire_boundary.clear()  
-
+        self._fire_boundary.clear()
 
     def enqueue_boundary(self, row, col):
         """
@@ -180,9 +171,8 @@ class WildFire(poc_grid.Grid):
                 self.set_full(neighbor[0], neighbor[1])
                 self._fire_boundary.enqueue(neighbor)
 
-        # Check class invariant after update  
-        assert self.boundary_invariant() 
-
+        # Check class invariant after update
+        assert self.boundary_invariant()
 
     def boundary_invariant(self):
         """
@@ -196,7 +186,6 @@ class WildFire(poc_grid.Grid):
         return True
 
 
-
 def run_examples():
     """
     Run several examples
@@ -205,11 +194,13 @@ def run_examples():
 
     print "merge([1, 3, 5, 8], [2, 4, 10]) is", merge([1, 3, 5, 8], [2, 4, 10])
 
-    print "recursive_factorial(4) is", recursive_factorial(4)    
+    print "recursive_factorial(4) is", recursive_factorial(4)
 
-    print "merge_sort([4, 2, 1, 4, 6, 7, 2, 1]) is", merge_sort([4, 2, 1, 4, 6, 7, 2, 1])
+    print "merge_sort([4, 2, 1, 4, 6, 7, 2, 1]) is", merge_sort([4, 2, 1, 4, 6,
+                                                                 7, 2, 1])
 
-    # run gui to visualize wildfire                
+    # run gui to visualize wildfire
     poc_wildfire_gui.run_gui(WildFire(30, 40))
+
 
 run_examples()
