@@ -2,7 +2,7 @@ sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get dist-upgrade
 
-sudo apt-get install vim git zsh tmux build-essential flex gawk gcc gcc-multilib gettext git-svn libncurses5-dev phablet-tools python python-pip python-virtualenv subversion unzip zlib1g-dev ipython ipython3 libffi-dev libyaml-dev
+sudo apt-get install vim git zsh tmux build-essential flex gawk gcc gcc-multilib gettext git-svn libncurses5-dev phablet-tools python python-pip python-virtualenv subversion unzip zlib1g-dev ipython ipython3 libffi-dev libyaml-dev debootstrap dchroot
 
 pip install --upgrade pip
 
