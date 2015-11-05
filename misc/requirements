@@ -7,8 +7,9 @@ sudo apt-get install vim git zsh tmux build-essential flex gawk gcc gcc-multilib
 pip install --upgrade pip
 
 # Setup git
-git config --global user.name "Qiong Wu"
-git config --global user.email creasywuqiong@gmail.com
+git config --global user.name "my name"
+git config --global user.email my@email.address
+git config --global push.default simple
 
 git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
