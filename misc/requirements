@@ -1,0 +1,24 @@
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+
+sudo apt-get install vim git zsh tmux build-essential flex gawk gcc gcc-multilib gettext git-svn libncurses5-dev phablet-tools python python-pip python-virtualenv subversion unzip zlib1g-dev ipython ipython3 libffi-dev libyaml-dev
+
+pip install --upgrade pip
+
+# Setup git
+git config --global user.name "Qiong Wu"
+git config --global user.email creasywuqiong@gmail.com
+
+git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
+# install Pathogen for vim
+mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+# install NerdTree
+git clone https://github.com/scrooloose/nerdtree.git ~/.vim/bundle
+
+# install pyenv
+curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
+# required library for pyenv install python versions
+sudo apt-get install libssl-dev libbz2-dev libreadline6 libreadline6-dev sqlite3 libsqlite3-dev
