@@ -2,16 +2,15 @@ sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get dist-upgrade
 
-sudo apt-get install vim git zsh tmux build-essential flex gawk gcc gcc-multilib gettext git-svn libncurses5-dev phablet-tools python python-pip python-virtualenv subversion unzip zlib1g-dev ipython ipython3 libffi-dev libyaml-dev debootstrap dchroot
+sudo apt-get install vim git zsh tmux build-essential flex gawk gcc gcc-multilib gettext git-svn libncurses5-dev phablet-tools python python-pip python-virtualenv subversion unzip zlib1g-dev ipython ipython3 libffi-dev libyaml-dev
 
 pip install --upgrade pip
 
 # Setup git
-git config --global user.name "my name"
-git config --global user.email my@email.address
-git config --global push.default simple
-
+git config --global user.name "NAME"
+git config --global user.email EMAIL@ADDRESS
 git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+git config core.editor "vim"
 
 # install Pathogen for vim
 mkdir -p ~/.vim/autoload ~/.vim/bundle && \
