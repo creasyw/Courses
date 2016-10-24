@@ -6,6 +6,8 @@
         <script type="text/javascript" src="d3/d3.js"></script>
     </head>
     <body>
+        <!-- The place of interpretions for both html and js matter -->
+        <p>Click on this text to update the chart with new data values.</p>
         <script type="text/javascript">
             var w = 500;
             var h = 200;
@@ -34,6 +36,34 @@
             .attr("font-size", "12px")
             .attr("text-anchor", "middle")
             .attr("fill", "white");
+
+            //On click, update with new data
+            var length_data = dataset.length
+            d3.select("p").on("click", function() {
+                        //New values for dataset
+                        dataset = [];
+                        for (var i = 0; i < length_data; i++) {
+                            var newNumber = Math.random() * 25;
+                            dataset.push(newNumber);
+                        }
+                        yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h - height_padding]);
+                        color_scale = d3.scaleLinear().domain([d3.min(dataset), d3.max(dataset)]).range([80, 200]);
+                        //Update all rects
+                        svg.selectAll("rect").data(dataset)
+                           .transition()
+                           // Use length of the dataset to keep the entire transition into 1.5 seconds
+                           .delay(function (d, i) { return i / dataset.length * 1000;})
+                           .duration(500)
+                           .attr("y", function(d) {return h - yscale(d); })
+                           .attr("height", function(d) {return yscale(d);})
+                           // RGB can only accept the integer value
+                           .attr("fill", function(d) {return "rgb(0, 0, " + Math.floor(color_scale(d)) + ")";});
+                        svg.selectAll("text").data(dataset)
+                           .text(function (d) { return Math.floor(d);})
+                           .attr("x", function(d, i) {return xscale(i) + xscale.bandwidth() / 2;})
+                           .attr("y", function (d) { return h - yscale(d) + text_padding;})
+
+            });
 
         </script>
     </body>
