@@ -43,10 +43,12 @@
                         //New values for dataset
                         dataset = [];
                         for (var i = 0; i < length_data; i++) {
-                            var newNumber = Math.random() * 25;
+                            var newNumber = Math.random() * 100;
                             dataset.push(newNumber);
                         }
+                        // Only yscale needs to update, since the length_data keeps the same
                         yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h - height_padding]);
+                        // Also update color_scale to make nice color contrast
                         color_scale = d3.scaleLinear().domain([d3.min(dataset), d3.max(dataset)]).range([80, 200]);
                         //Update all rects
                         svg.selectAll("rect").data(dataset)
