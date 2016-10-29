@@ -40,30 +40,30 @@
             //On click, update with new data
             var length_data = dataset.length
             d3.select("p").on("click", function() {
-                        //New values for dataset
-                        dataset = [];
-                        for (var i = 0; i < length_data; i++) {
-                            var newNumber = Math.random() * 100;
-                            dataset.push(newNumber);
-                        }
-                        // Only yscale needs to update, since the length_data keeps the same
-                        yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h - height_padding]);
-                        // Also update color_scale to make nice color contrast
-                        color_scale = d3.scaleLinear().domain([d3.min(dataset), d3.max(dataset)]).range([80, 200]);
-                        //Update all rects
-                        svg.selectAll("rect").data(dataset)
-                           .transition()
-                           // Use length of the dataset to keep the entire transition into 1.5 seconds
-                           .delay(function (d, i) { return i / dataset.length * 1000;})
-                           .duration(500)
-                           .attr("y", function(d) {return h - yscale(d); })
-                           .attr("height", function(d) {return yscale(d);})
-                           // RGB can only accept the integer value
-                           .attr("fill", function(d) {return "rgb(0, 0, " + Math.floor(color_scale(d)) + ")";});
-                        svg.selectAll("text").data(dataset)
-                           .text(function (d) { return Math.floor(d);})
-                           .attr("x", function(d, i) {return xscale(i) + xscale.bandwidth() / 2;})
-                           .attr("y", function (d) { return h - yscale(d) + text_padding;})
+                //New values for dataset
+                dataset = [];
+                for (var i = 0; i < length_data; i++) {
+                    var newNumber = Math.random() * 100;
+                    dataset.push(newNumber);
+                }
+                // Only yscale needs to update, since the length_data keeps the same
+                yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h - height_padding]);
+                // Also update color_scale to make nice color contrast
+                color_scale = d3.scaleLinear().domain([d3.min(dataset), d3.max(dataset)]).range([80, 200]);
+                //Update all rects
+                svg.selectAll("rect").data(dataset)
+                   .transition()
+                   // Use length of the dataset to keep the entire transition into 1.5 seconds
+                   .delay(function (d, i) { return i / dataset.length * 1000;})
+                   .duration(500)
+                   .attr("y", function(d) {return h - yscale(d); })
+                   .attr("height", function(d) {return yscale(d);})
+                   // RGB can only accept the integer value
+                   .attr("fill", function(d) {return "rgb(0, 0, " + Math.floor(color_scale(d)) + ")";});
+                svg.selectAll("text").data(dataset)
+                   .text(function (d) { return Math.floor(d);})
+                   .attr("x", function(d, i) {return xscale(i) + xscale.bandwidth() / 2;})
+                   .attr("y", function (d) { return h - yscale(d) + text_padding;})
             });
         </script>
     </body>
