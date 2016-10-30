@@ -20,9 +20,6 @@
     </head>
     <body>
         <p>Click on this text to update the chart with new data values.</p>
-        <clipPath id="chart-area">
-            <rect x="30" y="30" width="410" height="240"></rect>
-        </clipPath>
         <script type="text/javascript">
             var w = 1000;
             var h = 400;
@@ -51,7 +48,12 @@
             var xaxis = d3.axisBottom(xscale).ticks(5);
             var yaxis = d3.axisLeft(yscale).ticks(3);
 
-            svg.selectAll("circle").data(dataset).enter().append("circle")
+            svg.append("clipPath").attr("id", "chart-area").append("rect")
+               .attr("x", padding).attr("y", padding)
+               .attr("width", w - padding).attr("height", h - padding);
+
+            svg.append("g").attr("id", "circle").attr("clip-path", "url(#chart-area)")
+               .selectAll("circle").data(dataset).enter().append("circle")
                .attr("cx", function (d) { return xscale(d[0]);})
                .attr("cy", function (d) { return yscale(d[1]);})
                .attr("r", function(d) { return rscale(d[1]);});
