@@ -77,7 +77,6 @@
                 for (var i = 0; i < num_data; i++) {
                     dataset.push([Math.floor(Math.random() * 200), Math.floor(Math.random() * y_range)]);
                 }
-
                 // Redefine the scales
                 xscale = d3.scaleLinear()
                            .domain([d3.min(dataset, function (d) { return d[0]; }), d3.max(dataset, function (d) { return d[0]; })])
@@ -87,7 +86,7 @@
                            .range([h - padding_lable, padding]);
                 rscale = d3.scaleLinear().domain([0, d3.max(dataset, function(d) { return d[1]; })])
                          .range([2,5]);
-
+                // Transition for dots
                 svg.selectAll("circle").data(dataset).transition().duration(1000)
                    .on("start", function() { d3.select(this).attr("fill", "magenta").attr("r", 3);})
                    .attr("cx", function(d) { return xscale(d[0]);})
@@ -96,7 +95,7 @@
                    .on("end", function() { d3.select(this)
                                              .transition().duration(500)
                                              .attr("fill", "black").attr("r", function(d) { return rscale(d[1]);});});
-
+                // Transition for corresponding text
                 svg.selectAll("text").data(dataset).transition().duration(1000)
                    .text(function (d) { return d[0] + "," + d[1];})
                    .attr("x", function(d) {return xscale(d[0]);})
@@ -104,7 +103,7 @@
                    .attr("font-family", "sams-serif")
                    .attr("font-size", "11px")
                    .attr("fill", "red");
-
+                // Update scales
                 svg.select(".x.axis").transition().duration(1000).call(xaxis);
                 svg.select(".y.axis").transition().duration(1000).call(yaxis);
             });
