@@ -20,6 +20,9 @@
     </head>
     <body>
         <p>Click on this text to update the chart with new data values.</p>
+        <clipPath id="chart-area">
+            <rect x="30" y="30" width="410" height="240"></rect>
+        </clipPath>
         <script type="text/javascript">
             var w = 1000;
             var h = 400;
@@ -30,10 +33,9 @@
 
             var dataset = [];
             var num_data = 50;
-            var x_range = 1000;
-            var y_range = 1000;
+            var max_range = Math.random() * 1000;
             for (var i = 0; i < num_data; i++) {
-                dataset.push([Math.floor(Math.random() * x_range), Math.floor(Math.random() * y_range)]);
+                dataset.push([Math.floor(Math.random() * max_range), Math.floor(Math.random() * max_range)]);
             }
 
             var xscale = d3.scaleLinear()
@@ -62,10 +64,10 @@
                .attr("font-size", "11px")
                .attr("fill", "red");
 
-            svg.append("g").attr("class", "x.axis")
+            svg.append("g").attr("class", "x axis")
                            .attr("transform", "translate(0," + (h - padding_lable) + ")")
                            .call(xaxis);
-            svg.append("g").attr("class", "y.axis")
+            svg.append("g").attr("class", "y axis")
                            .attr("transform", "translate(" + padding + ",0)")
                            .call(yaxis);
 
@@ -74,18 +76,17 @@
             d3.select("p").on("click", function() {
                 //New values for dataset
                 dataset = [];
+                max_range = Math.random() * 1000;
                 for (var i = 0; i < num_data; i++) {
-                    dataset.push([Math.floor(Math.random() * 200), Math.floor(Math.random() * y_range)]);
+                    dataset.push([Math.floor(Math.random() * max_range), Math.floor(Math.random() * max_range)]);
                 }
                 // Redefine the scales
-                xscale = d3.scaleLinear()
-                           .domain([d3.min(dataset, function (d) { return d[0]; }), d3.max(dataset, function (d) { return d[0]; })])
-                           .range([padding, w - padding]);
-                yscale = d3.scaleLinear()
-                           .domain([d3.min(dataset, function (d) { return d[1]; }), d3.max(dataset, function (d) { return d[1]; })])
-                           .range([h - padding_lable, padding]);
-                rscale = d3.scaleLinear().domain([0, d3.max(dataset, function(d) { return d[1]; })])
-                         .range([2,5]);
+                xscale.domain([d3.min(dataset, function (d) { return d[0]; }), d3.max(dataset, function (d) { return d[0]; })])
+                      .range([padding, w - padding]);
+                yscale.domain([d3.min(dataset, function (d) { return d[1]; }), d3.max(dataset, function (d) { return d[1]; })])
+                      .range([h - padding_lable, padding]);
+                rscale.domain([0, d3.max(dataset, function(d) { return d[1]; })])
+                      .range([2,5]);
                 // Transition for dots
                 svg.selectAll("circle").data(dataset).transition().duration(1000)
                    .on("start", function() { d3.select(this).attr("fill", "magenta").attr("r", 3);})
