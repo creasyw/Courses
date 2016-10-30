@@ -91,10 +91,10 @@
                    .on("start", function() { d3.select(this).attr("fill", "magenta").attr("r", 3);})
                    .attr("cx", function(d) { return xscale(d[0]);})
                    .attr("cy", function(d) { return yscale(d[1]);})
-                   // ONLY END support the additional transition
-                   .on("end", function() { d3.select(this)
-                                             .transition().duration(500)
-                                             .attr("fill", "black").attr("r", function(d) { return rscale(d[1]);});});
+                   // Chained transistions (rather than nested in the .on("end" ...)
+                   .transition().duration(500)
+                   .attr("fill", "black")
+                   .attr("r", function(d) { return rscale(d[1]);});
                 // Transition for corresponding text
                 svg.selectAll("text").data(dataset).transition().duration(1000)
                    .text(function (d) { return d[0] + "," + d[1];})
