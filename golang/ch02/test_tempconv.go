@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	// the package has to put into a folder... that's stupid
-	"gobook/ch02/tempconv"
+	"./tempconv"
 )
 
 func main() {
