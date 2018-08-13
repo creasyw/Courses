@@ -32,6 +32,14 @@ func fetch(url string, ch chan<- string) {
 		return
 	}
 
+	// Print out everything
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		ch <- fmt.Sprint("while reading %s: %v", url, err)
+		return
+	}
+	fmt.Printf("%s\n", b)
+
 	nbytes, err := io.Copy(ioutil.Discard, resp.Body)
 	// it is a good practice to close the response first before checking if
 	// there is any content
