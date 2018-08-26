@@ -30,6 +30,8 @@ func (s *IntSet) Add(x int) {
 	s.words[word] |= 1 << bit
 }
 
+// Note that all methods of IntSet, as well as the use it as an input parameter,
+// use the references.
 func (s *IntSet) UnionWith(t *IntSet) {
 	for i, tword := range t.words {
 		if i < len(s.words) {
