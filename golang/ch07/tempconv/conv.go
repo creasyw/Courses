@@ -43,8 +43,13 @@ func (f *celsiusFlag) Set(s string) error {
 
 func CelsiusFlag(name string, value Celsius, usage string) *Celsius {
 	// To contruct the celsiusFlag use {} rather than ()
+	// It has the required method =Set= by the interface =flag= so that we can
+	// then feed the &f into the =flag.CommandLine.Var=
 	f := celsiusFlag{value}
 	// The actual horsepower to use the CommandLine from flag to parse the f
+	// But it still feels counter-intuitive to have the =&f= feeding into the
+	// =flag= within the package of tempconv but still have to call the
+	// =flag.Parse= from the main package so that it can be correectly decoded
 	flag.CommandLine.Var(&f, name, usage)
 	return &f.Celsius
 }
