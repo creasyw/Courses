@@ -1,0 +1,26 @@
+The UNIX file system is characterized by
+
+- a hierarchical structure. The file system is organized as a tree with a single root node called root.
+- consistent treatment of file data. Programs in the UNIX system have no knowledge of the internal format in which the kernel stores file data, treating the data as an unformatted stream of bytes. Programs may interpret the byte stream as they wish, but the interpretation has no bearing on how the operating system stores the data. Thus, the syntax of accessing the data in a file is defined by the system and is identical for all programs, but the semantics of the data are imposed by the program.
+- the ability to create and delete files,
+- dynamic growth of files,
+- the protection of file data.
+- the treatment of peripheral devices (such as terminals and tape units) as files.
+
+The shell interprets the first word of a command line as a command name: for many commands, the shell forks and the child process execs the command associated with the name, treating the remaining words on the command line as parameters to the command.
+
+The shell searches for commands in a given sequence of directories, changeable by user request per invocation of the shell. The shell usually executes a command synchronously, waiting for the command to terminate before reading the next command line. However, it also allows asynchronous execution, where it reads the next command line and executes it without waiting for the prior command to terminate. Commands executed asynchronously are said to execute in the background. Because the shell is a user program and not part of the kernel, it is easy to modify it and tailor it to a particular environment.
+
+Every process executing in the UNIX system has an execution environment that includes a current directory. The current directory of a process is the start directory used for all path names that do not begin with the slash character.
+
+The shell allows three types of commands. First, a command can be an executable file that contains object code produced by compilation of source code (a C program for example). Second, a command can be an executable file that contains a sequence of shell command lines. Finally, a command can be an internal shell command (instead of an executable file) . The internal commands make the shell a programming language in addition to a command interpreter and include commands for looping (for-in-do-done and while-do-done), commands for conditional execution (if-then-else-fi), a "case" statement command, a command to change the current directory of a process (cd) , and several others.
+
+The philosophy of the UNIX system is to provide operating ·system primitives that enable users to write small, modular programs that can be used as building blocks to build more complex programs.
+
+The execution of user processes on UNIX systems is divided into two levels: user and kernel. When a process executes a system call, the execution mode of the process changes from user mode to kernel mode: the operating system executes and attempts to service the user request, returning an error code if it fails. Even· if the user makes no explicit requests for operating system services, the operating system still does bookkeeping operations that relate fo the user process, handling interrupts, scheduling processes, managing memory, and so on.
+
+Although the system executes in one of two modes, the kernel runs on behalf of _a user process. The kernel is not a separate set of processes that run in parallel to a user processes., but it is part of-each user process.
+
+Exceptions happen "in the middle" of the execution of an instruction, and the system attempts to restart the instruction after handling the exception; interrupts are considered to happen between the execution of two instructions, and the system continues with the next instruction after servicing the interrupt. The UNIX system uses one mechanism to handle interrupts and exception conditions.
+
+The system calls allow processes to do operations that are otherwise forbidden to them. In addition to servicing system calls, the kernel does general bookkeeping for the user community, controlling process scheduling, managing the storage and protection of processes in main memory, fielding interrupts, managing files and devices, and taking care of system error conditions. The UNIX system kernel purposely omits many functions that are part of other operating systems, providing a small set of system calls that allow processes to do necessary functions at user level.
