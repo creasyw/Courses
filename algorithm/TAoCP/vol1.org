@@ -1,0 +1,67 @@
+#+begin_quote
+Practice yourself, for heaven’s sake, in little things; and thence proceed to greater. — EPICTETUS (Discourses IV.i)
+#+end_quote
+
+By the time of the Renaissance, the origin of this word was in doubt, and early linguists attempted to guess at its derivation by making combinations like algiros [painful]+arithmos [number]; others said no, the word comes from “King Algor of Castile.” Finally, historians of mathematics found the true origin of the word algorism: It comes from the name of a famous Persian textbook author, Abū ‘Abd Allāh Muh.
+
+
+Another word, “algebra,” stems from the title of that book, which was a systematic study of the solution of linear and quadratic equations.
+
+Algorithm E (Euclid’s algorithm). Given two positive integers m and n, find their greatest common divisor, that is, the largest positive integer that evenly divides both m and n. E1. [Find remainder.] Divide m by n and let r be the remainder. (We will have 0 ≤ r < n.) E2. [Is it zero?] If r = 0, the algorithm terminates; n is the answer. E3. [Reduce.] Set m ← n, n ← r, and go back to step E1.
+
+An algorithm must be seen to be believed, and the best way to learn what an algorithm is all about is to try it.
+
+Besides merely being a finite set of rules that gives a sequence of operations for solving a specific type of problem, an algorithm has five important features:
+
+
+1. Finiteness. An algorithm must always terminate after a finite number of steps.
+2. Definiteness. Each step of an algorithm must be precisely defined; the actions to be carried out must be rigorously and unambiguously specified for each case. The algorithms of this book will hopefully meet this criterion,
+3. Input. An algorithm has zero or more inputs: quantities that are given to it initially before the algorithm begins, or dynamically as the algorithm runs. These inputs are taken from specified sets of objects.
+4. Output. An algorithm has one or more outputs: quantities that have a specified relation to the inputs.
+5. Effectiveness. An algorithm is also generally expected to be effective, in the sense that its operations must all be sufficiently basic that they can in principle be done exactly and in a finite length of time by someone using pencil and paper.
+
+In practice we not only want algorithms, we want algorithms that are good in some loosely defined aesthetic sense. One criterion of goodness is the length of time taken to perform the algorithm; this can be expressed in terms of the number of times each step is executed. Other criteria are the adaptability of the algorithm to different kinds of computers, its simplicity and elegance, etc.
+
+The theory of algorithms is another subject entirely, dealing primarily with the existence or nonexistence of effective algorithms to compute particular quantities.
+
+Analysis of algorithms is the name the author likes to use to describe investigations such as this. The general idea is to take a particular algorithm and to determine its quantitative behavior; occasionally we also study whether or not an algorithm is optimal in some sense.
+
+Let us formally define a computational method to be a quadruple (Q, I, Ω, f), in which Q is a set containing subsets I and Ω, and f is a function from Q into itself. Furthermore f should leave Ω pointwise fixed; that is, f(q) should equal q for all elements q of Ω. The four quantities Q, I, Ω, f are intended to represent respectively the states of the computation, the input, the output, and the computational rule.
+
+There are many other essentially equivalent ways to formulate the concept of an effective computational method (for example, using Turing machines). The formulation above is virtually the same as that given by A. A. Markov in his book The Theory of Algorithms [Trudy Mat. Inst. Akad. Nauk 42 (1954), 1–376],
+
+Mathematical induction is quite different from induction in the sense just explained. It is not just guesswork, but a conclusive proof of a statement; indeed, it is a proof of infinitely many statements, one for each n. It has been called “induction” only because one must first decide somehow what is to be proved, before one can apply the technique of mathematical induction.
+
+we can envision a general method applicable to proving the validity of any algorithm. The idea is to take a flow chart for some algorithm and to label each of the arrows with an assertion about the current state of affairs at the time the computation traverses that arrow.
+
+Using this general method, the problem of proving that a given algorithm is valid evidently consists mostly of inventing the right assertions to put in the flow chart. Once this inductive leap has been made, it is pretty much routine to carry out the proofs that each assertion leading into a box logically implies each assertion leading out. In fact, it is pretty much routine to invent the assertions themselves, once a few of the difficult ones have been discovered;
+
+This approach to proving the correctness of algorithms has another aspect that is even more important: It mirrors the way we understand an algorithm.
+
+This point of view has important psychological consequences for the proper communication of algorithms from one person to another: It implies that the key assertions, those that cannot easily be derived by an automaton, should always be stated explicitly when an algorithm is being explained to someone else.
+
+The formulation of algorithm-proving in terms of assertions and induction, as given above, is essentially due to R. W. Floyd. He pointed out that a semantic definition of each operation in a programming language can be formulated as a logical rule that tells exactly what assertions can be proved after the operation, based on what assertions are true beforehand
+
+The understanding of the theory of a routine may be greatly aided by providing, at the time of construction one or two statements concerning the state of the machine
+
+The theory of complex numbers is in many ways simpler and more beautiful than the theory of real numbers, but it is usually considered to be an advanced topic.
+
+One might expect that in computer work binary logarithms (to the base 2) would be more useful, since most computers do binary arithmetic. Actually, we will see that binary logarithms are indeed very useful, but not only for that reason; the reason is primarily that a computer algorithm often makes two-way branches. Binary logarithms arise so frequently,
+
+As in case (b), the operation of interchanging order of summation is not always valid for infinite series. If the series is absolutely convergent — that is, if ∑R(i) ∑S(j) ∣aj∣ exists — it can be shown that Eqs.
+
+Induction is, of course, a perfectly valid procedure; but it does not give any insight into how on earth a person would ever have dreamed the formula up in the first place, except by some lucky guess. In the analysis of algorithms we are confronted with hundreds of sums that do not conform to any apparent pattern; by manipulating those sums, as above, we can often get the answer without the need for ingenious guesses.
+
+Induction is used to prove the correctness, but we  also need tools to derive the combinations (sums) at the first place. Dynamic programming is a sort of sum!!!!!
+
+Law A. If a ≡ b and x ≡ y, then a ± x ≡ b ± y and ax ≡ by (modulo m). Law B. If ax ≡ by and a ≡ b, and if a ⊥ m, then x ≡ y (modulo m). Law C. a ≡ b (modulo m) if and only if an ≡ bn (modulo mn), when n ≠ 0. Law D. If r ⊥ s, then a ≡ b (modulo rs) if and only if a ≡ b (modulo r) and a ≡ b (modulo s).
+
+Theorem F (Fermat’s theorem, 1640). If p is a prime number, then ap ≡ a (modulo p) for all integers a.
+
+It is helpful to keep the value 10! = 3,628,800 in mind; one should remember that 10! is about . In a sense, this number represents an approximate dividing line between things that are practical to compute and things that are not. If an algorithm requires the testing of more than 10! cases, it may consume too much computer time to be practical. On the other hand, if we decide to test 10! cases and each case requires, say, one millisecond of computer time, then the entire run will take about an hour. These comments are very vague, of course, but they can be useful to give an intuitive idea of what is computationally feasible.
+
+In addition to the approximate value given by Eq. (7), we can also rather easily obtain the exact value of n! factored into primes. In fact, the prime p is a divisor of n! with the multiplicity
+
+These formulas show how to sum over a product of two binomial coefficients, considering various places where the running variable k might appear: Of
+
+The principal tool for dealing with sums of binomial coefficients in a systematic, mechanical way is to exploit the properties of hypergeometric functions, which are infinite series defined as follows in terms of rising factorial powers:
