@@ -5,3 +5,14 @@ There are three parts to the description of the swapping algorithm: managing spa
 The swap device is a block device in a configurable section of a disk. When:as the kernel allocates space for files one block at a time, it allocates space on the swap device in groups of contiguous blocks. Space allocated for files is used statically; since it will exist for a long time, the allocation scheme is flexible to reduce the amount of fragmentation and, hence, unallocatable space in the file system. But the allocation of space on the swap device is transitory, depending on the pattern of process scheduling. A process that resides on the swap device will eventually migrate back to main memory, freeing the space it had occupied on the swap device. Since speed is critical and the system can do I/0 faster in one multiblock operation than in several single block operations, the kernel allocates contiguous space on the swap device without regard for fragmentation.
 
 The kernel maintains free space for file systems in a linked list of free blocks, accessible from· the file system super block, but it maintains the free space for the swap device in an in-core table, called a map . Maps, used for other resources besides the swap device (some device drivers, for example ), allow a first-fit allocation of contiguous "blocks" of a resource.
+
+The kernel swaps a process out if it needs space in memory. which may result from any of the following:
+
+1. The fork system call must allocate space for a child process,
+2. The brk system call increases the size of a process,
+3. A process becomes larger b y the natural growth o f its stack,
+4. The kernel wants to free space in memory for processes it had previously swapped out and should now swap in.
+
+When the kernel decides that a process is eligible for swapping from main memory, it decrements the reference count of each region in the process and swap!> the region out if its reference count drops to 0. The kernel allocates space on a swap device and locks the process in memory (for cases 1 - 3) , preventing the swapper from swapping it out while the current swap operation is in progress. The kernel saves the swap address of the region in the region table entry.
+
+The kernel swaps as much data as possible per 1/0 operation directly between the swap device and user address space, bypassing the buffer cache. If the hardware cannot transfer multiple pages in ohe operation, the kernel software must iteratively transfer one page of memory at a time. The exact rate of data transfer and its mechanics therefore depend on the capa�lities of the disk controller and the implementation of memory management, among other factors.
