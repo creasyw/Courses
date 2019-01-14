@@ -1,0 +1,281 @@
+* Operating Systems: Principles and Practice (Volume 1 of 4) (Anderson, Thomas;Dahlin, Michael)
+
+An important reason for the operating system to provide common services, rather than letting each application provide its own, is to facilitate sharing among applications.
+
+Many complex software systems have multiple users, run programs written by third-party developers, and/or need to coordinate many simultaneous activities. These pose questions of resource allocation, fault isolation, communication, abstractions of physical hardware, and how to provide a useful set of common services for software developers.
+
+We discuss several desirable criteria for operating systems: *Reliability* and *Availability*. The most important characteristic of an operating system is its *reliability*. Reliability means that a system does exactly what it is designed to do. As the lowest level of software running on the A related concept is *availability*, the percentage of time that the system is usable. A buggy operating system that crashes frequently, Availability is affected by two factors: /the frequency of failures/, measured as /the mean time to failure (MTTF)/, and the time it takes to restore a system to a working state after a failure (for example, to reboot), called /the mean time to repair (MTTR)/. Availability can be improved by increasing the MTTF or reducing the MTTR.
+
+Security means the computer’s operation cannot be compromised by a malicious attacker. Privacy is an aspect of security: data stored on the computer is only accessible to authorized users.
+
+/Most practical operating system designs strike a balance between the goals of reliability, security, portability, performance, and adoption/.
+
+it became clear that stricter fault isolation was needed to improve system reliability and resilience against computer viruses.
+
+A central role of operating systems is protection — the isolation of potentially misbehaving applications and users so that they do not corrupt other applications or the operating system itself.
+
+The operating system sets aside a memory region, the execution stack, to hold the state of local variables during procedure calls. The operating system also sets aside a memory region, called the heap, for any dynamically allocated data structures the program might need.
+
+A process is an instance of a program, in much the same way that an object is an instance of a class in object-oriented programming. Each program can have zero, one or more processes executing it. For each instance of a program, there is a process with its own copy of the program in memory.
+
+“thread" — a logical sequence of instructions that executes either operating system or application code.
+
+The difficulty of debugging operating system kernels was the original motivation behind the development of virtual machines. More importantly, the kernel must be trusted, as it has full control over the hardware. By separating out code that does not need to be in the kernel, the operating system can become more reliable
+
+This illustrates the principle of least privilege, that security and reliability are enhanced if each part of the system has exactly the privileges it needs to do its job, and no more.
+
+Memory allocation with base and bound registers is simple, analogous to heap memory allocation.
+
+The operating system can use memory protection to prevent user-level processes from accessing these special memory locations. Thus, memory protection has the added advantage of limiting direct access to input/output devices by user code. By limiting each process to just its own memory locations, the kernel prevents processes from directly reading or writing to the disk controller or other devices. In this way, a buggy or malicious application cannot modify the operating system’s image stored on disk, and a user cannot gain access to another user’s files without first
+
+The operating system can use memory protection to prevent user-level processes from accessing these special memory locations. Thus, memory protection has the added advantage of limiting direct access to input/output devices by user code. By limiting each process to just its own memory locations, the kernel prevents processes from directly reading or writing to the disk controller or other devices. In this way, a buggy or malicious application cannot modify the operating system’s image stored on disk, and a user cannot gain access to another user’s files without first going through the operating system to check file permissions.
+
+Although it may seem redundant, many systems use both language-level protection and process-level protection.
+
+There are three reasons for the kernel to take control from a user process: interrupts, processor exceptions, and system calls.
+
+An interrupt is an asynchronous signal to the processor that some external event has occurred that may require its attention. As the processor executes instructions, it checks
+
+Interrupts are also used to inform the kernel of the completion of I/O requests.
+
+An alternative to interrupts is polling: the kernel loops, checking each input/output device to see if an event has occurred that requires handling. Needless to say, if the kernel is polling, it is not available to run user-level code.
+
+Interprocessor interrupts are another source of interrupts. A processor can send an interrupt to any other processor. The kernel uses these interrupts to coordinate actions across the multiprocessor;
+
+Efficient delivery of network I/O packets is even more challenging. A high performance server might send and receive tens of thousands of packets per second, representing thousands of different connections. From a processing perspective, it is best to deliver incoming packets to the processor responsible for handling that connection; this requires the network interface hardware to re-direct the incoming packet based on the contents of its header (e.g., the IP address and port number of the client). Recent network controllers accomplish this by supporting multiple buffer descriptor rings for the same device, choosing which ring to use, and therefore which processor to interrupt, based on the header of the arriving packet.
+
+On a multiprocessor, each processor needs to have its own interrupt stack so that, for example, the kernel can handle simultaneous system calls and exceptions across multiple processors. For each processor, the kernel allocates a separate region of memory as that processor’s interrupt stack.
+
+How large is the 32-bit x86 trapframe in the example given above? ANSWER: The hardware saves six registers; the interrupt handler saves another eight general-purpose registers. In all, 56 bytes are saved in the trapframe. □
+
+We can use system calls for most of the communication between applications and the operating system kernel. When a program requests a protected operation, it can trap to ask the kernel to perform the operation on its behalf. Likewise, if the application needs data inside the kernel, a system call can retrieve it.
+
+There are several drawbacks to trying to store the entire kernel in ROM. The most significant problem is that the operating system would be hard to update. ROM instructions are fixed when the computer is manufactured and (except in rare cases) are never changed. If an error occurs while the BIOS is being updated, the machine can be left in a permanently unusable state — unable to boot and unable to complete the update of the BIOS. By contrast, operating systems need frequent updates, as bugs and security vulnerabilities are discovered and fixed.
+
+to find the bootloader, the BIOS needs to read a block of raw bytes from disk; the bootloader, in turn, needs to know how to read from the file system to find and read the operating system image.
+
+Process isolation is also essential to building more secure computer systems.
+
+Operating system support for fine-grained protection. Process isolation is becoming more flexible and fine-grained in order to reflect different levels of trust in different applications.
+
+Application-layer sandboxing. Increasingly, many applications are becoming mini-operating systems in their own right, capable of safely executing third-party software to extend and improve the user experience.
+
+A process is an instance of a program — the kernel provides an efficient sandbox for executing untrusted code at user-level, running user code directly on the processor.
+
+One of the key ideas in UNIX, responsible for much of its success, was to design its system call interface to be simple and powerful, so that almost all of the innovation in the system could happen in user code without changing the interface to the operating system. The UNIX system call interface is also highly portable — the operating system can be ported to new hardware without needing to rewrite application code.
+
+transferring control into the kernel is more expensive than a procedure call to a library, and transferring control to a user-level file system server via the kernel is still even more costly. Hardware designers have attempted to reduce the cost of these boundary crossings, but their performance remains a problem.
+
+An early motivation for user-level process management was to allow developers to write their own shell command line interpreters. A shell is a job control system; both Windows and UNIX have a shell. Many tasks involve a sequence of steps to do something, each of which can be its own program. With a shell, you can write down the sequence of steps, as a sequence of programs to run to do each step. Thus, you can view it as a very early version of a scripting system.
+
+UNIX takes a different approach to process management, one that is complex in theory and simple in practice. UNIX splits CreateProcess in two steps, called fork and exec,
+
+A strange aspect of UNIX fork is that the system call returns twice: once to the parent and once to the child. To the parent, UNIX returns the process ID of the child; to the child, it returns zero indicating success. Just as if you made a clone of yourself, you would need some way to tell who was the clone and who was the original, UNIX uses the return value from fork to distinguish the two copies.
+
+Note that exec does not create a new process!
+
+On the other side, often the parent process needs to pause until the child process completes,
+
+we discussed in the previous chapter, when a UNIX process finishes, it calls the system call exit. Exit can release various resources associated with the process, such as the user stack, heap, and code segments. It must be careful, however, in how it garbage collects the process control block (PCB). Even though the child process has finished, if it deletes the PCB, then the parent process will be left with a dangling pointer if later on it calls UNIX wait. Of course, we don’t know for sure if the parent will ever call wait, so to be safe, the PCB can only be reclaimed when both the parent and the child have finished or crashed.
+
+in both Windows and UNIX, handles are reference counted. Whenever the kernel returns a handle, it bumps a reference counter, and whenever the process releases a handle (or exits), the reference counter is decremented. UNIX fork sets the process ID reference count to two, one for the parent and one for the child. The underlying data structure, the PCB, is reclaimed only when the reference count goes to zero, that is, when both the parent and child terminate.
+
+One of the primary innovations in UNIX was to regularize all device input and output behind a single common interface. In fact, UNIX took this one giant step further: it uses this same interface for reading and writing files and for interprocess communication. This approach was so successful that it is almost universally followed in systems today.
+
+This allows the UNIX system call read interface to be the same for devices with streaming reads as those with block reads,
+
+Kernel-buffered reads. Stream data, such as from the network or keyboard,
+
+Kernel-buffered writes. Likewise, outgoing data is stored in a kernel buffer for transmission when the device becomes available. In the normal case, the system call write copies the data into the kernel buffer and returns immediately. This decouples the application from the device, allowing each to go at its own speed.
+
+UNIX addresses this with an all-purpose, atomic open: test if the file exists, optionally create it if it does not, and then open it. Because system calls are implemented in the kernel, the operating system can make open (and all other I/O systems calls) non-interruptible with respect to other system calls. If another user tries to delete a file while the kernel is executing an open system call on the same file, the delete will be delayed until the open completes. The open will return a file descriptor that will continue to work until the application closes the file. The delete will remove the file from the file system, but the file system does not actually reclaim its disk blocks until the file is closed. For interprocess communication,
+
+The kernel buffer allows each process to run at its own pace. There is no requirement that each process have equivalent amounts of work to do.
+
+Using kernel buffers to decouple the execution of the producer and consumer reduces the number and cost of context switches. Modern computers make extensive use of hardware caches to improve performance, but caches are ineffective if a program only runs for a short period of time before it must yield the processor to another task. The kernel buffer allows the operating system to run each process long enough to benefit from reuse, rather than alternating between the producer and consumer on each system call.
+
+system, it is possible or even likely that both the client and server each have their own processor. If the kernel sets up a shared memory region accessible to both the client and the server and no other processes, then the client and server can (safely) pass requests and replies back and forth, as fast as the memory system will allow, without ever traversing into the kernel or relinquishing their
+
+by centralizing functionality in the kernel, performance is improved and it makes it easier to arrange tight integration between kernel modules. However, the resulting systems are less flexible, less easy to change, and less adaptive to user or application needs.
+
+two common themes emerge across systems: to improve portability, almost all modern operating systems have both a hardware abstraction layer and dynamically loaded device drivers.
+
+key goal of operating systems is to be portable across a wide variety of hardware platforms. To accomplish this, especially within a monolithic system, requires careful design of the hardware abstraction layer. The hardware abstraction layer (HAL) is a portable interface to machine configuration and processor-specific operations within the kernel.
+
+With a well-defined hardware abstraction layer in place, most of the operating system is machine- and processor-independent. Thus, porting an operating system to a new computer is just a matter of creating new implementations of these low-level HAL routines and re-linking.
+
+The difference between a monolithic and a microkernel design is often transparent to the application programmer. The location of the service can be hidden in a user-level library — calls go to the library, which casts the requests either as system calls or as reads and writes to the server through a pipe. The location of the server can also be hidden inside the kernel — the application calls the kernel as if the kernel implements the service, but instead the kernel reformats the request into a pipe that the server can read.
+
+we focused parts of the UNIX interface because it is both compact and powerful. A key aspect of the UNIX interface are that creating a process (with fork) is separate from starting to run a program in that process (with exec); another key feature is the use of kernel buffers to decouple reading and writing data through the kernel.
+
+mini-operating systems in their own right, with multiple users, resource sharing and allocation, untrusted third-party code, processor and memory management, and so forth.
+
+As we noted, a trend is for applications to become mini-operating systems in their own right, with multiple users, resource sharing and allocation, untrusted third-party code, processor and memory management, and so forth.
+
+to make resource allocation decisions explicit and visible to applications. Traditionally, operating
+
+a trend is to re-structure the system call interface to make resource allocation decisions explicit and visible to applications. Traditionally, operating systems make resource allocation decisions — when to schedule a process or a thread, how much memory to give a particular application, where and when to store its disk blocks, when to send its network packets — transparently to the application, with a goal of improving end user and overall system performance. Applications are unaware of how many resources they have, appearing to run by themselves, isolated on their own (virtual) machine.
+
+reliable, portable, efficient, and secure computer systems? An essential component is the computer’s operating system
+
+1.2. At the lowest level, the hardware provides processors, memory, and a set of devices for storing data and communicating with the outside world. The hardware also provides primitives that the operating system can use for fault isolation and synchronization. The operating system runs as the lowest layer of software on the computer. It contains both a device-specific layer for managing the myriad hardware devices and a set of device-independent services provided to applications. Since the operating system must isolate malicious and buggy applications from other applications or the operating system itself, much of the operating system runs in a separate execution environment protected from application code. A portion of the operating system can also run as a system library linked into each application. In turn, applications run in an execution context provided by the operating system kernel. The application context is much more than a simple abstraction on top of hardware devices: applications execute in a virtual environment that is more constrained (to prevent harm), more powerful (to mask hardware limitations), and more useful (via common services) than the underlying hardware. Referee. Operating systems manage resources shared
+
+Limited - referer; powerful - illusionist; useful -glue
+
+An important reason for the operating system to provide common services, rather than letting each application provide its own, is to facilitate sharing among applications.
+
+much of the complexity of operating systems is due to resource sharing and the masking of hardware limits. Because common service code uses the abstractions provided by the other two operating system roles,
+
+Many complex software systems have multiple users, run programs written by third-party developers, and/or need to coordinate many simultaneous activities. These pose questions of resource allocation, fault isolation, communication, abstractions of physical hardware, and how to provide a useful set of common services for software developers.
+
+Perhaps the most important characteristic of an operating system is its reliability. Reliability means that a system does exactly what it is designed to do.
+
+A related concept is availability, the percentage of time that the system is usable. A buggy operating system that crashes frequently,
+
+buggy operating system that crashes frequently but never loses the user’s work and cannot be subverted by a malicious attack is reliable but unavailable. An operating system that has been subverted but continues to appear to run normally while logging the user’s keystrokes is unreliable but available.
+
+both reliability and availability are desirable. Availability is affected by two factors: the frequency of failures, measured as the mean time to failure (MTTF), and the time it takes to restore a system to a working state after a failure (for example, to reboot), called the mean time to repair (MTTR). Availability can be improved by increasing the MTTF or reducing the MTTR.
+
+Two concepts closely related to reliability are security and privacy. Security means the computer’s operation cannot be compromised by a malicious attacker. Privacy is an aspect of security: data stored on the computer is only accessible to authorized users.
+
+an operating system needs both an enforcement mechanism and a security policy. Enforcement is how the operating system ensures that only permitted actions are allowed. The security policy defines what is permitted — who is allowed to access what data, and who can perform what operations.
+
+helps to have a simple, standard way for applications to interact with the operating system, the abstract virtual machine (AVM). This is the interface provided by operating systems to applications, including: (i) the application programming interface (API), the list of function calls the operating system provides to applications, (ii) the memory access model, and (iii) which instructions can be legally executed. For example, an instruction to change whether the hardware is
+
+it helps to have a simple, standard way for applications to interact with the operating system, the abstract virtual machine (AVM). This is the interface provided by operating systems to applications, including: (i) the application programming interface (API), the list of function calls the operating system provides to applications, (ii) the memory access model, and (iii) which instructions can be legally executed.
+
+This notion of a portable hardware abstraction is so powerful that operating systems use the same idea internally: the operating system itself can largely be implemented independently of the hardware specifics. The interface that makes this possible is called the hardware abstraction layer (HAL)
+
+A related consideration is performance predictability: whether the system’s response time or other metric is consistent over time. Predictability can often be more important than average performance.
+
+Most practical operating system designs strike a balance between the goals of reliability, security, portability, performance, and adoption.
+
+The earliest time-sharing systems supported many simultaneous users, but even this was just a phase. Eventually, computers became cheap enough that people could afford their own dedicated "personal” computers, which would sit patiently unused for much of the day. Access to shared data became paramount, cementing the shift to client-server computing.
+
+Its also true for the program developing from single core to concurrent programming
+
+it became clear that stricter fault isolation was needed to improve system reliability and resilience against computer viruses.
+
+Throughput in handling a large number of requests per second is a key design goal.
+
+adding even 100 milliseconds of delay to each web request can significantly affect revenue.
+
+central role of operating systems is protection — the isolation of potentially misbehaving applications and users so that they do not corrupt other applications or the operating system itself.
+
+To the user, a system crash appears to be the operating system’s fault, even if the root cause of the problem is some unexpected behavior by an application or user. Thus, for high system reliability, an operating system must bullet proof itself to operate correctly regardless of what an application or user might do.
+
+The kernel, the lowest level of software running on the system, has full access to all of the machine hardware. The kernel is necessarily trusted to do anything with the hardware. Everything else — that is, the untrusted software running on the system — is run in a restricted environment with less than complete access to the full power of the hardware.
+
+A process is the execution of an application program with restricted rights; the process is the abstraction for protected execution provided by the operating system kernel. A process needs permission from the operating system kernel before accessing the memory of any other process, before reading or writing to the disk, before changing hardware settings, and so forth. In other words, the operating system kernel mediates and checks each process’s access to hardware.
+
+stack, to hold the state of local variables during procedure calls. The operating system also sets aside a memory region, called the heap, for any dynamically allocated data structures the program might need.
+
+The operating system sets aside a memory region, the execution stack, to hold the state of local variables during procedure calls. The operating system also sets aside a memory region, called the heap, for any dynamically allocated data structures the program might need.
+
+Attributes of  an object -execution stack; variablees in a method - goes into the heap
+
+“thread" — a logical sequence of instructions that executes either operating system or application code. The concept of a process was developed as a way of
+
+“thread" — a logical sequence of instructions that executes either operating system or application code.
+
+is often easier to debug user-level code than kernel code. The kernel can use low-level hardware to implement debugging support for breakpoints and for single stepping through application code; to single step the
+
+use low-level hardware to implement debugging support for breakpoints and for single stepping through application code; to single step the kernel
+
+that it is often easier to debug user-level code than kernel code. The kernel can use low-level hardware to implement debugging support for breakpoints and for single stepping through application code; to single step the kernel requires an even lower-level debugger running underneath the kernel. The difficulty of debugging operating system kernels was the original motivation behind the development of virtual machines. More importantly, the kernel must be trusted, as it has full control over the hardware.
+
+At a minimum, the hardware must support three things: Privileged Instructions. All potentially unsafe instructions are prohibited when executing in user mode. (Section 2.2.1) Memory Protection. All memory accesses outside of a process’s valid memory region are prohibited when executing in user mode. (Section 2.2.2) Timer Interrupts. Regardless of what the process does, the kernel must have a way to periodically regain control from the current process. (Section 2.2.3)
+
+Process isolation is possible only if there is a way to limit programs running in user mode from directly changing their privilege level.
+
+processes can indirectly change their privilege level by executing a special instruction, called a system call, to transfer control into the kernel at a fixed location defined by the operating system. Other than transferring control into the operating system kernel (that is, in effect, becoming the kernel) at these fixed locations, an application process cannot change its privilege level.
+
+Instructions available in kernel mode, but not in user mode, are called privileged instructions. The operating system kernel must be able to execute these instructions to do its work — it needs to change privilege levels, adjust memory access, and disable and enable interrupts.
+
+memory protection is not only useful for reliability and security; it also helps to enforce a well-defined interface between applications and the operating system kernel to aid future evolvability and portability.
+
+The execution stack holds procedure local variables and grows with the depth of the procedure call
+
+The execution stack holds procedure local variables and grows with the depth of the procedure call graph; the heap holds dynamically allocated objects.
+
+Most operating systems, such as Linux, MacOS, and Windows, combat viruses by randomizing (within a small range) the virtual addresses that a program uses each time it runs.
+
+Process isolation also requires hardware to provide a way for the operating system kernel to periodically regain control of the processor.
+
+queue of requests for each device to handle. (A network interface will have two queues: one for incoming packets and one for outgoing packets.) Each entry in the queue, called a buffer descriptor, specifies one I/O operation: the requested operation (e.g., disk read or write) and the location of the buffer to contain the data. The device hardware reads the
+
+For higher performance, the operating system sets up a circular queue of requests for each device to handle. (A network interface will have two queues: one for incoming packets and one for outgoing packets.) Each entry in the queue, called a buffer descriptor, specifies one I/O operation: the requested operation (e.g., disk read or write) and the location of the buffer to contain the data. The device hardware reads the buffer descriptor to determine what operations to perform. Provided the queue of buffer descriptors is full, the device can start working on the next operation while the operating system handles with the previous one.
+
+More generally, processor exceptions are used to transparently emulate a virtual machine. When a guest operating system is running as a user-level process on top of an operating system, it will attempt to execute privileged instructions as if it were running on physical hardware. These instructions will cause processor exceptions, trapping into the host operating system kernel. To maintain the illusion of physical hardware, the host kernel then performs the requested instruction of behalf of the user-level virtual machine and restarts the guest operating system at the instruction immediately following the one that caused the exception.
+
+Exception as communications...
+
+processor exceptions are a key building block for memory management. With most types of virtual addressing, the processor can be set up to take an exception whenever it reads or writes inside a particular virtual address range. This allows the kernel to treat memory as virtual — a portion of the program memory may be stored on disk instead of in physical memory. When the program touches a missing address, the operating system exception handler fills in the data from disk before resuming the program. In this way, the operating system can execute programs that require more memory than can fit on the machine at the same time.
+
+A system call is any procedure provided by the kernel that can be called from user level. Most processors implement system calls with a special trap or syscall instruction.
+
+Whether transitioning from user to kernel mode or in the opposite direction, care must be taken to ensure that a buggy or malicious user program cannot corrupt the kernel. Although the basic idea is simple, the low-level implementation
+
+Whether transitioning from user to kernel mode or in the opposite direction, care must be taken to ensure that a buggy or malicious user program cannot corrupt the kernel.
+
+The context switch code must be carefully crafted, and it relies on hardware support. To avoid confusion and reduce the possibility of error, most operating systems have a common sequence of instructions both for entering the kernel — whether due to interrupts, processor exceptions or system calls — and for returning to user level, again regardless of the cause.
+
+The hardware determines which hardware device caused the interrupt, whether the trap instruction was executed, or what exception condition occurred. Thus, the hardware can select the right entry from the interrupt vector table and invoke the appropriate handler.
+
+the interrupt vector table stored in kernel
+
+In modern systems, interrupt routing is increasingly programmable, under control of the kernel. Each processor usually has its own hardware timer. Likewise, disk I/O events can be sent directly to the processor that requested the I/O operation rather than to a random processor. Modern processors can run substantially faster if their data is already loaded into the processor cache, versus if their code and data are in some other processor’s cache.
+
+Allocating a kernel stack per process makes it easier to switch to a new process inside an interrupt or system call handler.
+
+In most operating systems, a process has two stacks: one for executing user code and one for kernel code.
+
+When a process is running in user mode, its kernel stack is empty. When a process has been preempted (ready but not running), its kernel stack will contain the user-level processor state at the point when the user process was interrupted. When a process is inside a system call waiting for I/O, the kernel stack contains the context to be resumed when the I/O completes, and the user stack contains the context to be resumed when the system call returns.
+
+The hardware saves the values for the stack pointer, program counter, and processor status word before jumping through the interrupt vector table to the interrupt handler. Once the handler starts running, these values will be those of the handler, not those of the interrupted process.
+
+To prevent an infinite loop, the exception handler modifies the program counter stored at the base on the stack to point to the instruction immediately after the one causing the mode switch. The iret instruction can then return to the user process at the correct location.
+
+System calls provide the illusion that the operating system kernel is simply a set of library routines available to user programs.
+
+Implementing system calls requires the operating system to define a calling convention — how to name system calls, pass arguments, and receive return values across the user/kernel boundary. Typically, the operating system uses the same convention as the compiler uses for normal procedures — some combination of passing arguments in registers and on the execution stack.
+
+In most cases, the kernel copies system call parameters into kernel memory before performing the necessary checks. The reason for this is to prevent the application from modifying the parameter after the stub checks the value, but before the parameter is used in the actual implementation of the routine. This is called a time of check vs. time of use (TOCTOU) attack.
+
+Many applications are more simply structured around an event loop that polls for events and then processes each event in turn. In this model, the kernel can pass data to the process by sending it events that do not need to be handled immediately.
+
+to find the bootloader, the BIOS needs to read a block of raw bytes from disk; the bootloader, in turn, needs to know how to read from the file system to find and read the operating system image.
+
+The host kernel handles processor exceptions similarly, with one caveat. Some exceptions generated by the virtual machine are due to the user process; the host kernel forwards these to the guest kernel for handling. Other exceptions are generated by the guest kernel (e.g., when it tries to execute privileged instructions); the host kernel simulates these itself. Thus, the host kernel must track whether the virtual machine is executing in virtual user mode or virtual kernel mode.
+
+The process concept — the ability to execute arbitrary user programs with restricted rights — has been remarkably successful. With the exception of devices that run only a single application at a time (such as embedded systems and game consoles), every commercially successful operating system provides process isolation.
+
+It is important to realize that the choice can be (mostly) transparent to both the user and the application programmer. The user wants a system that works; the programmer wants a clean, convenient interface that does the job. As long as the operating system provides that interface, where each function is implemented is up to the operating system, based on a tradeoff between flexibility, reliability, performance, and safety.
+
+If creating a process is something a process can do, then anyone can build a new version of any of these applications, without recompiling the kernel or forcing anyone else to use it.
+
+One approach to process management is to just add a system call to create a process, and other system calls for other process operations. This turns out to be simple in theory and complex in practice.
+
+By default, the UNIX open system call returns an error if the application tries to open a file that does not exist; as an option (not shown above), a parameter can tell the kernel to instead create the file if it does not exist. Since UNIX also has system calls for creating a file (creat) and for testing whether a file exists (stat), it might seem as if open could be simplified to always assume that the file already exists.
+
+A UNIX pipe is a kernel buffer with two file descriptors, one for writing (to put data into the pipe) and one for reading (to pull data out of the pipe), as illustrated in Figure 3.6. Data is read in exactly the same sequence it is written, but since the data is buffered, the execution of the producer and consumer can be decoupled, reducing waiting in the common case.
+
+UNIX fork automatically duplicates all open file descriptors in the parent, incrementing the kernel’s reference counts for those descriptors, so the input and output of the child is the same as the parent. The parent waits for the child to finish before it reads the next command to execute.
+
+A key distinction is that, unlike the first two modes, communication through the file system can be separated in time: the writer of the file does not need to be running at the same time as the file reader.
+
+Interprocess communication between a producer application and a consumer. The producer uses the write system call to put data into the buffer; the consumer uses the read system call to take data out of the buffer.
+
+Communication is one-way: the producer only writes, and the consumer only reads. As we explained above, this allows chaining: a consumer can be, in turn, a producer for a different process. Much of the success of UNIX was due to its ability to easily compose many different programs together in this fashion.
+
+Client-server. An alternative model is to allow two-way communication between processes, as in client-server computing.
+
+data needs to be stored persistently on disk or other stable storage, and the data needs to be
+
+data needs to be stored persistently on disk or other stable storage, and the data needs to be named so that you can find the file when needed later on.
+
+to the consumer, there is no difference between reading from a pipe and reading from a file.
+
+Client-server communication is a common pattern in many systems, and so one can ask: how can we improve its performance? One step is to recognize that both the client and the server issue a write immediately followed by a read, to wait for the other side to reply; at the cost of adding a system call, these can be combined to eliminate two kernel crossings per round trip. Further, the client will always need to wait for the server, so it makes sense for it to donate its processor to run the server code, reducing delay.
+
+by careful design of the system call interface, we can offload some of the work of the operating system to user programs, such as to a shell or to a print server.
