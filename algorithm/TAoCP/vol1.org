@@ -4,7 +4,6 @@ Practice yourself, for heaven’s sake, in little things; and thence proceed to 
 
 By the time of the Renaissance, the origin of this word was in doubt, and early linguists attempted to guess at its derivation by making combinations like algiros [painful]+arithmos [number]; others said no, the word comes from “King Algor of Castile.” Finally, historians of mathematics found the true origin of the word algorism: It comes from the name of a famous Persian textbook author, Abū ‘Abd Allāh Muh.
 
-
 Another word, “algebra,” stems from the title of that book, which was a systematic study of the solution of linear and quadratic equations.
 
 Algorithm E (Euclid’s algorithm). Given two positive integers m and n, find their greatest common divisor, that is, the largest positive integer that evenly divides both m and n. E1. [Find remainder.] Divide m by n and let r be the remainder. (We will have 0 ≤ r < n.) E2. [Is it zero?] If r = 0, the algorithm terminates; n is the answer. E3. [Reduce.] Set m ← n, n ← r, and go back to step E1.
@@ -12,7 +11,6 @@ Algorithm E (Euclid’s algorithm). Given two positive integers m and n, find th
 An algorithm must be seen to be believed, and the best way to learn what an algorithm is all about is to try it.
 
 Besides merely being a finite set of rules that gives a sequence of operations for solving a specific type of problem, an algorithm has five important features:
-
 
 1. Finiteness. An algorithm must always terminate after a finite number of steps.
 2. Definiteness. Each step of an algorithm must be precisely defined; the actions to be carried out must be rigorously and unambiguously specified for each case. The algorithms of this book will hopefully meet this criterion,
@@ -65,3 +63,128 @@ In addition to the approximate value given by Eq. (7), we can also rather easily
 These formulas show how to sum over a product of two binomial coefficients, considering various places where the running variable k might appear: Of
 
 The principal tool for dealing with sums of binomial coefficients in a systematic, mechanical way is to exploit the properties of hypergeometric functions, which are infinite series defined as follows in terms of rising factorial powers:
+
+Most of the important results involving Fibonacci numbers can be deduced from the representation of Fn in terms of φ,
+
+The use of generating functions opens up a whole new range of techniques, and it broadly increases our capacity for problem solving.
+
+The question of convergence of the infinite sum (1) is of some importance.
+
+On the other hand, it often does not pay to worry about convergence of the series when we work with generating functions, since we are only exploring possible approaches to the solution of some problem. When we discover the solution by any means, however sloppy, we may be able to justify the solution independently.
+
+Furthermore one can show that most (if not all) of the operations we do with generating functions can be rigorously justified without regard to the convergence of the series.
+
+A generating function is a clothesline on which we hang up a sequence of numbers for display. — H. S. WILF (1989)
+
+The important fact is that we can determine the mean and variance easily from the generating function itself.
+
+The mean or average value of a random quantity X is often called its expected value, and denoted by EX. The variance of X is then EX2 − (EX)2. Using this notation, the probability generating function for X is G(z) = EzX, the expected value of zX, in cases when X takes only nonnegative integer values. Similarly, if X is a statement that is either true or false, the probability that X is true is Pr(X) = E [X ], using Iverson’s convention
+
+Chebyshev’s inequality: The probability that a normally distributed random value differs from the mean by less than the standard deviation is that is, about 68.268949213709% of the time. The difference is less than twice the standard deviation about 95.449973610364% of the time, and it is less than three times the standard deviation about 99.730020393674% of the time.
+
+A normal distribution is one for which all semi-invariants are zero except the mean and variance.
+
+Every appearance of O(f (n)) means precisely this: There are positive constants M and n0 such that the number xn represented by O(f (n)) satisfies the condition |xn | ≤ M |f(n)|, for all integers n ≥ n0.
+
+The context of O-notation should always identify the variable that is involved and the range of that variable.
+
+Sometimes an asymptotic series is correct although it does not correspond to a convergent infinite series. For example, the basic formulas that express factorial powers in
+
+These functions, which are similar in appearance yet intrinsically different, arise in several algorithms that we shall encounter later.
+
+an important function known as the incomplete gamma function:
+
+an important function known as the incomplete gamma function: We shall assume that a > 0. By exercise 1.2.5–20, we have γ(a, ∞)
+
+we are soon led to an important function known as the incomplete gamma function: We shall assume that a > 0.
+
+/Everyone with more than a casual interest in computers will probably get to know at least one machine language sooner or later./
+
+The rightmost byte, C, is the operation code telling what operation is to be performed. For example, C = 8 specifies the operation LDA, “load the A-register.”
+
+The F-byte holds a modification of the operation code. It is usually a field specification (L:R) = 8L + R; for example, if C = 8 and F = 11, the operation is “load the A-register with the (1:3) field.”
+
+Sometimes F is used for other purposes; on input-output instructions, for example, F is the number of the relevant input or output unit. The
+
+The left-hand portion of the instruction, ±AA, is the address. (Notice that the sign is part of the address.) The I-field, which comes next to the address, is the index specification, which may be used to modify the effective address.
+
+The comparison indicator is then set to LESS, EQUAL, or GREATER according to whether the value of the register is less than, equal to, or greater than the value of the memory cell.
+
+ADD, SUB, all LOAD operations, all STORE operations (including STZ), all shift commands, and all comparison operations take two units of time. MOVE requires one unit plus two for each word moved. MUL, NUM, CHAR each require 10 units and DIV requires 12. The execution time for floating point operations is specified in Section 4.2.1. All remaining operations take one unit of time, plus the time the computer may be idle on the IN, OUT, IOC, or HLT instructions.
+
+Notice in particular that ENTA takes one unit of time, while LDA takes two units. The timing rules are easily remembered because of the fact that, except for shifts, conversions, MUL, and DIV, the number of time units equals the number of references to memory (including the reference to the instruction itself).
+
+The use of literal constants is a decided convenience, because it means that programmers do not have to invent symbolic names for trivial constants, nor do they have to remember to insert constants at the end of each program. Programmers can keep their minds on the central problems and not worry about such routine details.
+
+Permutations with no fixed elements are called derangements; the number of derangements is the number of ways to put n letters into n envelopes, getting them all wrong.
+
+This insertion and removal of parentheses gives us an unusual one-to-one correspondence between the set of all permutations expressed in cycle form and the set of all permutations expressed in linear form.
+
+the principle of inclusion and exclusion, which is an important method for many enumeration problems. The general principle of inclusion and exclusion may be formulated as follows: We are given N elements, and M subsets, S1,S2, ..., SM, of these elements; and our goal is to count how many of the elements lie in none of the subsets.
+
+Subroutines have several other advantages. They make it easier to visualize the structure of a large and complex program; they form a logical segmentation of the entire problem, and this usually makes debugging of the program easier. Many subroutines have additional value because they can be used by people other than the programmer of the subroutine.
+
+WHEN A CERTAIN task is to be performed at several different places in a program, it is usually undesirable to repeat the coding in each place. To avoid this situation, the coding (called a subroutine) can be put into one place only, and a few extra instructions can be added to restart the outer program properly after the subroutine is finished. Transfer of control between subroutines and main programs is called subroutine linkage.
+
+It is important to define the effect of each subroutine just as carefully as the machine language operators themselves have been defined; a programmer should therefore be sure to write down the characteristics of each subroutine, even though nobody else will be making use of the routine or its specification.
+
+Debugging is an art that needs much further study, and the way to approach it is highly dependent on the facilities available at each computer installation. A good start towards effective debugging is often the preparation of appropriate test data.
+
+The most effective debugging techniques seem to be those that are designed and built into the program itself — many of today’s best programmers will devote nearly half of their programs to facilitating the debugging process in the other half; the first half, which usually consists of fairly straightforward routines that display relevant information in a readable format, will eventually be thrown away, but the net result is a surprising gain in productivity.
+
+Subroutines are special cases of more general program components, called coroutines. In contrast to the unsymmetric relationship between a main routine and a subroutine, there is complete symmetry between coroutines, which call on each other.
+
+noting in particular how each coroutine can be written independently as though the other coroutine were its subroutine.
+
+Psychological difference. A multipass algorithm is generally easier to create and to understand than a one-pass algorithm for the same problem. Breaking a process down into a sequence of small steps that happen one after the other is easier to comprehend than an involved process in which many transformations take place simultaneously.
+
+an effective use of interpretive routines may be regarded as one of the essential characteristics of modern programming.
+
+The interpretive technique has the further advantage of being relatively machine-independent — only the interpreter must be rewritten when changing computers. Furthermore, helpful debugging aids can readily be built into an interpretive system.
+
+This philosophy of multipass operation may be characterized as telling the later pass what to do, whenever possible, rather than simply presenting it with a lot of facts and asking it to figure out what to do.
+
+The rise of microprogrammed machines and of special-purpose integrated circuit chips has made this interpretive approach even more valuable.
+
+There is another way to look at a program written in interpretive language: It may be regarded as a series of subroutine calls, one after another. Such a program may in fact be expanded into a long sequence of calls on subroutines, and, conversely, such a sequence can usually be packed into a coded form that is readily interpreted. The advantages of interpretive techniques are the compactness of representation, the machine independence, and the increased diagnostic capability. An interpreter can often be written so that the amount of time spent in interpretation of the code itself and branching to the appropriate routine is negligible.
+
+In the author’s opinion, entirely too much programmers’ time has been spent in writing such simulators and entirely too much computer time has been wasted in using them. The motivation for simulators is simple: A computer installation buys a new machine and still wants to run programs written for the old machine (rather than rewriting the programs). However, this usually costs more and gives poorer results than if a special task force of programmers were given temporary employment to do the reprogramming.
+
+When a machine is being simulated on itself (as MIX was simulated on MIX in the previous section) we have the special case of a simulator called a trace or monitor routine. Such programs are occasionally used to help in debugging, since they print out a step-by-step account of how the simulated program behaves.
+
+The program being traced is subject to only three restrictions: a) It must not store anything into the locations used by the trace program. b) It must not use the output device on which tracing information is being recorded (for example, JBUS would give an improper indication). c) It will run at a slower speed while being traced.
+
+Perhaps the most outstanding differences between one computer and the next are the facilities available for doing input and output, and the computer instructions that govern those peripheral devices. We cannot hope to discuss in a single book all of the problems
+
+
+1) We have presented only the most interesting part of a trace program, the part that retains control while executing another program. For a trace to be useful, there must also be a routine for writing out the contents of registers, and this has not been included. Such a routine distracts from the more subtle features of a trace program, although it certainly is important; the necessary modifications are left as an exercise (see exercise 2). 2) Space is generally more important than time; that is, the program should be written to be as short as possible. Then the trace routine will be able to coexist with extremely large programs. The running time is consumed by output anyway.
+
+COMPUTER PROGRAMS usually operate on tables of information. In most cases these tables are not simply amorphous masses of numerical values; they involve important structural relationships between the data elements.
+
+when we must choose which I/O unit to initiate next, how is the choice to be made? This is called the problem of “forecasting.” The best forecasting rule for the general case would seem to give preference to the unit whose buffer circle has the largest value of n/N, assuming that the number of buffers in the circles has been chosen wisely.
+
+Much of the material we will discuss is often called “List processing,” since a number of programming systems such as LISP have been designed
+
+DATA USUALLY has much more structural information than we actually want to represent directly in a computer.
+
+A linear list is a sequence of n ≥ 0 nodes X[1], X[2], . . ., X[n] whose essential structural properties involve only the relative positions between items as they appear in a line.
+
+We must decide in each case how much structure to represent in our tables, and how accessible to make each piece of information. To make such decisions, we need to know what operations are to be performed on the data. For each problem considered in this chapter, therefore, we consider not only the data structure but also the class of operations to be done on the data; the design of computer representations depends on the desired function of the data as well as on its intrinsic properties. Indeed, an emphasis on function as well as form is basic to design problems in general.
+
+deletions (and usually all accesses) are made at one end of the list. A queue is a linear list for which all insertions are made at one end of the list; all deletions (and usually all accesses) are made at the other end. A deque (“double-ended queue”) is a linear list for which all insertions and deletions
+
+A stack is a linear list for which all insertions and deletions (and usually all accesses) are made at one end of the list. A queue is a linear list for which all insertions are made at one end of the list; all deletions (and usually all accesses) are made at the other end. A deque (“double-ended queue”) is a linear list for which all insertions and deletions (and usually all accesses) are made at the ends of the list.
+
+In general, stacks occur most frequently in connection with explicitly or implicitly recursive algorithms,
+
+The simplest and most natural way to keep a linear list inside a computer is to put the list items in consecutive locations, one node after the other.
+
+We have, in fact, already seen circular queuing action like this, when we looked at input-output buffering in Section 1.4.4. Our discussion so far has been very
+
+We have, in fact, already seen circular queuing action like this, when we looked at input-output buffering
+
+In the case of UNDERFLOW, we have tried to remove a nonexistent item; this is usually a meaningful condition — not an error situation — that can be used to govern the flow of a program. For example, we might want to delete items repeatedly until UNDERFLOW occurs. An OVERFLOW situation, however, is usually an error; it means that the table is full already, yet there is still more information waiting to be put in. The usual policy in case of OVERFLOW is to report reluctantly that the program cannot go on because its storage capacity has been exceeded; then the program terminates.
+
+An OVERFLOW situation, however, is usually an error; it means that the table is full already, yet there is still more information waiting to be put in. The usual policy in case of OVERFLOW is to report reluctantly that the program cannot go on because its storage capacity has been exceeded; then the program terminates.
+
+The next question is, “What do we do when UNDERFLOW or OVERFLOW occurs?” In the case of UNDERFLOW, we have tried to remove a nonexistent item; this is usually a meaningful condition — not an error situation — that can be used to govern the flow of a program. For example, we might want to delete items repeatedly until UNDERFLOW occurs. An OVERFLOW situation, however, is usually an error; it means that the table is full already, yet there is still more information waiting to be put in. The usual policy in case of OVERFLOW is to report reluctantly that the program cannot go on because its storage capacity has been exceeded; then the program terminates.
