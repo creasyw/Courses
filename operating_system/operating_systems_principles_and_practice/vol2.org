@@ -1,0 +1,679 @@
+The key idea is to write a concurrent program — one with many simultaneous activities — as a set of sequential streams of execution, or threads, that interact and share results in very precise ways.
+
+Program structure: expressing logically concurrent tasks. Programs often interact with or simulate real-world applications that have concurrent activities. Threads let you express an application’s natural concurrency by writing each concurrent task as a separate thread.
+
+background. To improve user responsiveness and performance, a common design pattern is to create threads to perform work in the background, without the user waiting for the result.
+
+Responsiveness: shifting work to run in the background. To improve user responsiveness and performance, a common design pattern is to create threads to perform work in the background, without the user waiting for the result.
+
+Operating system kernels make extensive use of threads to preserve responsiveness.
+Programs can use threads on a multiprocessor to do work in parallel; they can do the same work in less time or more work in the same elapsed time.
+
+Performance: exploiting multiple processors. Programs can use threads on a multiprocessor to do work in parallel; they can do the same work in less time or more work in the same elapsed time.
+
+process as the execution of a program with restricted rights. A thread is an independent sequence of instructions running within a program. Perhaps the best way to see how these concepts are related,
+
+
+described a process as the execution of a program with restricted rights. A thread is an independent sequence of instructions running within a program.
+
+A thread is a single execution sequence that represents a separately schedulable task.
+
+multi-threaded programs should make no assumptions about the behavior of the thread scheduler. In turn, the kernel’s scheduling decisions — when to assign a thread to a processor, and when to preempt it for a different thread — can be made without worrying whether they might affect program correctness.
+
+A good way to understand the simple threads API is that it provides a way to invoke an asynchronous procedure call. A normal procedure call passes a set of arguments to a function, runs the function immediately on the caller’s stack, and when the function is completed, returns control back to the caller with the result. An asynchronous procedure call separates the call from the return: with thread_create, the caller starts the function, but unlike a normal procedure call, the caller continues execution concurrently with the called function. Later, the caller can wait for the function completion (with thread_join).
+
+Creating and scheduling threads are separate operations. Although threads are usually scheduled in the order that they are created, there is no guarantee.
+
+Rather, the only assumption the programmer can make is that each of the threads runs on its own virtual processor with unpredictable speed. Any interleaving is possible.
+
+Data may be safely shared between threads, provided it is (a) written by the parent before the child thread starts or (b) written by the child and read by the parent after the join.
+
+To prevent unintentional data leakage, whenever a process exits, the operating system must zero the memory that had been allocated to the exiting process. Otherwise, a new process may be re-assigned the memory, enabling it to read potentially sensitive data. For example, an operating system’s remote login program might temporarily store a user’s password in memory, but the next process to use the same physical memory might be a memory-scanning program launched by a different, malicious user.
+
+each thread represents a sequential stream of execution. The operating system provides the illusion that each thread runs on its own virtual processor by transparently suspending and resuming threads. For the illusion to work, the operating system must precisely save and restore the state of a thread. However, because threads run either in a process or in the kernel, there is also shared state that is not saved or restored when
+
+each thread represents a sequential stream of execution. The operating system provides the illusion that each thread runs on its own virtual processor by transparently suspending and resuming threads. For the illusion to work, the operating system must precisely save and restore the state of a thread. However, because threads run either in a process or in the kernel, there is also shared state that is not saved or restored when switching the processor between threads.
+
+A multi-threaded process or operating system kernel has both per-thread state and shared state. The thread control block stores the per-thread state: the current state of the thread’s computation (e.g., saved processor registers and a pointer to the stack) and metadata needed to manage the thread (e.g., the thread’s ID, scheduling priority, owner, and resource consumption). Shared state includes the program’s code, global static variables, and the heap.
+
+thread’s stack is the same as the stack for a single-threaded computation — it stores information needed by the nested procedures the thread is currently running.
+
+the current state of each thread’s computation: a pointer to the thread’s stack and a copy of its processor registers.
+
+Copy of processor registers. A processor’s registers include not only its general-purpose registers for storing intermediate values for ongoing computations, but they also include special-purpose registers, such as the instruction pointer and stack pointer.
+
+The kernel stays within this bound due to an important kernel coding convention: buffers and data structures are always allocated on the heap and never as procedure local variables.
+
+Most modern operating systems allocate kernel stacks in physical memory, putting space at a premium.
+
+User-level stacks are allocated in virtual memory and so there is less need for a tight space constraint.
+
+The TCB also includes per-thread metadata — information for managing the thread. For example, each thread
+
+Per-thread Metadata. The TCB also includes per-thread metadata — information for managing the thread. For example, each thread might have a thread ID, scheduling priority, and status (e.g., whether the thread is waiting for an event or is ready to be placed onto a processor).
+statically allocated global variables and dynamically allocated heap variables can store information that is accessible to all threads.
+
+To avoid unexpected behaviors, it is therefore important when writing multi-threaded programs to know which variables are designed to be shared across threads (global variables, objects on the heap) and which are designed to be private (local/automatic variables).
+
+that there are exactly k RUNNING threads, by keeping a low priority idle thread per processor for when there is nothing else to run. On old machines, the
+
+If a system has k processors, most operating systems ensure that there are exactly k RUNNING threads, by keeping a low priority idle thread per processor for when there is nothing else to run.
+
+When a thread calls thread_exit, there are two steps to deleting the thread: Remove the thread from the ready list so that it will never run again. Free the per-thread state allocated for the thread.
+
+a thread never deletes its own state. Instead, some other thread must do it. On exit, the thread transitions to the FINISHED state, moves its TCB from the ready list to a list of finished threads the scheduler should never run. The thread can then safely switch to the next thread on the ready list. Once the finished thread is no longer running, it is safe for some other thread to free the state of the thread.
+
+Although this seems easy, there is an important subtlety: if a thread removes itself from the ready list and frees its own per-thread state, then the program may break.
+
+Separating mechanism from policy is a useful and widely applied principle in operating system design. When mechanism and policy are cleanly separated, it is easier to introduce new policies to optimize a system for a new workload or new technology.
+
+For example, the thread context switch abstraction cleanly separates mechanism (how to switch between threads) from policy (which thread to run) so that the mechanism works no matter what policy is used.
+
+A thread context switch suspends execution of a currently running thread and resumes execution of some other thread. The switch saves the currently running thread’s registers to the thread’s TCB and stack, and then it restores the new thread’s registers from that thread’s TCB and stack into the processor.
+
+A thread context switch can be triggered by either a voluntary call into the thread library, or an involuntary interrupt or processor exception.
+
+To keep things simple, we do not want to do an involuntary context switch while we are in the middle of a voluntary one. When switching between two threads, we need to temporarily defer interrupts until the switch is complete, to avoid confusion. Processors contain privileged instructions to defer and re-enable interrupts;
+
+Because a process contains more than just a thread, each process’s process control block (PCB) needs more information than a thread control block (TCB) for a kernel thread
+
+when a context switch occurs from one process to another, the operating system must change the virtual memory mappings as well as the register state.
+
+We can resume a process in the kernel using thread_switch. However, when we resume execution of the user-level process after the completion of a system call or interrupt, we must restore its state precisely as it was beforehand: with the correct value in its registers, executing in user mode, with the appropriate virtual memory mappings, and so forth.
+
+mode switch in Chapter 2 caused the x86 hardware to save not just the instruction pointer and eflags register but also the stack pointer of the interrupted process before starting the handler. For mode switching, the hardware changes the stack pointer to the kernel’s interrupt stack, so it must save the original user-level stack pointer. In contrast, when switching from a kernel thread to a kernel handler, the hardware does not switch stacks. Instead, the handler runs on the current stack, not on a separate interrupt stack. Therefore, the hardware does not need to save the original stack pointer; the handler just saves the stack pointer with the other registers as part of the pushad instruction. Thus, x86 hardware works slightly differently when switching between a kernel thread and a kernel handler than when doing a mode switch:
+
+x86 hardware works slightly differently when switching between a kernel thread and a kernel handler than when doing a mode switch:
+
+To create a thread, the user library allocates a user-level stack for the thread and then does a system call into the kernel. The kernel allocates a TCB and interrupt stack, and arranges the state of the thread to start execution on the user-level stack at the beginning of the requested procedure. The kernel needs to store a pointer to the TCB in the process control block; if the process exits, the kernel must terminate any other threads running in the process.
+
+The basic idea is simple. The thread library instantiates all of its data structures within the process: TCBs, the ready list, the finished list, and the waiting lists all are just data structures in the process’s address space. Then, calls to the thread library are just procedure calls, akin to how the same functions are implemented within a multi-threaded kernel.
+
+Today, most programs use kernel-supported threads rather than pure user-level threads. Major operating systems support threads using standard abstractions, so the issue of portability is less of an issue than it once was. However, various systems take more of a hybrid model, attempting to combine the lightweight performance and application control over scheduling found in user-level threads, while keeping many of the advantages of kernel threads.
+
+Asynchronous I/O and events allow a single-threaded program to cope with high-latency I/O devices by overlapping I/O with processing and other I/O.
+
+Although threads are a common way to express and manage concurrency, they are not the only way. In this section, we describe two popular alternatives, each targeted at a different application domain: Asynchronous I/O and event-driven programming. Asynchronous I/O and events allow a single-threaded program to cope with high-latency I/O devices by overlapping I/O with processing and other I/O. Data parallel programming. With data parallel programming, all processors perform the same instructions in parallel on different parts of a data set. In each case, the goal is similar: to replace the complexities of multi-threading with a deterministic, sequential model that is easier for the programmer to understand and debug.
+
+Asynchronous I/O is a way to allow a single-threaded process to issue multiple concurrent I/O requests at the same time. The process makes a system call to issue an I/O request but the call returns immediately, without waiting for the result. At a later time, the operating system provides the result to the process by either: (1) calling a signal handler, (2) placing the result in a queue in the process’s memory, or (3) storing the result in kernel memory until the process makes another system call to retrieve it.
+
+the server does a select call that blocks until any of the 10 network connections has data available to read. When the select call returns, it provides a list of connection with available data. The thread can then read from those connections, knowing that the read will always return immediately. After processing the data, the thread then calls select again to wait for the next data to arrive.
+
+Asynchronous I/O allows progress by many concurrent operating system requests. This approach gives rise to an event-driven programming pattern where a thread spins in a loop; each iteration gets and processes the next I/O event. To process each event, the thread typically maintains for each task a continuation, a data structure that keeps track of a task’s current state and next step.
+
+When a new message arrives, the thread uses the network connection’s port number to identify which client sent the request and retrieves the appropriate client’s variables using this port number/client ID.
+
+that's what i did for the dns forwarder :)
+The differences are: (1) whether the state is stored in a continuation or TCB and (2) whether the state save/restore is done explicitly by the application or automatically by the thread system.
+
+The common wisdom has been that the event-driven approach was significantly faster for two reasons. First, the space and context switch overheads of this approach could be lower because a thread system must use generic code that allocates a stack for each thread’s state and that saves and restores all registers on each context switch, while the event-driven approach lets programmers allocate and save/restore just the state needed for each task. Second, some past operating systems had inefficient or unscalable implementations of their thread systems, making it important not to create too many threads for each process.
+
+In most cases, the performance difference is small enough that other factors (e.g., code simplicity and ease of maintenance) are more important than raw performance. If performance is crucial for a particular application, then, as is often the case, there is no substitute for careful benchmarking before making your decision.
+
+While event-driven programming can be effective when tasks are usually short-lived, threads can be more convenient when there is a mixture of foreground and background tasks.
+
+for most I/O-intensive programs, threads are preferable: they are often more natural, reasonably efficient, and simpler when running on multiple processors.
+
+Large data-analysis tasks often use data parallel programming. For example, Hadoop is an open source system that can process and analyze terabytes of data spread across hundreds or thousands of servers.
+
+modern software engineering: the systematic management of complex implementation tasks through the careful control of feature lists, module testing, assertions, and so forth.
+
+One of the most influential papers in computer science history is Dijkstra’s description of his THE system [48]. Dijkstra argued for constructing operating systems as a series of layered abstractions, with communicating threads implementing each layer.
+
+thread programmers should not make any assumptions about the relative speed at which their threads operate.
+
+Multi-threaded programs extend the traditional, single-threaded programming model so that each thread provides a single sequential stream of execution composed of familiar instructions.
+
+Jim Gray, the 1998 ACM Turing Award winner, coined the term Heisenbugs for bugs that disappear or change behavior when you try to examine them. Multi-threaded programming is a common source of Heisenbugs. In contrast, Bohrbugs are deterministic and generally much easier to diagnose.
+
+long as the programmer uses structured synchronization for protecting shared data, the compiler
+
+long as the programmer uses structured synchronization for protecting shared data, the compiler can reorder instructions as needed without changing program behavior, provided that the compiler does not reorder across
+
+long as the programmer uses structured synchronization for protecting shared data,
+
+As long as the programmer uses structured synchronization for protecting shared data, the compiler can reorder instructions as needed without changing program behavior, provided that the compiler does not reorder across synchronization operations. A compiler making the more conservative assumption that all memory is shared would produce slow code even when it was not necessary.
+
+For your code to be portable, you should assume that the compiler and the hardware can reorder instructions except across synchronization operations.
+
+Given these challenges, multi-threaded code can introduce subtle, non-deterministic, and non-reproducible bugs
+
+First, we structure a multi-threaded program’s shared state as a set of shared objects that encapsulate the shared state as well as define and limit how the state can be accessed. Second, to avoid ad hoc reasoning about the possible interleavings of access to the state variables within a shared object, we describe how shared objects can use a small set of synchronization primitives — locks and condition variables — to coordinate access to their state by different threads. Third, to simplify reasoning about the code in shared objects, we describe a set of best practices for writing the code that implements each shared object. Finally, we dive into the details of how to implement synchronization primitives.
+
+a multi-threaded program’s execution depends on the interleavings of different threads’ access to shared memory, which can make it difficult to reason about or debug these programs. In particular, cooperating threads’ execution may be affected by race conditions.
+
+race condition occurs when the behavior of a program depends on the interleaving of operations of different threads. In effect, the threads run a race between their operations, and the results of the program execution depends on who wins the race.
+
+atomic operations, indivisible operations that cannot be interleaved with or split by other operations.
+
+safety (the program never enters a bad state) and liveness (the program eventually enters a good state)?
+
+given our programming model that we have shared memory on which we can perform atomic loads and stores — is to set a flag when going to buy milk and to check
+
+given our programming model that we have shared memory on which we can perform atomic loads and stores
+
+ensure that at least one of the threads determines whether the other thread has bought milk or not before deciding whether or not to buy.
+
+Peterson’s algorithm, which works with any fixed number of n threads.
+
+In Peterson’s generalized solution, all n threads can busy-wait. Busy-waiting is particularly problematic on modern systems with preemptive multi-threading, as the spinning thread may be holding the processor waiting for an event that cannot occur until some preempted thread is re-scheduled to run.
+
+We write shared objects that use synchronization objects to coordinate different threads’ access to shared state.
+
+Shared objects are objects that can be accessed safely by multiple threads. All shared state in a program — including variables allocated on the heap (e.g., objects allocated with malloc or new) and static, global variables — should be encapsulated in one or more shared objects.
+
+A synchronization variable is a data structure used for coordinating concurrent access to shared state. Both the interface and the implementation of synchronization variables must be carefully designed. In particular, we build shared objects using two types of synchronization variables: locks and condition variables.
+
+Mutual exclusion greatly simplifies reasoning about programs because a thread can perform an arbitrary set of operations while holding a lock, and those operations appear to be atomic to other threads. In particular, because a lock enforces mutual exclusion and threads must hold the lock to access shared state, no other thread can observe an intermediate state. Other threads can only observe the state left after the lock release.
+
+In particular, shared objects usually have one lock guarding all of an object’s state. Each public method acquires the lock on entry and releases the lock on exit. Thus, reasoning about a shared class’s code is similar to reasoning about a traditional class’s code: we assume a set of invariants when a public method is called and re-establish those invariants before a public method returns. If we define our invariants well, we can then reason about each method independently.
+
+is much easier to reason about interleavings of atomic groups of operations
+
+It is much easier to reason about interleavings of atomic groups of operations rather than interleavings of individual operations for two reasons. First, there
+
+It is much easier to reason about interleavings of atomic groups of operations rather than interleavings of individual operations for two reasons. First, there are (obviously) fewer interleavings to consider.
+
+Second, and more important, we can make each atomic group of operations correspond to the logical structure of the program, which allows us to reason about invariants not specific interleavings.
+
+A lock enables mutual exclusion by providing two methods: Lock::acquire() and Lock::release().
+
+Checking the state to see if it is FREE and setting the state to BUSY are together an atomic operation. Even if multiple threads try to acquire the lock, at most one thread will succeed. One thread observes that the lock is FREE and sets it to BUSY; the other threads just see that the lock is BUSY and wait.
+
+A lock should ensure the following three properties: Mutual Exclusion. At most one thread holds the lock. Progress. If no thread holds the lock and any thread attempts to acquire the lock, then eventually some thread succeeds in acquiring the lock. Bounded waiting. If thread T attempts to acquire a lock, then there exists a bound on the number of times other threads can successfully acquire the lock before T does. Mutual exclusion is a safety property because locks prevent more than one thread from accessing shared state. Progress and bounded waiting are liveness properties. If a lock is FREE, some thread must be able to acquire it. Further, any particular thread that wants to acquire the lock must eventually succeed in doing so.
+
+Non-property: Thread ordering. The bounded waiting property defined above guarantees that a thread will eventually get a chance to acquire the lock. However, it does not promise that waiting threads acquire the lock in FIFO order. Most implementations of locks that you will encounter — for example with POSIX threads — do not provide FIFO ordering.
+
+Operating system kernels use bounded queues for managing interprocess communication, TCP and UDP sockets, and I/O requests. Because the kernel runs in a finite physical memory, the kernel must be designed to work properly with finite resources.
+
+A critical section is a sequence of code that atomically accesses shared state. By ensuring that a thread holds the object’s lock while executing any of its critical sections, we ensure that each critical section appears to execute atomically on its shared state.
+
+Each class can define multiple methods that operate on the shared state defined by the class, so there may be multiple critical sections per class. However, for each instance of the class (i.e., for each object), only one thread holds the object’s lock at a time, so only one thread actively executes any of the critical sections per shared object instance.
+
+invocation. If one thread passes a pointer or reference to one of its automatic variables to another thread and later returns
+
+one thread passes a pointer or reference to one of its automatic variables to another thread and later returns from the procedure where the automatic variable was allocated, then that second thread now has a pointer into a region of the first thread’s stack that may be used for other purposes. To prevent this error, a few garbage-collected languages, such as Google’s Go, automatically convert all automatic data to being heap-allocated if the data can be referenced outside of the procedure.
+
+invocation. If one thread passes a pointer or reference to one of its automatic variables to another thread and later returns from the procedure where the automatic variable was allocated, then that second thread now has a pointer into a region of the first thread’s stack that may be used for other purposes. To prevent this error, a few garbage-collected languages, such as Google’s Go, automatically convert all automatic data to being heap-allocated if the data can be referenced outside of the procedure.
+
+this. The compiler allocates automatic variables (sometimes called “local variables”, with good reason) on the stack during procedure invocation. If one thread passes a pointer or reference to one of its automatic variables to another thread and later returns from the procedure where the automatic variable was allocated, then that second thread now has a pointer into a region of the first thread’s stack that may be used for other purposes. To prevent this error, a few garbage-collected languages, such as Google’s Go, automatically convert all automatic data to being heap-allocated if the data can be referenced outside of the procedure.
+
+The compiler allocates automatic variables (sometimes called “local variables”, with good reason) on the stack during procedure invocation. If one thread passes a pointer or reference to one of its automatic variables to another thread and later returns from the procedure where the automatic variable was allocated, then that second thread now has a pointer into a region of the first thread’s stack that may be used for other purposes. To prevent this error, a few garbage-collected languages, such as Google’s Go, automatically convert all automatic data to being heap-allocated if the data can be referenced outside of the procedure.
+
+When sharing dynamically allocated variables, it is best to stay in the habit of sharing variables only from the heap — and never sharing variables from the stack — across threads.
+
+Unfortunately, this approach is inefficient: the waiting thread continually loops, or busy-waits, consuming processor cycles without making useful progress. Worse, busy-waiting can delay the scheduling of other threads — perhaps exactly the thread for which the looping thread is waiting.
+
+One way for a thread to wait would be to poll — to repeatedly check the shared state to see if it has changed.
+
+A condition variable is a synchronization object that lets a thread efficiently wait for a change to shared state that is protected by a lock.
+
+Similarly, the only reason for a thread to signal (or broadcast) is that it has just changed the shared state in a way that may be of interest to a waiting thread.
+
+To make a change to shared state, the thread must hold the lock on the state variables, so signal and broadcast are also always called while holding a lock. Discussion. Condition variables have been carefully
+
+To make a change to shared state, the thread must hold the lock on the state variables, so signal and broadcast are also always called while holding a lock.
+
+A condition variable is memoryless. The condition variable, itself, has no internal state other than a queue of waiting threads. Condition variables do not need their own state because they are always used inside shared objects that have their own state.
+
+A thread always calls wait while holding a lock. The call to wait atomically releases the lock and puts the thread on the condition variable’s waiting list. Atomicity ensures that there is no separation between checking the shared object’s state, deciding to wait, adding the waiting thread to the condition variable’s queue, and releasing the lock so that some other thread can access the shared object.
+Atomicity ensures that there is no separation between checking the shared object’s state, deciding to wait, adding the waiting thread to the condition variable’s queue, and releasing the lock so that some other thread can access the shared object.
+
+forever. Consider the case where thread T1 checks an object’s state and decides to wait, so it releases the lock in anticipation of putting itself on the condition variable’s waiting list. At that precise moment, T2 preempts T1. T2 acquires the lock, changes the object’s state to what T1 wants, and calls signal, but the waiting list is empty so the call to signal has no effect. Finally, T1 runs again, puts itself on the waiting list, and suspends execution. The lack of atomicity means that T1 missed the signal and is now waiting, potentially forever. Once wait releases the lock, any number of threads might run before wait re-acquires the lock after a signal. In the meantime, the state variables might have changed — in fact, they are almost certain to have changed. Code must not assume just because something was true before wait was called, it remains true when wait returns. The only assumption you should make on return from wait is that the lock is held, and the normal invariants that hold at the start of the critical section are true. When
+
+When a waiting thread is re-enabled via signal or broadcast, it may not run immediately. When a waiting thread is re-enabled, it is moved to the scheduler’s ready queue with no special priority, and the scheduler may run it at some later time. Furthermore, when the thread finally does run, it must re-acquire the lock, which means that other threads may have acquired and released the lock in the meantime, between when the signal occurs and when the waiter re-acquires the lock. Therefore, even if the desired predicate were true when signal or broadcast was called, it may no longer be true when wait returns.
+
+wait must always be called from within a loop.
+
+Because wait releases the lock, and because there is no guarantee
+
+wait must always be called from within a loop.
+
+wait must always be called from within a loop. Because wait releases the lock, and because there is no guarantee of atomicity between signal or broadcast and the return of a call to wait, there is no guarantee that the checked-for state still holds. Therefore, a waiting thread must always wait in a loop, rechecking the state until the desired predicate holds.
+
+not only is it possible that the desired predicate on the state is no longer true, it is possible that the desired predicate on the state was never true.
+
+The modularity advantages of Mesa greatly simplify reasoning about an object’s core safety properties. For the properties we care most about (i.e., the safety properties that threads proceed only when they are supposed to) and for large programs where modularity matters, Mesa semantics seem vastly preferable.
+
+Although multi-threaded programming has a reputation for being difficult, shared objects provide a basis for writing simple, safe code for multi-threaded programs.
+
+Signaling at the wrong time will never cause a waiting thread to proceed when it should not. Signal and broadcast can be regarded as hints that it might be a good time to proceed; if the hints prove to be wrong, no damage is done. You can always convert a signal to a broadcast, or add any number of signal or broadcast calls, without changing the semantics of a shared object. Avoiding extra signal and broadcast calls may matter for performance, but not for correctness.
+
+One of the themes running through this textbook is the importance of simple abstractions in building robust, reliable operating systems. Operating systems place a premium on reliability;
+
+Add a lock. Each shared object needs a lock as a member variable to enforce mutually exclusive access to the object’s shared state.
+
+The simplest and most common approach is to acquire the lock at the start of each public method and release it at the end of each public method. Doing so makes it easy to inspect your code to verify that a lock is always held when needed. It also means that the lock is already held when each private method is called, and you do not need to re-acquire it.
+
+Do not be tempted by this “optimization” until you are an experienced programmer and have done sufficient profiling of the code to verify that the optimization will significantly speed up your program, and you fully understand the hazards posed by compiler and architecture instruction re-ordering.
+
+The bottom line is that there is no hard and fast rule for how many condition variables to use in a shared object. Selecting condition variables requires thought, and different designers may use different numbers of condition variables for a given class. Like many other design decisions, this is a matter of programmer taste, judgment, and experience. Asking “When can this method wait?” will help you identify what is for you a natural way of thinking about a shared object’s condition variables.
+
+Modern implementations almost invariably provide Mesa semantics and often allow for spurious wakeups (i.e., a thread can return from wait even if no thread called signal or broadcast). Therefore, a thread must always check the condition before proceeding. Even if the condition was true when the signal or broadcast call occurred, it may no longer be true when the waiting thread resumes execution.
+
+It is always safe to use broadcast. Even in cases where signal would suffice, at worst, all of the waiting threads would run and check the condition in the while loop, but only one would continue out of the loop. Compared to signal, this would consume some additional resources, but it would not introduce any bugs.
+
+For concurrent programming, debugging does not work. You must rely on: (a) writing correct code, and (b) writing code that you and others can read and understand — not just for now, but also over time as the code changes.
+
+for concurrent programs, the evidence is that the abstractions we describe are better than almost all others.
+
+It is just not worth it. Always
+
+Always synchronize with locks and condition variables.
+
+We recommend that you be able to read and understand semaphores so you can understand legacy code, but that you only write new code using locks and condition variables.
+
+We recommend that you be able to read and understand semaphores so you can understand legacy code, but that you only write new code using locks and condition variables. Almost always, code using locks and condition variables is clearer than the equivalent code using semaphores because it is more “self-documenting.”
+
+Always acquire the lock at the beginning of a method and release it right before the return. This extends the principle of consistent structure: pick one way to do things and always follow it. The benefit here is that it is easy to read code and see where the lock is or is not held because synchronization is structured on a method-by-method basis.
+
+There are two corollaries to this rule. First, if your code is well structured, all shared data will be encapsulated in an object, and therefore all accesses to shared data will be protected by a lock. Since compilers and processors never re-order instructions across lock operations, this rule guarantees instruction re-ordering is not a concern for your code.
+
+Condition variables are useless without shared state, and shared state should only be accessed while holding a lock. Many libraries enforce this rule — that you
+
+Condition variables are useless without shared state, and shared state should only be accessed while holding a lock.
+
+Never use thread_sleep to have one thread wait for another thread to perform a task. The correct way to wait for a condition to become true is to wait on a condition variable. In general, thread_sleep is appropriate
+
+Similarly, if a thread must wait for an object’s state to change, it should wait on a condition variable, and not just call thread_yield. Use thread_yield only when a low-priority thread that can still make progress wants to let a higher-priority thread to run.
+
+We strongly advise holding a shared object’s lock across any method that accesses the object’s member variables. Programmers are often tempted to avoid some of these lock acquire and release operations. Unfortunately, such efforts often result in code that is complex, wrong, or both.
+
+The “optimization” is to acquire the lock if the object has not already been allocated, but to avoid acquiring the lock if the object already exists. Because there can be a race condition between the first check and acquiring the lock, the check must be made again inside the lock.
+
+Being good programmers, we can hide the lazy allocation inside an object, Singleton, which returns a pointer to the object, creating it if needed.
+
+The simplest and most common approach is to acquire the lock at the start of each public method and release it at the end of each public method. Doing so makes it easy to inspect your code to verify that a lock is always held when needed. It also means that the lock is already held when each private method is called, and you do not need to re-acquire it.
+
+theory to other ﬁelds. As the ﬁgure suggests, information theory intersects physics (statistical mechanics), mathematics (probability theory), electrical engineering (communication theory), and computer science (algorithmic complexity
+
+Avoid defining a synchronized block in the middle of a method.
+
+Keep shared state classes separate from thread classes.
+
+The best way to learn how to program concurrently is to practice.
+
+Always make sure threads and shared objects are defined in separate classes. State that can be accessed by multiple threads, locks, and condition variables should never appear in any Java class that extends Thread or implements Runnable.
+
+Like a normal mutual exclusion lock, a readers/writers lock (RWLock) protects shared data. However, it makes the following optimization. To maximize performance, an RWLock allows multiple “reader” threads to simultaneously access the shared data. Any number of threads can safely read shared data at the same time, as long as no thread is modifying the data. However, only one “writer” thread may hold the RWLock at any one time. (While a “reader” thread is restricted to only read access, a “writer” thread may read and write the data structure.) When a writer thread holds the RWLock, it may safely modify the data, as the lock guarantees that no other thread (whether reader or writer) may simultaneously hold the lock. The mutual exclusion is thus between any writer and any other writer, and between any writer and the set of readers. Optimizing for the common case Reader/writer locks are an example of an important principle in the design of computer systems: optimizing for the common case. Performance optimizations often have the side effect of making the code more complex to understand and reason about. Code that is more complex is more likely to be buggy, and more likely to have new bugs introduced as features are added.
+
+Reader/writer locks are an example of an important principle in the design of computer systems: optimizing for the common case. Performance optimizations often have the side effect of making the code more complex to understand and reason about. Code that is more complex is more likely to be buggy, and more likely to have new bugs introduced as features are added.
+
+One approach is to profile your code. Then, and only then, optimize the code paths that are frequently used. In the case of locks, it is obviously simpler to use a
+
+To design the RWLock class, we begin by defining its interface (already done in this case) and its shared state.
+
+Reader-writer locks are very commonly used in databases, where they are used to support faster search queries over the database, while also supporting less frequent database updates. Another common use is inside the operating system kernel, where core data structures are often read by many threads and only infrequently updated.
+
+One thing you should always do — whether for sequential or concurrent code — is to use a debugger to single step through the code on various inputs, to verify that the program logic is doing what you expect it to do, and do the variables have the values you expect.
+
+A more systematic approach is called model checking. To fully verify that a concurrent program does what it was designed to do, a model checker enumerates all possible sequences of operations, and tries each one in turn. Since this could result in a nearly infinite number of possible tests even for a fairly simple program, to be practical model checking needs to reduce the search space. For code that follows our guidelines — with locks to protect
+
+Even with this, the number of possibilities can be prohibitively large, and so typically the model checker will verify however many different interleavings it can within some time limit.
+
+an efficient way to check whether all n threads have finished their work. This is called a synchronization barrier. It has one operation, checkin. A thread calls checkin when it has completed its work; no thread may return from checkin until all n threads have checked in. Once all threads have checked in, it is safe to use the results of the previous step.
+
+A synchronization barrier is called concurrently by many threads; the barrier prevents any thread from proceeding until all threads reach the barrier. A memory barrier is called by one thread, to prevent the thread from proceeding until all memory operations that occur before the barrier have completed and are visible to other threads.
+
+Starvation-freedom. If a thread waits in insert, then it is guaranteed to proceed after a bounded number of remove calls complete, and vice versa.
+
+The easiest way to do this is to create a condition variable for each separate waiting thread. Then, you can be precise as to which thread to wake up! Although you might be worried that this would be space inefficient, on modern computer systems a condition variable (or lock) takes up just a few words of DRAM; it is small compared to the rest of the storage needed per thread.
+
+Users of locks should not make assumptions about the order in which waiting threads acquire a lock.
+
+Since turning off interrupts is insufficient, most processor architectures provide atomic read-modify-write instructions to support synchronization. These instructions can read a value from a memory location to a register, modify the value, and write the modified value to memory atomically with respect to all instructions on other processors.
+
+Every entry in a processor cache has a state, either exclusive or read-only. If any other processors have a cached copy of the data, it must be read-only everywhere.
+
+Whenever any thread acquires a spinlock used within an interrupt handler, the thread must disable interrupts first. Otherwise, deadlock can result if the interrupt arrives at an inopportune moment. The handler could spin forever waiting for a lock held by the thread it interrupted. Most likely, the system would need to be rebooted to clear the problem. To avoid these types of errors, most operating systems keep interrupt handlers extremely simple.
+
+The basic issue is that we want to make sure the acquiring thread finishes suspending itself before a thread releasing the lock tries to reschedule it.
+
+most systems have one ready list per processor, each protected by a different spinlock. Different processors can then simultaneously add and remove threads to different lists. Typically, the WAITING thread is placed on the ready list of the same processor where it had previously been RUNNING; this improves cache performance as that processor’s cache may still contain code and data from the last time the thread ran. Putting the thread back on the same ready list also prevents the thread from being run by any other processor before the thread has completed its context switch. Once it is READY, any idle processor can run the thread by acquiring the spinlock of the ready list where it is enqueued, removing the thread, and releasing the spinlock.
+
+The Linux implementation of locks takes advantage of this by providing an extremely fast path for the case when the thread does not need to wait for the lock in acquire, and when there is no thread not need to wake up a thread in release. A slow path, similar to Figure 5.17, is used for all
+
+The key idea is to design the lock data structures to allow the lock to be acquired and released on the fast path without first acquiring the spinlock or disabling interrupts.
+
+acquiring and releasing a lock can be inexpensive. Programmers sometimes go to great lengths to avoid acquiring a lock in a particular situation. However, the reasoning in such cases can be subtle, and omitting needed locks is dangerous. In cases where there is little contention, avoiding locks is unlikely to significantly improve performance, so it is usually better just to keep things simple and rely on locks to ensure mutual exclusion when accessing shared state. 5.7.6 Implementing Condition
+
+care is needed to prevent a waiting thread from being put back on the ready list until it has completed its context switch;
+
+when we signal a waiting thread, that thread becomes READY, but it may not run immediately and must still re-acquire the monitor lock. It is possible for another thread to acquire the monitor lock first and to change the state guarded by the lock before the waiting thread returns from CV::wait.
+there are two ways of supporting application-level concurrency: via system calls to access kernel thread operations or via a user-level thread scheduler.
+
+In a thread library that operates completely at user level, the library creates multiple kernel threads to serve as virtual processors, and then multiplexes user-level threads over those virtual processors
+“During system conception it transpired that we used the semaphores in two completely different ways. The difference is so marked that, looking back, one wonders whether it was really fair to present the two ways as uses of the very same primitives. On the one hand, we have the semaphores used for mutual exclusion, on the other hand, the private semaphores.” (From Dijkstra “The structure of the ’THE’-Multiprogramming System” Communications of the ACM v. 11 n. 5 May 1968.)
+
+The only significant change has to do with disabling interrupts. Obviously, a user-level thread package cannot disable system-level interrupts; the kernel cannot allow an untrusted process to disable interrupts and potentially run forever.
+
+Given this definition, semaphores can be used for either mutual exclusion (like locks) or general waiting for another thread to do something (a bit like condition variables).
+
+A useful analogy for semaphores is thread_join. With thread_join, the precise order of events does not matter: if the forked thread finishes before the parent thread calls thread_join, then the call returns right away. On the other hand, if the parent calls thread_join first, then it waits until the thread finishes, and then returns.
+
+Our view is that programming with locks and condition variables is superior to programming with semaphores.
+
+Semaphores considered harmful. Our view is that programming with locks and condition variables is superior to programming with semaphores.
+First, using separate lock and condition variable classes makes code more self-documenting and easier to read. As the quote from Dijkstra notes, two different abstractions are needed, and code is clearer when the role of each synchronization variable is made clear through explicit typing.
+
+Second, a stateless condition variable bound to a lock is a better abstraction for generalized waiting than a semaphore.
+
+In one situation, semaphores are superior to condition variables and locks: synchronizing communication between an I/O device and threads waiting for I/O completion. Typically,
+
+A common solution is for device interrupts to use semaphores instead. Because semaphores are stateful, it does not matter whether the thread calls P or the interrupt handler calls V first: the result is the same, the V cannot be lost.
+
+The approach, shared objects with concurrent access managed with locks and condition variables, has stood the test of time. Using shared objects makes reasoning about multi-threaded programs vastly simpler than it would be if we tried to reason about the possible interleavings of individual loads and stores. Further, by following a systematic approach, we make it possible for others to read, understand, maintain, and change the multi-threaded code we write.
+
+The approach, shared objects with concurrent access managed with locks and condition variables, has stood the test of time.
+
+Race conditions. The fundamental challenge to writing multi-threaded code that uses shared data is that the behavior of the program may depend on the precise ordering of operations executed by each thread. This non-deterministic behavior is difficult to reason about, reproduce, and debug.
+
+Implementations of synchronization. Locks and condition variables can be efficiently implemented using hardware support for atomic read-modify-write instructions and, where necessary, the ability to temporarily defer hardware interrupts. In particular, we showed that the overhead of acquiring and releasing a non-contested lock can be as low as four instructions.
+
+synchronizing operations that span multiple shared objects, avoiding deadlocks in which a set of threads are all waiting for each other to do something, and maximizing performance when large numbers of threads are contending for a single object.
+
+Google’s Go language for concurrent web programming is a modern language that supports both monitors and the CSP style of programming. With CSP and Go, a thread that needs to perform an operation on some other thread’s data sends it a message; the receiving thread can either reply with the result, or in data-flow style, forward the result onto some other thread.
+
+current techniques have two basic limitations. First, they pose engineering trade-offs. Some solutions are general but complex or expensive; others are simple but slow; still others are simple and cheap but not general. Second, many solutions are inherently non-modular: they require reasoning about the global structure of the system and internal implementation details of modules to understand or restrict how different modules can interact.
+
+Even with ample request parallelism, however, performance can often be disappointing. Once locks and condition variables are added to a server application to allow it to process requests concurrently, throughput may be only slightly faster on a fifty-way multiprocessor than on a uniprocessor. Most often, this can be due to three causes: Locking.
+
+The performance of a modern processor can vary by a factor of ten (or more) depending on whether the data needed by the processor is already in its cache or not. Modern processors are designed with large caches, so that almost all of the data needed by the processor will already be stored in the cache.
+
+you should keep your shared object design simple until you have proven, through detailed measurement, that a more complex design is necessary to achieve your performance target.
+
+An important question in this design is whether the single lock on the hash table will significantly limit server parallelism.
+
+a further complication is that it can take much longer to fetch shared data on a multiprocessor because the data is unlikely to be in the processor cache. If the portion of the program holding the lock is slower on a multiprocessor than on a uniprocessor, the potential gain in throughput can be severely limited. EXAMPLE: In the example above, what is the maximum throughput improvement if the hash table code runs four times slower on a multiprocessor due to the need to move shared data between processor caches?
+
+Suppose that, on average, a web server spends 5% of each request accessing and manipulating its hash table of recently used web pages. If the hash table is protected by a single lock, what is the maximum possible throughput gain? ANSWER: The time spent in the critical section is inherently sequential. If we assume all other parts of the server are perfectly parallelizable, then the maximum speedup is a factor of 20 regardless of how many processors are used.
+
+a set of approaches that can reduce the impact of locking on multiprocessor performance. Often, the best practice is to start simple, with a single lock per shared object. If an object’s interface is well designed, then refactoring its implementation to increase concurrency and performance can be done once the system is built and performance measurements can identify any bottlenecks. An adage to follow is: “It is easier to go from a working system to a working, fast system than to go from a fast system to a fast, working system.”
+
+four design patterns to increase concurrency when it is necessary: Fine-Grained Locking. Partition an object’s state into different subsets each protected by a different lock. Per-Processor Data Structures. Partition an object’s state so that all or most accesses are performed by threads running on the same processor. Ownership Design Pattern. Remove a shared object from a shared container so that only a single thread can read or modify the object. Staged Architecture. Divide system into multiple stages, so that only those threads within each stage can access that stage’s shared data.
+
+A related technique to fine-grained locking is to partition the shared data structure based on the number of processors on the machine.
+
+An advantage of this approach is better hardware cache behavior; as we saw in the previous section, shared data that must be communicated between processors can slow down the execution of critical sections.
+
+Whether this is a performance benefit depends on the relative impact of reducing communication of shared data versus the decreased effectiveness of the cache.
+
+A common synchronization technique in large, multi-threaded programs is an ownership design pattern. In this pattern, a thread removes an object from a container and can then access the object without holding a lock: the program structure guarantees that at most one thread owns an object at a time.
+
+A better choice, where possible, is to design the API to be commutative: the result of two calls is the same regardless of which call was made first.
+
+The staged architecture pattern, illustrated in Figure 6.3, divides a system into multiple subsystems, called stages. Each stage includes state private to the stage and a set of one or more worker threads that operate on that state. Different stages communicate by sending messages to each other via shared producer-consumer queues. Each worker thread repeatedly pulls the next message from a stage’s incoming queue and then processes it, possibly producing one or more messages for other stages’ queues.
+
+state of each stage is private to that stage. This improves modularity, making it easier to reason about each stage individually and about interactions across stages.
+
+connection. The key property of a staged architecture is that the state of each stage is private to that stage. This improves modularity, making it easier to reason about each stage individually and about interactions across stages.
+
+As an example of the modularity benefits, consider a system where different stages are produced by different teams or even different companies. Each stage can be designed and tested almost independently, and the system is likely to work as expected when the stages are brought together.
+
+The key property of a staged architecture is that the state of each stage is private to that stage. This improves modularity, making it easier to reason about each stage individually and about interactions across stages. As an example of the modularity benefits, consider a system where different stages are produced by different teams or even different companies. Each stage can be designed and tested almost independently, and the system is likely to work as expected when the stages are brought together.
+
+Another benefit is improved cache locality. A thread operating on a subset of the system’s state may have better cache behavior than a thread that accesses state from all stages. On the other hand, for some workloads, passing a request from stage to stage could hurt cache behavior compared to doing all of the processing for a request on one processor.
+
+Also note that for good performance, the processing in each stage must be large enough to amortize the cost of sending and receiving messages.
+
+The special case of exactly one thread per stage is event-driven programming, described in Chapter 4. With event-driven programming, there is no concurrency within a stage, so no locking is required. Each message is processed atomically with respect to that stage’s state.
+One challenge with staged architectures is dealing with overload. System throughput is limited by the throughput of the slowest stage.
+
+One solution is to dynamically vary the number of threads per stage. If a stage’s incoming queue is growing, the program can shift processing resources to it by reducing the number of threads for a lightly-loaded stage in favor of more threads for the stage that is falling behind.
+
+Unfortunately, the overhead of acquiring and releasing a lock can increase dramatically with the number of threads contending for the lock. For a contended lock, this can further increase the number of threads waiting for the lock.
+
+The problem is that before a processor can execute an atomic read-modify-write instruction, the hardware must obtain exclusive access to that memory location. Any other read-modify-write instruction must occur either before or afterwards.
+
+Thus, if a number of processors are executing a spin loop, they will all be trying to gain exclusive access to the memory location of the lock. The store instruction to clear the lock also needs exclusive access, and the hardware has no way to know that it should prioritize the lock release ahead of the competing requests to see if the lock is free.
+
+The most widely used implementation of this idea is known as the MCS lock, after the initials of its authors, Mellor-Crummey and Scott. The MCS lock takes advantage of an atomic read-modify-write instruction called compare-and-swap that is supported on most modern multiprocessor architectures. Compare-and-swap tests the value of a memory location and swaps in a new value if the old value has not changed.
+
+Compare-and-swap can be used to build a queue of waiting threads, without a separate spinlock. A waiting thread atomically adds itself to the tail of the queue, and then spins on a flag in its queue entry. When a thread releases the lock, it sets the flag in the next queue entry, signaling to the thread that its turn is next.
+Because each thread in the queue spins on its own queue entry, the lock can be passed efficiently from one thread to another along the queue. Of course, the overhead of setting up the queue means that an MCS lock is less efficient than a normal spinlock unless there are a large number of waiting threads.
+
+Read-copy-update (RCU) provides high-performance synchronization for data structures that are frequently read and occasionally updated. In particular, RCU optimizes the read path to have extremely low synchronization costs even with a large number of concurrent readers. However, writes can be delayed for a long time — tens of milliseconds in some implementations.
+
+Integration with the thread scheduler. Because there may be readers still in progress when an update is made, the shared object must maintain multiple versions of its state, to guarantee that an old version is not freed until all readers have finished accessing it. The time from when an update is published until the last reader is done with the previous version is called the grace period. The RCU lock uses information provided by the thread scheduler to determine when a grace period ends.
+
+the system guarantees that the old version is not deleted until the grace period expires. The deletion of the old version must be delayed until all reads that might observe the old version have completed.
+
+RCU is a synchronization abstraction that allows concurrent access to a data structure by multiple readers and a single writer at a time.
+
+writes are serialized — only one write can proceed at a time. However, a write can be concurrent with any number of reads. A write can also be concurrent with another write’s grace period: there may be any number of versions of the object until multiple overlapping grace periods expire.
+
+A common technique for achieving these goals is to integrate the RCU implementation with that of the thread scheduler. This is in contrast with the readers/writers lock described in the previous chapter, which makes no assumptions about the thread scheduler, but which must track exactly how many readers are active at any given time.
+
+When implementing RCU, the central goal is to minimize the cost of read critical sections: the system must allow an arbitrary number of concurrent readers. Conversely, writes can have high latency. In particular, grace periods can be long, with tens of milliseconds from when an update is published until the system can guarantee that no readers are still using the old version. Even so, write overhead — the CPU time needed per write — should be modest.
+
+whenever a program contains multiple shared objects. Even if the object guarantees that each method operates atomically, sequences of operations by different threads can be interleaved. The same issues of managing multiple locks also apply to fine-grained locking within an object.
+
+This advice may seem obvious: of course, you should strive for elegant designs for both single- and multi-threaded code. Nonetheless, we emphasize that the choices you make for your interfaces, abstractions, and software architecture can dramatically affect the complexity or feasibility of your designs.
+
+Acquire-all/release-all allows significant concurrency. When individual requests touch non-overlapping subsets of state protected by different locks, they can proceed in parallel. A key property of this approach is serializability across requests: the result of any program execution is equivalent to an execution in which requests are processed one at a time in some sequential order. Serializability allows one to reason about multi-step tasks as if each task executed alone.
+
+Unlike acquire-all/release-all, however, two-phase locking can in some cases lead to deadlock,
+A challenge to constructing complex multi-threaded programs is the possibility of deadlock. A deadlock is a cycle of waiting among a set of threads, where each thread waits for some other thread in the cycle to take some action. Deadlock can occur in many different situations, but one of the simplest is mutually recursive locking
+
+resources can be locks, but they can also be any other scarce quantity: memory, processing time, disk blocks, or space in a buffer.
+The problem of deadlock is much broader than just locks and condition variables. Deadlock can occur anytime a thread waits for an event that cannot happen because of a cycle of waiting for a resource held by the first thread.
+
+Deadlock and starvation are both liveness concerns. In starvation, a thread fails to make progress for an indefinite period of time. Deadlock is a form of starvation but with the stronger condition: a group of threads forms a cycle where none of the threads make progress because each thread is waiting for some other thread in the cycle to take action. Thus, deadlock implies starvation (literally, for the dining philosophers), but starvation does not imply deadlock.
+
+Just because a system can suffer deadlock or starvation does not mean that it always will.
+
+A system that is subject to starvation or deadlock may be live in many or most runs and starve or deadlock only for particular workloads or “unlucky” interleavings.
+
+Since testing may not discover deadlock problems, it is important to construct systems that are deadlock-free by design.
+
+There are four necessary conditions for deadlock to occur. Knowing these conditions is useful for designing solutions: if you can prevent any one of these conditions, then you can eliminate the possibility of deadlock.
+
+Bounded resources. There are a finite number of threads that can simultaneously use a resource. No preemption. Once a thread acquires a resource, its ownership cannot be revoked until the thread acts to release it. Wait while holding. A thread holds one resource while waiting for another. This condition is sometimes called multiple independent requests because it occurs when a thread first acquires one resource and then tries to acquire another. Circular waiting. There is a set of waiting threads such that each thread is waiting for a resource held by another.
+
+The four conditions are necessary but not sufficient for deadlock. When there are multiple instances of a type of resource, there can be a cycle of waiting without deadlock because a thread not in the cycle may return resources that enable a waiting thread to proceed.
+
+for an arbitrary program, preventing deadlock can take one of three approaches: Exploit or limit the behavior of the program.
+
+Predict the future. If we can know what threads may or will do, then we can avoid deadlock by having threads wait
+
+Detect and recover. Another alternative is to allow threads to recover or “undo” actions that take a system into a deadlock; in the above example, when thread 2 finds itself in deadlock, it can recover by
+
+Detect and recover. Another alternative is to allow threads to recover or “undo” actions that take a system into a deadlock; in the above example, when thread 2 finds itself in deadlock, it can recover by reverting to an earlier state.
+
+Circular waiting: Lock ordering. An approach used in many systems is to identify an ordering among locks and only acquire locks in that order.
+
+we can avoid deadlock by always acquiring the lock for the lower-numbered bucket before the one for the higher-numbered bucket. This prevents circular waiting since a thread only waits for threads holding higher-numbered locks.
+
+A general technique to eliminate wait-while-holding is to wait until all needed resources are available and then to acquire them atomically at the beginning of an operation, rather than incrementally as the operation proceeds.
+
+it cannot deadlock as long as the implementation acquires all of the locks atomically rather than one at a time.
+
+Of course, a thread may not know exactly which resources it will need to complete its work, but it can still acquire all resources that it might need. Consider an operating system for mobile phones where memory is constrained and cannot be preempted by copying it to disk. Rather than having applications request additional memory as needed, we might instead have each application state its maximum memory needs and
+
+Of course, a thread may not know exactly which resources it will need to complete its work, but it can still acquire all resources that it might need.
+
+Dijkstra developed the Banker’s Algorithm as a way to improve on the performance of acquire-all.
+
+The Banker’s Algorithm also sheds light on the distinction between safe and unsafe states and how the occurrence of deadlocks often depends on a system’s workload and sequence of operations.
+
+The Banker’s Algorithm also sheds light on the distinction between safe and unsafe states and how the occurrence of deadlocks often depends on a system’s workload and sequence of operations.
+
+The Banker’s Algorithm also sheds light on the distinction between safe and unsafe states and how the occurrence of deadlocks often depends on a system’s workload and sequence of operations. In the Banker’s Algorithm, a thread states its maximum resource requirements when it begins a task, but it then acquires and releases those resources incrementally as the task runs. The runtime system delays granting some requests to ensure that the system never deadlocks. The insight behind the algorithm is that a system that may deadlock will not necessarily do so: for some interleavings of requests it will deadlock, but for others it will not. By delaying when some resource requests are processed, a system can avoid interleavings that could lead to deadlock. Figure 6.18: A process can be in a safe, unsafe, or deadlocked state. The dashed line illustrates a sequence of states visited by a thread — some are safe, some are unsafe, and the final state is a deadlock. A deadlock-prone system can be in one of three states: a safe state, an unsafe state, and a deadlocked state (see Figure 6.18.) In a safe state, for any possible sequence of resource requests, there is at least one safe sequence of processing the requests that eventually succeeds in granting all pending and future
+
+Banker’s Algorithm also sheds light on the distinction
+
+The Banker’s Algorithm also sheds light on the distinction between safe and unsafe states and how the occurrence of deadlocks often depends on a system’s workload and sequence of operations. In the Banker’s Algorithm, a thread states its maximum resource requirements when it begins a task, but it then acquires and releases those resources incrementally as the task runs. The runtime system delays granting some requests to ensure that the system never deadlocks. The insight behind the algorithm is that a system that may deadlock will not necessarily do so: for some interleavings of requests it will deadlock, but for others it will not. By delaying when some resource requests are processed, a system can avoid interleavings that could lead to deadlock.
+
+A deadlock-prone system can be in one of three states: a safe state, an unsafe state, and a deadlocked state
+
+the Banker’s Algorithm delays any request that takes it from a safe to an unsafe state.
+
+system in an unsafe state may remain that way or return to a safe state, depending on the specific interleaving of resource requests and completions. However, as long as the system remains
+
+A system in an unsafe state may remain that way or return to a safe state, depending on the specific interleaving of resource requests and completions. However, as long as the system remains in an unsafe state, a bad workload or unlucky scheduling of requests can force it to deadlock.
+
+we can realize this high-level approach by tracking: (i) the current allocation of each resource to each thread, (ii) the maximum allocation possible for each thread, and (iii) the current set of available, unallocated resources.
+
+Why allow deadlocks to occur at all? Sometimes, it is difficult or expensive to enforce sufficient structure on the system’s data and workloads to guarantee that deadlock will never occur. If deadlocks are rare, why pay the overhead in the common case to prevent them?
+
+Because the resources are by definition not revocable, forcibly taking resources away from some or all of the deadlocked threads is not an ideal solution.
+
+Because deadlocks are rare and hard to test for, this requires coding discipline to handle error conditions systematically throughout the program.
+
+A key feature of transactions is that no other thread is allowed to see the results of a transaction until the transaction completes. That way, if the changes a transaction makes need to be rolled back due to a deadlock, only that one thread is affected. This can be accomplished with two-phase locking, provided locks are not released until after the transaction is complete.
+
+A related question that arises in transactional systems is which thread to abort and which threads to allow to proceed. An important consideration is liveness. Progress can be ensured, and starvation avoided, by prioritizing the oldest transactions. Then, when the system needs to abort some transaction, it can abort the youngest. This ensures that some transaction, e.g., the oldest, will eventually complete.
+
+Precisely identifying whether deadlock has occurred would incur more overhead than simply dropping and resending some packets.
+
+The Coffman et al. algorithm highlights that deadlock is determined not just by what requests are granted but also by what requests are waiting. The request that triggers deadlock (“circular wait”) will be a request that waits, not one that is granted.
+
+Measure the performance of your system to ensure that these techniques yield significant gains, and seek out extra peer review from trusted colleagues to help ensure that the code works as intended.
+The most likely result from premature optimization is a program that is buggy, hard to maintain, no faster than a clean implementation, and, ironically, harder to tune than a cleanly architected program
+
+If you are tempted to do so, take extra care. Measure the performance of your system to ensure that these techniques yield significant gains, and seek out extra peer review from trusted colleagues to help ensure that the code works as intended.
+
+wait-free data structure is one that guarantees progress for every thread: every method finishes in a finite number of steps, regardless of the state of other threads executing in the data structure or their rate of execution. A lock-free data structure is one that guarantees progress for some thread: some method will finish in a finite number of steps.
+A common building block for wait-free and lock-free data structures is the atomic compare-and-swap instruction available on most modern processors. We saw a taste of this in the implementation of the MCS lock in Section 6.3. There, we used compare-and-swap to atomically append to a linked list of waiting threads without first acquiring a lock.
+
+intricate data structures, and as a result, designing efficient wait-free and lock-free data structures remains the domain of experts. Nonetheless, non-blocking algorithms exist for a wide range of data structures, including FIFO queues, double-ended queues, LIFO stacks, sets, and balanced trees.
+
+designing efficient wait-free and lock-free data structures remains the domain of experts. Nonetheless, non-blocking algorithms exist for a wide range of data structures, including FIFO queues, double-ended queues, LIFO stacks, sets, and balanced trees.
+
+Most modern databases use a form of optimistic concurrency control to provide atomic and fault-tolerant updates of on-disk data structures.
+
+optimistic concurrency control is lock-free, consider two conflicting transactions executing at the same time. The first one to commit succeeds, and the second must abort and retry. An implementation is wait-free if it uses wound wait or some other mechanism to bound the number of retries for a transaction to successfully commit. □
+
+Extending this idea, software transactional memory (STM) is a promising approach to support general-purpose transactions for in-memory data structures. Unfortunately, the cost of an STM transaction is often significantly higher than that of a traditional critical section; this is because of the need to maintain the state required to check dependencies and the state required either to update the object if there is no conflict or to roll back its state if a conflict is detected. It is an open question whether the overhead of STM can be reduced to where it can be used more widely. In situations where STM can be used, it provides a way to compose different modules without having to lock contention or deadlock concerns.
+
+approached with caution. Your first goal should be to construct a program that works, even if doing so means putting “one big lock” around everything in a data structure or even in an entire program.
+
+6.7 Summary and Future Directions Advanced synchronization techniques should be approached with caution. Your first goal should be to construct a program that works, even if doing so means putting “one big lock” around everything in a data structure or even in an entire program.
+
+Advanced synchronization techniques should be approached with caution. Your first goal should be to construct a program that works, even if doing so means putting “one big lock” around everything in a data structure or even in an entire program. Resist the temptation to do anything more complicated unless you know that doing so is necessary.
+
+Measuring the “before” and “after” performance of a program and its subsystems not only helps you make good decisions about the program on which you are working, but it also helps you develop good intuition for the programs you write in the future.
+
+clean structure for your program. Given that issues with multi-object synchronization often blur module boundaries, it is vital to have an overall structure that lets you reason about how the different pieces of your program will interact. Strive for a strict layering or hierarchy of modules. It is easier to make such programs deadlock-free, and it is easier to test them as well.
+
+Spend time early in the design process developing a clean structure for your program. Given that issues with multi-object synchronization often blur module boundaries, it is vital to have an overall structure that lets you reason about how the different pieces of your program will interact. Strive for a strict layering or hierarchy of modules. It is easier to make such programs deadlock-free, and it is easier to test them as well. Although performance is important, it is usually easier to start with a clean, simple, and correct design, measure it to identify its bottlenecks, and then optimize the bottlenecks than to start with a complex design and try to tune its performance, let alone fix its bugs.
+
+Yet, writing concurrent programs remains frustratingly complex. We believe that an important area for future work will be to develop better tools for managing and reducing that complexity. The last decade has seen the development of a new generation of tools for helping programmers improve software reliability, by automatically identifying test coverage, memory leaks, reuse of de-allocated data, buffer overflows, and bad pointer arithmetic.
+
+promising avenue is to use automated tools for detecting memory races; a well-written program should have
+
+A promising avenue is to use automated tools for detecting memory races; a well-written program should have no reads or writes to shared memory without holding the lock that protects that data structure. Once a program has been shown to be without races, model checking can be used to systematically test that shared objects work for all possible thread interleavings.
+
+The best performance improvement is the transition from the non-working state to the working state. That’s infinite speedup. —John Ousterhout
+
+We begin with three simple policies — first-in-first-out, shortest-job-first, and round robin — as a way of illustrating scheduling concepts. Each approach has its own the strengths and weaknesses, and most resource allocation systems (whether for processors, memory, network or disk) combine aspects of all three.
+
+Because it minimizes overhead, if we have a fixed number of tasks, and those tasks only need the processor, FIFO will have the best throughput: it will complete the most tasks the most quickly. And
+For this workload where tasks are roughly equal in size, FIFO is simple, minimizes average response time, and even maximizes throughput. Win-win!
+
+SJF can suffer from starvation and frequent context switches.
+
+The average response time for accessing web pages is dominated by the more frequent requests to short pages, while the bandwidth costs are dominated by the less frequent requests to large pages. This combination is almost ideal for using SJF for managing the allocation of network bandwidth by the server.
+
+policy that addresses starvation is to schedule tasks in a round robin fashion.
+
+A policy that addresses starvation is to schedule tasks in a round robin fashion.
+
+Modern processors often have multiple levels of cache to improve performance. Reloading just the first level on-chip cache from scratch can take several milliseconds; reloading the second and third level caches takes even longer. Thus, it is typical for operating systems to set their time slice interval to be somewhere between 10 and 100 milliseconds, depending on the goals of the system: better responsiveness or reduced overhead.
+
+One way of viewing Round Robin is as a compromise between FIFO and SJF.
+
+Since we know SJF is optimal for average response time, this means that both FIFO and Round Robin are optimal for some workloads and pessimal for others, just different ones in each case.
+
+Round Robin is sometimes the best policy even when all tasks are roughly the same size. An example is managing the server bandwidth for streaming video. When streaming, response time is much less of a concern than achieving a predictable, stable rate of progress. For this, Round Robin is nearly ideal: all streams progress at the same rate.
+
+Depending on the time quantum, Round Robin can also be quite poor when running a mixture of I/O-bound and compute-bound tasks. I/O-bound tasks often need very short periods on the processor in order to compute the next I/O operation to issue. Any delay to be scheduled onto the processor can lead to system-wide slowdowns.
+
+In many settings, a fair allocation of resources is as important to the design of a scheduler as responsiveness and low overhead.
+
+While it might seem that fairness has little value in single-user machines, individual applications are often written by different companies, each with an interest in making their application performance look good even if that comes at a cost of degrading responsiveness for other applications.
+
+We can be concerned with fair allocation at any of these levels of granularity: threads within a process, processes for a particular user, users sharing a physical machine.
+
+An I/O-bound process may need only a small portion of the processor, while a compute-bound process is willing to consume all available processor time. What is a fair allocation when there is a diversity of needs? One possible answer is to say that whatever
+
+Max-min fairness iteratively maximizes the minimum allocation given to a particular process (user, application or thread) until all resources are assigned.
+
+The algorithm we just described was originally defined for network, and not processor, scheduling. If we share a link between a browser request and a long download, we will get reasonable responsiveness for the browser if we have approximately fair allocation — the browser needs few network packets, and so under max-min its packets will always be scheduled ahead of the packets from the download.
+
+Most commercial operating systems, including Windows, MacOS, and Linux, use a scheduling algorithm called multi-level feedback queue (MFQ).
+
+Responsiveness. Run short tasks quickly, as in SJF. Low Overhead. Minimize the number of preemptions, as in FIFO, and minimize the time spent making scheduling decisions. Starvation-Freedom. All tasks should make progress, as in Round Robin. Background Tasks. Defer system maintenance tasks, such as disk defragmentation, so they do not interfere with user work. Fairness. Assign (non-background) processes approximately their max-min fair share of the processor.
+
+MFQ has multiple Round Robin queues, each with a different priority level and time quantum. Tasks at a higher priority level preempt lower priority tasks, while tasks at the same level are scheduled in Round Robin fashion. Further, higher priority
+
+MFQ has multiple Round Robin queues, each with a different priority level and time quantum. Tasks at a higher priority level preempt lower priority tasks, while tasks at the same level are scheduled in Round Robin fashion. Further, higher priority levels have shorter time quanta than lower levels.
+
+Tasks are moved between priority levels to favor short tasks over long ones.
+
+So, it also takes the SJF scheduler into consideration
+
+new task enters at the top priority level. Every time the task uses up its time quantum, it drops a level; every time the task yields the processor because it is waiting on I/O, it stays at the same level (or is bumped up a level); and if the task completes it leaves the system.
+
+At each level, Linux actually maintains two queues — tasks whose processes have already reached their fair share are only scheduled if all other processes at that level have also received their fair share. Periodically, any process receiving less than its fair share will have its tasks increased in priority; equally, tasks that receive more than their fair share can be reduced in priority.
+
+FIFO is simple and minimizes overhead. If tasks are variable in size, then FIFO can have very poor average response time. If tasks are equal in size, FIFO is optimal in terms of average response time. Considering only the processor, SJF is optimal in terms of average response time. SJF is pessimal in terms of variance in response time. If tasks are variable in size, Round Robin approximates SJF. If tasks are equal in size, Round Robin will have very poor average response time. Tasks that intermix processor and I/O benefit from SJF and can do poorly under Round Robin. Max-min fairness can improve response time for I/O-bound tasks. Round Robin and Max-min fairness both avoid starvation. By manipulating the assignment of tasks to priority queues, an MFQ scheduler can achieve a balance between responsiveness, low overhead, and fairness.
+
+Fetching data from a remote cache can take two to three orders of magnitude longer than accessing locally cached data.
+
+Fetching data from a remote cache can take two to three orders of magnitude longer than accessing locally cached data. Since the cache miss delay occurs while holding the MFQ lock, the MFQ lock is held for longer periods and so can become even more of a bottleneck.
+
+commercial operating systems such as Linux use a per-processor data structure: a separate copy of the multi-level feedback queue for each processor.
+
+Each processor uses affinity scheduling: once a thread is scheduled on a processor, it is returned to the same processor when it is re-scheduled, maximizing cache reuse. Each processor looks at its own copy of the queue for new work to do; this can mean that some processors can idle while others have work waiting to be done. Rebalancing occurs only if the queue lengths are persistent enough to compensate for the time to reload the cache for the migrated threads. Because rebalancing is possible, the per-processor data structures must still be protected by locks, but in the common case the next processor to use the data will be the last one to have written it, minimizing cache coherence overhead and lock contention.
+
+Some parallel applications use a producer-consumer design pattern, where the results of one thread are fed to the next thread, and the output of that thread is fed onward, as in Figure 7.9. Preempting a thread in the middle of a producer-consumer chain can stall all of the processors in the chain.
+
+parallel programs have a critical path — the minimum sequence of steps for the application to compute its result.
+
+Preempting a thread on the critical path, however, will slow down the end result. Although the application programmer may know which parts of the computation are on the critical path, with oblivious scheduling, the operating system will not; it will be equally likely to preempt a thread on the critical path as off.
+
+is usually more efficient to run two parallel programs each with half the number of processors, than to time slice the two programs, each gang scheduled onto all of the processors.
+
+Space sharing on a multiprocessor is also more efficient in that it minimizes processor context switches: as long as the operating system has not changed the allocation, the processors do not even need to be time sliced.
+
+user-level thread management is possible with scheduler activations. The operating system kernel assigns processors to applications, either evenly or according to some priority weighting. Each application then schedules its user-level threads onto the processors assigned to it, changing its allocation as the number of processors varies due to external events such as other processes starting or stopping. If no other application is running, an application can use all of the processors of the machine; with more contention, the application must remap its work onto a smaller number of processors.
+
+there is a fundamental tradeoff between policies (such as Shortest Job First) that improve average response time and those (such as max-min fairness) that attempt to achieve fair allocation of resources among different applications.
+
+Another important consideration for processor scheduling is its impact on battery life and energy use.
+
+Below the threshold of human perception. Optimize for energy use, to the extent that tasks can be executed with greater energy efficiency without the user noticing. Above the threshold of human perception. Optimize for response time if the user will notice any slowdown. Long-running or background tasks. Balance energy use and responsiveness depending on the available battery resources.
+
+A commonly used solution, implemented in most commercial operating systems, is called priority donation: when a high priority task waits on a shared lock, it temporarily donates its priority to the task holding the lock. This allows the low priority task to be scheduled to complete the critical section, at which point its priority reverts to its original state, and the processor is re-assigned to the high priority, waiting, task.
+
+response time depends non-linearly on the rate that tasks arrive at a system.
+
+queueing theory is concerned with the root causes of system performance, and not just its observable effects,
+
+Although this relationship is simple and intuitive, it is powerful because the “system” can be anything with arriving and departing tasks, provided the system is stable — regardless of the arrival process, number of servers, or queueing order.
+
+Because having more servers (whether processors on chip or cashiers in a supermarket) or faster servers is costly, you might think that the goal of the system designer is to maximize utilization. However, in most cases, there is no free lunch: as we will see, higher utilization normally implies higher queueing delay and higher response times.
+
+Operating a system at high utilization also increases the risk of overload.
+Broadly speaking, higher arrival rates and burstier arrival patterns tend to yield longer queue lengths and response times than lower arrival rates and smoother arrival patterns.
+
+A particularly useful model for understanding queueing behavior is to use an exponential distribution to describe the time between tasks arriving and the time it takes to service each task. Once you get past a bit of math, the exponential provides a stunningly simple approximate description of most real-life queueing systems.
+
+Selecting the right model for system evaluation is a delicate balance between complexity and accuracy. If after abstracting away detail, we can still provide approximately correct predictions of system behavior under a variety of scenarios, then it is likely the model captures the most important aspects of the system. If the model is inaccurate in some important respect, then it means our explanation for how the system behaves is too coarse, and to improve the prediction we need to revise the model.
+
+A useful property of an exponential distribution is that it is memoryless. A memoryless distribution for the time between two events means that the likelihood of an event occurring remains the same, no matter how long we have already waited for the event, or what other events may have already happened.
+
+With a memoryless distribution, the behavior of queueing systems becomes simple to understand. One can think of the queue as a finite state machine:
+
+The response time of a system becomes unbounded as the system approaches full utilization. Although it might seem that full utilization is an achievable goal, if there is any randomness in arrivals or any randomness in service times, full utilization cannot be achieved in steady state without making some tasks wait unbounded amounts of time. In most systems, well before a system reaches full utilization, average response time will become unbearably long.
+
+Variance in the response time increases even faster as the system approaches full utilization, proportional to 1 / (1 - U)2. Even
+
+If task service times are exponentially distributed but individual task times are unpredictable, the average response time is the exactly the same for Round Robin as for FIFO. With a memoryless distribution, every queued task has the same expected remaining service time, so switching among tasks has no impact other than to increase overhead.
+
+On the other hand, if task lengths can be predicted and there is variability of service times, Shortest Job First can improve average response time, particularly if arrivals are bursty.
+
+Under overload conditions, however, your system is incapable of serving all of the requests in the normal way. The only question is: do you choose what to disable, or do you let events choose for you?
+
+the cumulative effect of Moore’s Law has shifted the balance towards a focus on improving response time for users, rather than on efficient utilization of resources for the computer.
