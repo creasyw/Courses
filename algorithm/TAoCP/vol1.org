@@ -1,28 +1,28 @@
 #+begin_quote
-Practice yourself, for heaven’s sake, in little things; and thence proceed to greater. — EPICTETUS (Discourses IV.i)
+Practice yourself, for heaven’s sake, in little things; and thence proceed to greater.
+
+— EPICTETUS (Discourses IV.i)
 #+end_quote
 
-By the time of the Renaissance, the origin of this word was in doubt, and early linguists attempted to guess at its derivation by making combinations like algiros [painful]+arithmos [number]; others said no, the word comes from “King Algor of Castile.” Finally, historians of mathematics found the true origin of the word algorism: It comes from the name of a famous Persian textbook author, Abū ‘Abd Allāh Muh.
-
-Another word, “algebra,” stems from the title of that book, which was a systematic study of the solution of linear and quadratic equations.
+By the time of the Renaissance, the origin of this word was in doubt, and early linguists attempted to guess at its derivation by making combinations like algiros [painful]+arithmos [number]; others said no, the word comes from “King Algor of Castile.” Finally, historians of mathematics found the true origin of the word algorism: It comes from the name of a famous Persian textbook author, Abū ‘Abd Allāh Muh. Another word, “algebra,” stems from the title of that book, which was a systematic study of the solution of linear and quadratic equations.
 
 Algorithm E (Euclid’s algorithm). Given two positive integers m and n, find their greatest common divisor, that is, the largest positive integer that evenly divides both m and n. E1. [Find remainder.] Divide m by n and let r be the remainder. (We will have 0 ≤ r < n.) E2. [Is it zero?] If r = 0, the algorithm terminates; n is the answer. E3. [Reduce.] Set m ← n, n ← r, and go back to step E1.
 
+#+begin_quote
 An algorithm must be seen to be believed, and the best way to learn what an algorithm is all about is to try it.
+#+end_quote
 
-Besides merely being a finite set of rules that gives a sequence of operations for solving a specific type of problem, an algorithm has five important features:
+Besides merely being a finite set of rules that gives a sequence of operations for solving a specific type of problem, /an algorithm has five important features/:
 
-1. Finiteness. An algorithm must always terminate after a finite number of steps.
-2. Definiteness. Each step of an algorithm must be precisely defined; the actions to be carried out must be rigorously and unambiguously specified for each case. The algorithms of this book will hopefully meet this criterion,
-3. Input. An algorithm has zero or more inputs: quantities that are given to it initially before the algorithm begins, or dynamically as the algorithm runs. These inputs are taken from specified sets of objects.
-4. Output. An algorithm has one or more outputs: quantities that have a specified relation to the inputs.
-5. Effectiveness. An algorithm is also generally expected to be effective, in the sense that its operations must all be sufficiently basic that they can in principle be done exactly and in a finite length of time by someone using pencil and paper.
+1. *Finiteness*. An algorithm must always terminate after a finite number of steps.
+2. *Definiteness*. Each step of an algorithm must be precisely defined; the actions to be carried out must be rigorously and unambiguously specified for each case. The algorithms of this book will hopefully meet this criterion,
+3. *Input*. An algorithm has zero or more inputs: quantities that are given to it initially before the algorithm begins, or dynamically as the algorithm runs. These inputs are taken from specified sets of objects.
+4. *Output*. An algorithm has one or more outputs: quantities that have a specified relation to the inputs.
+5. *Effectiveness*. An algorithm is also generally expected to be effective, in the sense that its operations must all be sufficiently basic that they can in principle be done exactly and in a finite length of time by someone using pencil and paper.
 
-In practice we not only want algorithms, we want algorithms that are good in some loosely defined aesthetic sense. One criterion of goodness is the length of time taken to perform the algorithm; this can be expressed in terms of the number of times each step is executed. Other criteria are the adaptability of the algorithm to different kinds of computers, its simplicity and elegance, etc.
+In practice we not only want algorithms, we want /algorithms that are good in some loosely defined aesthetic sense/. One criterion of goodness is the length of time taken to perform the algorithm; this can be expressed in terms of the number of times each step is executed. Other criteria are the adaptability of the algorithm to different kinds of computers, its simplicity and elegance, etc.
 
-The theory of algorithms is another subject entirely, dealing primarily with the existence or nonexistence of effective algorithms to compute particular quantities.
-
-Analysis of algorithms is the name the author likes to use to describe investigations such as this. The general idea is to take a particular algorithm and to determine its quantitative behavior; occasionally we also study whether or not an algorithm is optimal in some sense.
+The theory of algorithms is another subject entirely, dealing primarily with the existence or nonexistence of effective algorithms to compute particular quantities. Analysis of algorithms is the name the author likes to use to describe investigations such as this. The general idea is to take a particular algorithm and to determine its quantitative behavior; occasionally we also study whether or not an algorithm is optimal in some sense.
 
 Let us formally define a computational method to be a quadruple (Q, I, Ω, f), in which Q is a set containing subsets I and Ω, and f is a function from Q into itself. Furthermore f should leave Ω pointwise fixed; that is, f(q) should equal q for all elements q of Ω. The four quantities Q, I, Ω, f are intended to represent respectively the states of the computation, the input, the output, and the computational rule.
 
@@ -188,3 +188,5 @@ In the case of UNDERFLOW, we have tried to remove a nonexistent item; this is us
 An OVERFLOW situation, however, is usually an error; it means that the table is full already, yet there is still more information waiting to be put in. The usual policy in case of OVERFLOW is to report reluctantly that the program cannot go on because its storage capacity has been exceeded; then the program terminates.
 
 The next question is, “What do we do when UNDERFLOW or OVERFLOW occurs?” In the case of UNDERFLOW, we have tried to remove a nonexistent item; this is usually a meaningful condition — not an error situation — that can be used to govern the flow of a program. For example, we might want to delete items repeatedly until UNDERFLOW occurs. An OVERFLOW situation, however, is usually an error; it means that the table is full already, yet there is still more information waiting to be put in. The usual policy in case of OVERFLOW is to report reluctantly that the program cannot go on because its storage capacity has been exceeded; then the program terminates.
+
+(loc 6755)
