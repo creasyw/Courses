@@ -1,5 +1,3 @@
-* Operating Systems: Principles and Practice (Volume 1 of 4) (Anderson, Thomas;Dahlin, Michael)
-
 An important reason for the operating system to provide common services, rather than letting each application provide its own, is to facilitate sharing among applications.
 
 Many complex software systems have multiple users, run programs written by third-party developers, and/or need to coordinate many simultaneous activities. These pose questions of resource allocation, fault isolation, communication, abstractions of physical hardware, and how to provide a useful set of common services for software developers.
@@ -8,19 +6,15 @@ We discuss several desirable criteria for operating systems: *Reliability* and *
 
 Security means the computer’s operation cannot be compromised by a malicious attacker. Privacy is an aspect of security: data stored on the computer is only accessible to authorized users.
 
-/Most practical operating system designs strike a balance between the goals of reliability, security, portability, performance, and adoption/.
+/Most practical operating system designs strike a balance between the goals of reliability, security, portability, performance, and adoption/. It became clear that /stricter fault isolation/ was needed to improve system reliability and resilience against computer viruses.
 
-it became clear that stricter fault isolation was needed to improve system reliability and resilience against computer viruses.
+A central role of operating systems is /protection/ — the isolation of potentially misbehaving applications and users so that they do not corrupt other applications or the operating system itself.
 
-A central role of operating systems is protection — the isolation of potentially misbehaving applications and users so that they do not corrupt other applications or the operating system itself.
+The operating system sets aside a memory region, *the execution stack*, to hold the state of local variables during procedure calls. The operating system also sets aside a memory region, called the *heap*, for any dynamically allocated data structures the program might need.
 
-The operating system sets aside a memory region, the execution stack, to hold the state of local variables during procedure calls. The operating system also sets aside a memory region, called the heap, for any dynamically allocated data structures the program might need.
+A *process* is an instance of a program, in much the same way that an object is an instance of a class in object-oriented programming. Each program can have zero, one or more processes executing it. For each instance of a program, there is a process with its own copy of the program in memory. “*Thread*" — a logical sequence of instructions that executes either operating system or application code.
 
-A process is an instance of a program, in much the same way that an object is an instance of a class in object-oriented programming. Each program can have zero, one or more processes executing it. For each instance of a program, there is a process with its own copy of the program in memory.
-
-“thread" — a logical sequence of instructions that executes either operating system or application code.
-
-The difficulty of debugging operating system kernels was the original motivation behind the development of virtual machines. More importantly, the kernel must be trusted, as it has full control over the hardware. By separating out code that does not need to be in the kernel, the operating system can become more reliable
+The difficulty of debugging operating system kernels was the original motivation behind the development of virtual machines. More importantly, the kernel must be trusted, as it has full control over the hardware. /By separating out code that does not need to be in the kernel, the operating system can become more reliable/.
 
 This illustrates the principle of least privilege, that security and reliability are enhanced if each part of the system has exactly the privileges it needs to do its job, and no more.
 
@@ -116,11 +110,7 @@ to make resource allocation decisions explicit and visible to applications. Trad
 
 a trend is to re-structure the system call interface to make resource allocation decisions explicit and visible to applications. Traditionally, operating systems make resource allocation decisions — when to schedule a process or a thread, how much memory to give a particular application, where and when to store its disk blocks, when to send its network packets — transparently to the application, with a goal of improving end user and overall system performance. Applications are unaware of how many resources they have, appearing to run by themselves, isolated on their own (virtual) machine.
 
-reliable, portable, efficient, and secure computer systems? An essential component is the computer’s operating system
-
-1.2. At the lowest level, the hardware provides processors, memory, and a set of devices for storing data and communicating with the outside world. The hardware also provides primitives that the operating system can use for fault isolation and synchronization. The operating system runs as the lowest layer of software on the computer. It contains both a device-specific layer for managing the myriad hardware devices and a set of device-independent services provided to applications. Since the operating system must isolate malicious and buggy applications from other applications or the operating system itself, much of the operating system runs in a separate execution environment protected from application code. A portion of the operating system can also run as a system library linked into each application. In turn, applications run in an execution context provided by the operating system kernel. The application context is much more than a simple abstraction on top of hardware devices: applications execute in a virtual environment that is more constrained (to prevent harm), more powerful (to mask hardware limitations), and more useful (via common services) than the underlying hardware. Referee. Operating systems manage resources shared
-
-Limited - referer; powerful - illusionist; useful -glue
+At the lowest level, the hardware provides processors, memory, and a set of devices for storing data and communicating with the outside world. The hardware also provides primitives that the operating system can use for fault isolation and synchronization. The operating system runs as the lowest layer of software on the computer. It contains both a device-specific layer for managing the myriad hardware devices and a set of device-independent services provided to applications. Since the operating system must isolate malicious and buggy applications from other applications or the operating system itself, much of the operating system runs in a separate execution environment protected from application code. A portion of the operating system can also run as a system library linked into each application. In turn, applications run in an execution context provided by the operating system kernel. The application context is much more than a simple abstraction on top of hardware devices: applications execute in a virtual environment that is more constrained (to prevent harm), more powerful (to mask hardware limitations), and more useful (via common services) than the underlying hardware. Referee. Operating systems manage resources shared
 
 An important reason for the operating system to provide common services, rather than letting each application provide its own, is to facilitate sharing among applications.
 
