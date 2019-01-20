@@ -179,4 +179,132 @@ An OVERFLOW situation, however, is usually an error; it means that the table is 
 
 The next question is, “What do we do when UNDERFLOW or OVERFLOW occurs?” In the case of UNDERFLOW, we have tried to remove a nonexistent item; this is usually a meaningful condition — not an error situation — that can be used to govern the flow of a program. For example, we might want to delete items repeatedly until UNDERFLOW occurs. An OVERFLOW situation, however, is usually an error; it means that the table is full already, yet there is still more information waiting to be put in. The usual policy in case of OVERFLOW is to report reluctantly that the program cannot go on because its storage capacity has been exceeded; then the program terminates.
 
-(loc 6755)
+
+An OVERFLOW situation, however, is usually an error; it means that the table is full already, yet there is still more information waiting to be put in. The usual policy in case of OVERFLOW is to report reluctantly that the program cannot go on because its storage capacity has been exceeded; then the program terminates.
+
+reference to the table may be made to an absolute memory address, since all references must be relative to the base address L0.
+
+If we wish to satisfy condition (a), we must give up condition (b); that is, we must allow the “bottom” elements of the lists to change their positions. This means that the location L0 of Eq. (1) is not constant any longer; no reference to the table may be made to an absolute memory address, since all references must be relative to the base address L0.
+
+Approximately 10 percent of the memory presently available will be shared equally among the n lists, and the other 90 percent will be divided proportionally to the amount of increase in table size since the previous allocation.)
+
+Thus, as we might expect, the number of moves is essentially proportional to the square of the number of times the tables grow.
+
+The moral of the story seems to be that a very large number of moves will be made if a reasonably large number of items is put into the tables. This is the price we must pay for the ability to pack a large number of sequential tables together tightly.
+
+Experience shows that when memory is only half loaded (that is, when the available space equals half the total space), we need very little rearranging of the tables with Algorithm G. The important thing is perhaps that the algorithm behaves well in the half-full case and that it at least delivers the right answers in the almost-full case.
+
+When the tables nearly fill memory, Algorithm R takes rather long to perform its job. And to make matters worse, OVERFLOW is much more frequent just before the memory space is used up. There are very few programs that will come close to filling memory without soon thereafter completely overflowing it; and those that do overflow memory will probably waste enormous amounts of time in Algorithms G and R just before memory is overrun.
+
+Linked allocation takes up additional memory space for the links. This can be the dominating factor in some situations. However, we frequently find that the information in a node does not take up a whole word anyway, so there is already space for a link field present. Also, it is possible in many applications to combine several items into one node so that there is only one link for several items of information
+
+there is often an implicit gain in storage by the linked memory approach, since tables can overlap, sharing common parts; and in many cases, sequential allocation will not be as efficient as linked allocation unless a rather large number of additional memory locations are left vacant anyway.
+
+It is easy to delete an item from within a linked list.
+
+It is easy to insert an item into the midst of a list when the linked scheme is being used.
+
+References to random parts of the list are much faster in the sequential case.
+
+Thus the usefulness of linked memory is predicated on the fact that in the large majority of applications we want to walk through lists sequentially, not randomly; if items in the middle or at the bottom of the list are needed, we try to keep an additional link variable or list of link variables pointing to the proper places.
+
+The linked scheme lends itself immediately to more intricate structures than simple linear lists. We can have a variable number of variable-size lists; any node of the list may be a starting point for another list; the nodes may simultaneously be linked together
+
+Simple operations, like proceeding sequentially through a list, are slightly faster for sequential lists on many computers.
+
+Thus we see that the linking technique, which frees us from any constraints imposed by the consecutive nature of computer memory, gives us a good deal more efficiency in some operations, while we lose some capabilities in other cases. It is usually clear which allocation technique will be most appropriate in a given situation, and both methods are often used in different lists of the same program.
+
+The use of linked allocation generally implies the existence of some mechanism for finding empty space available for a new node, when we wish to insert some newly created information onto a list. This is usually done by having a special list called the list of available space.
+
+The possibility of overflow must always be considered. Here OVERFLOW generally means that we terminate the program with regrets; or else we can go into a “garbage collection” routine that attempts to find more available space.
+
+The simplest kind of linked list is a stack.
+
+Linked allocation applies in a particularly convenient way to queues. In this case it is easy to see that the links should run from the front of the queue towards the rear, so that when a node is removed from the front, the new front node is directly specified.
+
+conditions carefully, particularly for the case when the list is empty. One of the most common programming errors connected with linked allocation is the failure to handle empty lists properly; the other common error is to forget about changing some of the links when a structure is being manipulated. In order to avoid the first type of error, we should always examine the “boundary conditions” carefully. To avoid making the second type of error, it is helpful to draw “before and after” diagrams and to compare them, in order to see which links must change.
+
+One of the most common programming errors connected with linked allocation is the failure to handle empty lists properly; the other common error is to forget about changing some of the links when a structure is being manipulated. In order to avoid the first type of error, we should always examine the “boundary conditions” carefully. To avoid making the second type of error, it is helpful to draw “before and after” diagrams and to compare them, in order to see which links must change.
+
+Notice that R must be changed when the queue becomes empty; this is precisely the type of “boundary condition” we should always be watching for.
+
+For the boundary conditions we must make sure that the deletion operation works when the queue is empty either before or after the operation.
+
+Notice that R must be changed when the queue becomes empty; this is precisely the type of “boundary condition” we should always be watching for.
+
+topological sorting, which is an important process needed in connection with network problems, with so-called PERT charts, and even with linguistics; in fact, it is of potential use whenever we have a problem involving a partial ordering.
+
+topological sorting, which is an important process needed in connection with network problems, with so-called PERT charts, and even with linguistics; in fact, it is of potential use whenever we have a problem involving a partial ordering. A partial ordering of a set S is a relation between the objects of S, which we may denote by the symbol “≼”,
+
+The problem of topological sorting is to embed the partial order in a linear order; that is, to arrange the objects into a linear sequence a1 a2 . . . an such that whenever aj ≺ ak, we have j < k. Graphically, this means that the boxes are to be rearranged into a line so that all arrows go towards the right (see Fig. 7). It is not immediately obvious that such a rearrangement is possible in every case, although such a rearrangement certainly could not be done if any loops were present. Therefore the algorithm we will give is interesting not only because it does a useful operation, but also because it proves that this operation is possible for every partial ordering.
+
+The problem of topological sorting in this case is to find a way to arrange the words in the glossary so that no term is used before it has been defined.
+
+The problem of topological sorting in this case is to find a way to arrange the words in the glossary so that no term is used before it has been defined. Analogous problems arise in writing programs to process the declarations in certain assembly and compiler languages; they also arise in writing a user’s manual describing a computer language or in writing textbooks about information structures.
+
+The trick is to avoid doing any “searching” for nodes whose COUNT field is zero, and this can be done by maintaining a queue containing those nodes.
+
+we find in particular that a circular list can be used as either a stack or a queue. Operations (a) and (c) combined give us a stack; operations (b) and (c) give us a queue. These operations are only slightly less direct than their counterparts in the previous section, where we saw that operations (a), (b), and (c) can be performed on linear lists using two pointers F and R.
+
+Thus we see that a circular list can be used not only to represent inherently circular structures, but also to represent linear structures; a circular list with one pointer to the rear node is essentially equivalent to a straight linear list with two pointers to the front and rear.
+
+This special node is a great convenience, analogous to our discussion of a list head above, because it provides a convenient sentinel and it avoids the problem of an empty list (corresponding to the polynomial 0).
+
+A doubly linked list usually takes more memory space than a singly linked one does (although there is sometimes room for another link in a node that doesn’t fill a complete computer word). But the additional operations that can be performed efficiently with two-way links are often more than ample compensation for the extra space requirement. Besides the obvious advantage of being able to go back and forth at will when examining a doubly linked list, one of the principal new abilities is the fact that we can delete NODE(X) from the list it is in, given only the value of X.
+
+we will meet several algorithms that require removing random nodes from the middle of a list, and doubly linked lists are frequently used just for this reason.
+
+The elevator system is simulated by using two coroutines, one for the passengers and one for the elevator; these routines specify all the actions to be performed, as well as various time delays that are to be used in the simulation.
+
+large programs often spend most of their time in comparatively short routines doing comparatively simple things. Therefore we can usually get a good indication of the overall efficiency by using a special trace routine called a profiler, which executes the program and records how often each instruction is performed. This identifies the “bottlenecks,” the places that should be given special attention.
+
+The two triangular matrices are packed together tightly within the space of (n + 1)(n + 2) locations, and we have linear addressing as in (2). The generalization of triangular matrices to higher dimensions is called a tetrahedral array.
+
+there is another way to deal with sparse matrices that is often preferable because it reflects the matrix structure more appropriately, and this is the method we will discuss here. The representation we will discuss consists of circularly linked lists for each row and column. Every node of the matrix contains three words and five fields:
+
+if there are but few elements in each row or column; and since most matrix algorithms proceed by walking sequentially through a matrix, instead of accessing elements at random, this linked representation often works faster than a sequential one.
+
+It is clear that the transformation (13) affects only those rows of a matrix for which there is a nonzero element in the pivot column, and it affects only those columns for which there is a nonzero entry in the pivot row.
+
+The pivoting algorithm is in many ways a straightforward application of linking techniques we have already discussed; in particular, it bears strong resemblances to Algorithm 2.2.4A for addition of polynomials.
+
+The running time of Algorithm S is very roughly proportional to the number of matrix elements affected by the pivot operation.
+
+More formally, let us define a binary tree as a finite set of nodes that either is empty, or consists of a root and the elements of two disjoint binary trees called the left and right subtrees of the root.
+
+trees, the most important nonlinear structures that arise in computer algorithms. Generally speaking, tree structure means a “branching” relationship between nodes, much like that found in the trees of nature.
+
+A List is defined (recursively) as a finite sequence of zero or more atoms or Lists.
+
+Summary: Four closely related kinds of information structures — trees, forests, binary trees, and Lists — arise from many sources, and they are therefore important in computer algorithms.
+
+An ingenious use of this extra space has been suggested by A. J. Perlis and C. Thornton, who devised the so-called threaded tree representation. In this method, terminal links are replaced by “threads” to other parts of the tree, as an aid to traversal.
+It can traverse the tree without stack - the "threds" would do the work
+
+The threaded tree equivalent
+
+The great advantage of threaded trees is t hat traversal algorithms become simpler.
+
+There is a natural way to represent any forest as a binary tree.
+
+Conversely, it is easy to see that any binary tree corresponds to a unique forest of trees by reversing the process.
+
+The definitions of preorder and postorder mesh very nicely with the natural correspondence between trees and binary trees, since the subtrees of the first tree correspond to the left binary subtree, and the remaining trees correspond to the right binary subtree.
+
+By using a right-threaded tree, we avoid the need for a stack during the operation of the algorithm. On the other hand, a threaded tree representation has the disadvantage that we will need to make copies of subtrees;
+
+The most common sequential representation of trees (and forests) corresponds essentially to the omission of LLINK fields, by using consecutive addressing instead.
+
+This representation has several interesting properties. In the first place, all subtrees of a node appear immediately after that node, so that all subtrees within the original forest appear in consecutive blocks. [Compare this with the “nested parentheses” in (1) and in Fig. 20(b).]
+
+This representation has several interesting properties. In the first place, all subtrees of a node appear immediately after that node, so that all subtrees within the original forest appear in consecutive blocks. [Compare this with the “nested parentheses” in (1) and in Fig. 20(b).] In the second place, notice that the RLINK arrows never cross each other in (3); this will be true in general, for in a binary tree all nodes between X and RLINK(X) in preorder lie in the left subtree of X, hence no outward arrows will emerge from that part of the tree. In the third place, we may observe that the LTAG field, which indicates whether a node is terminal or not, is redundant, since “” occurs only at the end of the forest and just preceding every downward pointing arrow.
+
+Many applications of tree structures require rather frequent references upward in the tree as well as downward. A threaded tree gives us the ability to go upward, but not with great speed; we can sometimes do better if we have a third link, PARENT, in each node. This leads to a triply linked tree, where each node has LCHILD, RLINK, and PARENT links.
+
+Recall that we discussed three principal methods for representing linear lists in Section 2.2: the straight representation with terminal link Λ, the circularly linked lists, and the doubly linked lists.
+
+RLINKs. It is possible to get eight other binary tree representations by independently using any of these three methods in the LLINK and RLINK directions.
+
+It is always possible to find a free subtree of the graphs arising from flow charts, because the graphs must be connected and, by part (b) of Theorem A, if G is connected and not a free tree, we can delete some edge and still have the resulting graph connected; this process can be iterated until we reach a free subtree.
+
+Theorem K. If a flow chart (such as Fig. 31) contains n boxes (including Start and Stop) and m arrows, it is possible to find m − n + 1 fundamental cycles and a fundamental path from Start to Stop, such that any walk from Start to Stop is equivalent (in terms of the number of times each edge is traversed) to one traversal of the fundamental path plus a uniquely determined number of traversals of each of the fundamental cycles. (The fundamental path and fundamental cycles may include some edges that are to be traversed in a direction opposite that shown by the arrow on the edge; we conventionally say that such edges are being traversed −1 times.) Conversely, for any traversal of the fundamental path and the fundamental cycles in which the total number of times each edge is traversed is nonnegative, and in which the vertices and edges corresponding to a positive number of traversals form a connected graph, there is at least one equivalent walk from Start to Stop.
