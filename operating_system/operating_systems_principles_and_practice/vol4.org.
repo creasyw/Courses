@@ -1,0 +1,69 @@
+the time to access a random sector on a disk can be around 10 milliseconds. In contrast, DRAM latencies are typically under 100 nanoseconds. This large difference — about five orders of magnitude in the case of spinning disks — drives the operating system to organize and use persistent storage devices differently than main memory.
+
+a file system is an operating system abstraction that provides persistent, named data. Persistent data is stored until it is explicitly deleted, even if the computer storing it crashes or loses power. Named data can be accessed via a human-readable identifier that the file system associates with the file. Having a name allows a file to be accessed even after the program that created it has exited, and allows it to be shared by multiple applications.
+
+Most file systems that allow multiple hard links to a file restrict these links to avoid cycles, ensuring that their directory structures form a directed acyclic graph (DAG.) Avoiding cycles can simplify management by, for example, ensuring that recursive traversals of a directory structure terminate or by making it straightforward to use reference counting to garbage collect a file when the last link to it is removed.
+
+Rather than using read() and write() to access a file’s data, an application can use mmap() to establish a mapping between a region of the process’s virtual memory and some region of the
+
+Rather than using read() and write() to access a file’s data, an application can use mmap() to establish a mapping between a region of the process’s virtual memory and some region of the file.
+
+Fsync() ensures that all pending updates for a file are written to persistent storage before the call returns.
+
+In addition to improving performance by caching and write buffering, the block cache serves as a synchronization point: because all requests for a given block go through the block cache, the operating system includes information with each buffer cache entry to, for example, prevent one process from reading a block while another process writes it or to ensure that a given block is only fetched from the storage device once, even if it is simultaneously read by many processes.
+
+the device driver is part of the kernel, then a device driver’s bugs have the potential to affect the overall reliability of a system. For example, in 2003 it was reported that drivers caused about 85% of failures
+
+if the device driver is part of the kernel, then a device driver’s bugs have the potential to affect the overall reliability of a system.
+
+NOR flash storage is wired to allow individual words to be written and read. NOR flash storage is useful for storing device firmware since it can be executed in place.
+
+reading a flash memory cell a large number of times can cause the surrounding cells’ charges to be disturbed. A read disturb error can occur if a location in flash memory is read to many times without the surrounding memory being written.
+
+In addition to affecting reliability, wear out affects a flash device’s performance over time.
+
+File systems must map file names and offsets to physical storage blocks in a way that allows efficient access.
+
+File systems must map file names and offsets to physical storage blocks in a way that allows efficient access. Although there are many different file systems, most implementations are based on four key ideas: directories, index structures, free space maps, and locality heuristics.
+
+file systems map file names and file offsets to specific storage blocks in two steps. First, they use directories to map human-readable file names to file numbers. Directories are often just special files that contain lists of file name →file number mappings. Second, once a file name has been translated to a file number, file systems use a persistently stored index structure to locate the blocks of the file. The index structure can be any persistent data structure that maps a file number and offset to a storage block. Often, to efficiently support a wide range of file sizes and access patterns, the index structure is some form of tree.
+
+The Unix Fast File System (FFS) illustrates important ideas for both indexing a file’s blocks so they can be located quickly and for placing data on disk to get good locality. In particular, FFS’s index structure, called a multi-level index, is a carefully structured tree that allows FFS to locate any block of a file and that is efficient for both large and small files. Given the flexibility provided by FFS’s multi-level index, FFS employs two locality heuristics — block group placement and reserve space — that together usually provide good on-disk layout.
+
+High degree nodes make sense for on-disk data structures where (1) we want to minimize the number of seeks, (2) the cost of reading several kilobytes of sequential data is not much higher than the cost of reading the first byte, and (3) data must be read and written at least a sector at a time. High degree nodes also improve efficiency for sequential reads and writes — once an indirect block is read, hundreds of data blocks can be read before the next indirect block is needed. Runs between reads of double indirect blocks are even larger.
+
+Similar to efficient support for sparse virtual memory address spaces, efficient support of sparse files is useful for giving applications maximum flexibility in placing data in a file.
+
+Sparse files have two important limitations. First, not all file systems support them, so an application that relies on sparse file support may not be portable. Second, not all utilities correctly handle sparse files, which can lead to unexpected consequences.
+
+The reserved space approach works well given disk technology trends. It sacrifices a small amount of disk capacity, a hardware resource that has been improving rapidly over recent decades, to reduce seek times, a hardware property that is improving only slowly.
+
+Most implementations of NTFS use a variation of best fit, where the system tries to place a newly allocated file in the smallest free region that is large enough to hold
+
+Most implementations of NTFS use a variation of best fit, where the system tries to place a newly allocated file in the smallest free region that is large enough to hold it. In NTFS’s variation, rather than trying to keep the allocation bitmap
+
+Most implementations of NTFS use a variation of best fit, where the system tries to place a newly allocated file in the smallest free region that is large enough to hold it.
+
+Several technology trends are driving widespread adoption of COW file systems: Small writes are expensive. Disk performance for large sequential writes is much better than for small random writes.
+
+Formatting a file system includes writing a superblock that identifies the file system’s type and its key parameters such as its type, block size, and inode array or MBR location and size. Again, for reliability, a file system typically stores multiple copies of its superblock at several predefined locations.
+
+Practical solid state storage technologies like flash memory change the constraints around which file systems can be designed. Random access performance that is good both in relative terms compared to sequential access performance and in absolute terms provide opportunities to reconsider many aspects of file system design — directories, file metadata structures, block placement — that have been shaped by the limitations of magnetic disks.
+
+Workloads are also evolving rapidly, which changes demands on file systems. In servers, the rising popularity of virtual machines and cloud computing pressure operating systems designers to provide better ways to share storage devices with fair and predictable performance despite variable and mixed workloads. At clients, the increasing popularity of apps and specialized compute appliances are providing new ways for organizing storage: rather than having users organize files into directories, apps and appliances often manage their own storage, providing users with a perhaps very different way of identifying stored objects.
+
+Perhaps our reliance on directories for naming and locality will need to be rethought in the coming years.
+
+the Unix fast file system (FFS) would carefully control the order that its updates were sent to disk so that if a crash occurred in the middle of a group of updates, a scan of the disk during recovery could identify and repair inconsistent data structures.
+
+If a system running FFS crashed, then when it rebooted it would use a program called fsck (file system check) to scan all of the file system’s metadata (e.g., all inodes, all directories, and all free space bitmaps) to make sure that all metadata items were consistent.
+
+In operating systems, we use the term consistency in two ways. In the context of critical sections and transactions, we use “consistency” to refer to the idea of a system’s invariants being maintained (e.g., “are my data structures consistent?”) In the context of distributed memory machines and distributed systems, we use “consistency” to refer to the memory model — the order in which updates can become visible to reads (e.g., “are my system’s reads at different caches sequentially consistent?”).
+
+common way to enforce isolation among transactions is two-phase locking, which divides a transaction into two phases. During the
+
+A common way to enforce isolation among transactions is two-phase locking, which divides a transaction into two phases. During the expanding phase, locks may be acquired but not released. Then, in the contracting phase, locks may be released but not acquired. In the case of transactions, because we want isolation and durability, the second phase must wait until after the transaction commits or rolls back so that no other transaction sees updates that later disappear.
+
+Although acquiring multiple locks in arbitrary orders normally risks deadlock, transactions provide a simple solution. If a set of transactions deadlocks, one or more of the transactions can be forced to roll back, release their locks, and restart at some later time.
+
+One way to reduce transaction overheads for large writes is to add a level of indirection: write the large data objects to a free area of the disk, but not in the circular log. Then, the update in the log just needs to be a reference to that data rather than the data itself. Finally, after the transaction commits, perform the write-back by updating a pointer in the original data structure to point to the new data.
