@@ -18,7 +18,8 @@ described a process as the execution of a program with restricted rights. A thre
 
 A thread is a single execution sequence that represents a separately schedulable task.
 
-multi-threaded programs should make no assumptions about the behavior of the thread scheduler. In turn, the kernel’s scheduling decisions — when to assign a thread to a processor, and when to preempt it for a different thread — can be made without worrying whether they might affect program correctness.
+multi-threaded programs should make no assumptions about the behavior of the thread scheduler. In turn, the kernel’s scheduling decisions — when to assign a thread to a processor, and when to preempt it for a different thread — can be made without worrying whether they might affect program correctness. It is the perfect place to put the Murphy's law - for anything about the scheduler "whatever can go wrong, will go wrong." /One can ensure *correctness by design* for a multi-threaded program but *not* correctness by test/. The cooperating threads which have shared states could generate non-deterministic and non-reproducible bugs (Heisenbugs). This is why we need to follow certain pattern to design these threads rather than relying on testing.
+
 
 A good way to understand the simple threads API is that it provides a way to invoke an asynchronous procedure call. A normal procedure call passes a set of arguments to a function, runs the function immediately on the caller’s stack, and when the function is completed, returns control back to the caller with the result. An asynchronous procedure call separates the call from the return: with thread_create, the caller starts the function, but unlike a normal procedure call, the caller continues execution concurrently with the called function. Later, the caller can wait for the function completion (with thread_join).
 
@@ -653,18 +654,18 @@ queueing theory is concerned with the root causes of system performance, and not
 
 Although this relationship is simple and intuitive, it is powerful because the “system” can be anything with arriving and departing tasks, provided the system is stable — regardless of the arrival process, number of servers, or queueing order.
 
-Because having more servers (whether processors on chip or cashiers in a supermarket) or faster servers is costly, you might think that the goal of the system designer is to maximize utilization. However, in most cases, there is no free lunch: as we will see, higher utilization normally implies higher queueing delay and higher response times.
+Because having more servers (whether processors on chip or cashiers in a supermarket) or faster servers is costly, you might think that the goal of the system designer is to maximize utilization. However, in most cases, there is no free lunch: as we will see, higher utilization normally implies higher queuing delay and higher response times.
 
 Operating a system at high utilization also increases the risk of overload.
 Broadly speaking, higher arrival rates and burstier arrival patterns tend to yield longer queue lengths and response times than lower arrival rates and smoother arrival patterns.
 
-A particularly useful model for understanding queueing behavior is to use an exponential distribution to describe the time between tasks arriving and the time it takes to service each task. Once you get past a bit of math, the exponential provides a stunningly simple approximate description of most real-life queueing systems.
+A particularly useful model for understanding queuing behavior is to use an exponential distribution to describe the time between tasks arriving and the time it takes to service each task. Once you get past a bit of math, the exponential provides a stunningly simple approximate description of most real-life queuing systems.
 
 Selecting the right model for system evaluation is a delicate balance between complexity and accuracy. If after abstracting away detail, we can still provide approximately correct predictions of system behavior under a variety of scenarios, then it is likely the model captures the most important aspects of the system. If the model is inaccurate in some important respect, then it means our explanation for how the system behaves is too coarse, and to improve the prediction we need to revise the model.
 
 A useful property of an exponential distribution is that it is memoryless. A memoryless distribution for the time between two events means that the likelihood of an event occurring remains the same, no matter how long we have already waited for the event, or what other events may have already happened.
 
-With a memoryless distribution, the behavior of queueing systems becomes simple to understand. One can think of the queue as a finite state machine:
+With a memoryless distribution, the behavior of queuing systems becomes simple to understand. One can think of the queue as a finite state machine:
 
 The response time of a system becomes unbounded as the system approaches full utilization. Although it might seem that full utilization is an achievable goal, if there is any randomness in arrivals or any randomness in service times, full utilization cannot be achieved in steady state without making some tasks wait unbounded amounts of time. In most systems, well before a system reaches full utilization, average response time will become unbearably long.
 
