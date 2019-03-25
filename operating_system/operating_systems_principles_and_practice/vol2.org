@@ -1,10 +1,7 @@
 The key idea is to write a concurrent program — one with many simultaneous activities — as a set of sequential streams of execution, or threads, that interact and share results in very precise ways.
 
-Program structure: expressing logically concurrent tasks. Programs often interact with or simulate real-world applications that have concurrent activities. Threads let you express an application’s natural concurrency by writing each concurrent task as a separate thread.
-
-background. To improve user responsiveness and performance, a common design pattern is to create threads to perform work in the background, without the user waiting for the result.
-
-Responsiveness: shifting work to run in the background. To improve user responsiveness and performance, a common design pattern is to create threads to perform work in the background, without the user waiting for the result.
+- Program structure: expressing logically concurrent tasks. Programs often interact with or simulate real-world applications that have concurrent activities. Threads let you express an application’s natural concurrency by writing each concurrent task as a separate thread.
+- Responsiveness: shifting work to run in the background. To improve user responsiveness and performance, /a common design pattern is to create threads to perform work in the background, without the user waiting for the result/.
 
 Operating system kernels make extensive use of threads to preserve responsiveness.
 Programs can use threads on a multiprocessor to do work in parallel; they can do the same work in less time or more work in the same elapsed time.
@@ -20,6 +17,9 @@ A thread is a single execution sequence that represents a separately schedulable
 
 multi-threaded programs should make no assumptions about the behavior of the thread scheduler. In turn, the kernel’s scheduling decisions — when to assign a thread to a processor, and when to preempt it for a different thread — can be made without worrying whether they might affect program correctness. It is the perfect place to put the Murphy's law - for anything about the scheduler "whatever can go wrong, will go wrong." /One can ensure *correctness by design* for a multi-threaded program but *not* correctness by test/. The cooperating threads which have shared states could generate non-deterministic and non-reproducible bugs (Heisenbugs). This is why we need to follow certain pattern to design these threads rather than relying on testing.
 
+- Always write down behavior first
+- Impulse is to start coding first, then when it doesn't work, figure out what is wrong.
+- Instead, think first and then code.
 
 A good way to understand the simple threads API is that it provides a way to invoke an asynchronous procedure call. A normal procedure call passes a set of arguments to a function, runs the function immediately on the caller’s stack, and when the function is completed, returns control back to the caller with the result. An asynchronous procedure call separates the call from the return: with thread_create, the caller starts the function, but unlike a normal procedure call, the caller continues execution concurrently with the called function. Later, the caller can wait for the function completion (with thread_join).
 
