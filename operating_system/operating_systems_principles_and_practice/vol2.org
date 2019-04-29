@@ -1,21 +1,12 @@
 The key idea is to write a concurrent program — one with many simultaneous activities — as a set of sequential streams of execution, or threads, that interact and share results in very precise ways.
 
 - Program structure: expressing logically concurrent tasks. Programs often interact with or simulate real-world applications that have concurrent activities. Threads let you express an application’s natural concurrency by writing each concurrent task as a separate thread.
-- Responsiveness: shifting work to run in the background. To improve user responsiveness and performance, /a common design pattern is to create threads to perform work in the background, without the user waiting for the result/.
+- Responsiveness: shifting work to run in the background. To improve user responsiveness and performance, /a common design pattern is to create threads to perform work in the background, without the user waiting for the result/. Operating system kernels make extensive use of threads to preserve responsiveness. Programs can use threads on a multiprocessor to do work in parallel; they can do the same work in less time or more work in the same elapsed time.
+- Performance: exploiting multiple processors. Programs can use threads on a multiprocessor to do work in parallel; they can do the same work in less time or more work in the same elapsed time.
 
-Operating system kernels make extensive use of threads to preserve responsiveness.
-Programs can use threads on a multiprocessor to do work in parallel; they can do the same work in less time or more work in the same elapsed time.
+A /process/ is an execution of a program with restricted rights. A /thread/ is an independent sequence of instructions running within a program. A thread is a single execution sequence that represents a separately schedulable task.
 
-Performance: exploiting multiple processors. Programs can use threads on a multiprocessor to do work in parallel; they can do the same work in less time or more work in the same elapsed time.
-
-process as the execution of a program with restricted rights. A thread is an independent sequence of instructions running within a program. Perhaps the best way to see how these concepts are related,
-
-
-described a process as the execution of a program with restricted rights. A thread is an independent sequence of instructions running within a program.
-
-A thread is a single execution sequence that represents a separately schedulable task.
-
-multi-threaded programs should make no assumptions about the behavior of the thread scheduler. In turn, the kernel’s scheduling decisions — when to assign a thread to a processor, and when to preempt it for a different thread — can be made without worrying whether they might affect program correctness. It is the perfect place to put the Murphy's law - for anything about the scheduler "whatever can go wrong, will go wrong." /One can ensure *correctness by design* for a multi-threaded program but *not* correctness by test/. The cooperating threads which have shared states could generate non-deterministic and non-reproducible bugs (Heisenbugs). This is why we need to follow certain pattern to design these threads rather than relying on testing.
+Multi-threaded programs should make no assumptions about the behavior of the thread scheduler. In turn, the kernel’s scheduling decisions — when to assign a thread to a processor, and when to preempt it for a different thread — can be made without worrying whether they might affect program correctness. It is the perfect place to put the Murphy's law - for anything about the scheduler "whatever can go wrong, will go wrong." /One can ensure *correctness by design* for a multi-threaded program but *not* correctness by test/. The cooperating threads which have shared states could generate non-deterministic and non-reproducible bugs (Heisenbugs). This is why we need to follow certain pattern to design these threads rather than relying on testing.
 
 - Always write down behavior first
 - Impulse is to start coding first, then when it doesn't work, figure out what is wrong.
@@ -127,17 +118,9 @@ Multi-threaded programs extend the traditional, single-threaded programming mode
 
 Jim Gray, the 1998 ACM Turing Award winner, coined the term Heisenbugs for bugs that disappear or change behavior when you try to examine them. Multi-threaded programming is a common source of Heisenbugs. In contrast, Bohrbugs are deterministic and generally much easier to diagnose.
 
-long as the programmer uses structured synchronization for protecting shared data, the compiler
+/The *synchronization* always involves *waiting* (to avoid confusion)/ - when to wait, how long should it wait, and what are the strategies to coordinate or minimize the time of waiting. It is uses atomic operations to ensure cooperation between threads.
 
-long as the programmer uses structured synchronization for protecting shared data, the compiler can reorder instructions as needed without changing program behavior, provided that the compiler does not reorder across
-
-long as the programmer uses structured synchronization for protecting shared data,
-
-As long as the programmer uses structured synchronization for protecting shared data, the compiler can reorder instructions as needed without changing program behavior, provided that the compiler does not reorder across synchronization operations. A compiler making the more conservative assumption that all memory is shared would produce slow code even when it was not necessary.
-
-For your code to be portable, you should assume that the compiler and the hardware can reorder instructions except across synchronization operations.
-
-Given these challenges, multi-threaded code can introduce subtle, non-deterministic, and non-reproducible bugs
+As long as the programmer uses structured synchronization for protecting shared data, the compiler can reorder instructions as needed without changing program behavior, provided that the compiler does not reorder across synchronization operations. A compiler making the more conservative assumption that all memory is shared would produce slow code even when it was not necessary. For your code to be portable, you should assume that the compiler and the hardware can reorder instructions except across synchronization operations. Given these challenges, /multi-threaded code can introduce subtle, non-deterministic, and non-reproducible bugs/.
 
 First, we structure a multi-threaded program’s shared state as a set of shared objects that encapsulate the shared state as well as define and limit how the state can be accessed. Second, to avoid ad hoc reasoning about the possible interleavings of access to the state variables within a shared object, we describe how shared objects can use a small set of synchronization primitives — locks and condition variables — to coordinate access to their state by different threads. Third, to simplify reasoning about the code in shared objects, we describe a set of best practices for writing the code that implements each shared object. Finally, we dive into the details of how to implement synchronization primitives.
 
@@ -165,7 +148,7 @@ Shared objects are objects that can be accessed safely by multiple threads. All 
 
 A synchronization variable is a data structure used for coordinating concurrent access to shared state. Both the interface and the implementation of synchronization variables must be carefully designed. In particular, we build shared objects using two types of synchronization variables: locks and condition variables.
 
-Mutual exclusion greatly simplifies reasoning about programs because a thread can perform an arbitrary set of operations while holding a lock, and those operations appear to be atomic to other threads. In particular, because a lock enforces mutual exclusion and threads must hold the lock to access shared state, no other thread can observe an intermediate state. Other threads can only observe the state left after the lock release.
+*Mutual exclusion* greatly simplifies reasoning about programs because a thread can perform an arbitrary set of operations while holding a lock, and those operations appear to be atomic to other threads. In particular, because a lock enforces mutual exclusion and threads must hold the lock to access shared state, no other thread can observe an intermediate state. Other threads can only observe the state left after the lock release.
 
 In particular, shared objects usually have one lock guarding all of an object’s state. Each public method acquires the lock on entry and releases the lock on exit. Thus, reasoning about a shared class’s code is similar to reasoning about a traditional class’s code: we assume a set of invariants when a public method is called and re-establish those invariants before a public method returns. If we define our invariants well, we can then reason about each method independently.
 
@@ -187,7 +170,7 @@ Non-property: Thread ordering. The bounded waiting property defined above guaran
 
 Operating system kernels use bounded queues for managing interprocess communication, TCP and UDP sockets, and I/O requests. Because the kernel runs in a finite physical memory, the kernel must be designed to work properly with finite resources.
 
-A critical section is a sequence of code that atomically accesses shared state. By ensuring that a thread holds the object’s lock while executing any of its critical sections, we ensure that each critical section appears to execute atomically on its shared state.
+A *critical section* is a sequence of code that atomically accesses shared state. By ensuring that a thread holds the object’s lock while executing any of its critical sections, we ensure that each critical section appears to execute atomically on its shared state.
 
 Each class can define multiple methods that operate on the shared state defined by the class, so there may be multiple critical sections per class. However, for each instance of the class (i.e., for each object), only one thread holds the object’s lock at a time, so only one thread actively executes any of the critical sections per shared object instance.
 
@@ -260,7 +243,7 @@ for concurrent programs, the evidence is that the abstractions we describe are b
 
 It is just not worth it. Always
 
-Always synchronize with locks and condition variables.
+*Always synchronize with locks and condition variables*.
 
 We recommend that you be able to read and understand semaphores so you can understand legacy code, but that you only write new code using locks and condition variables.
 
@@ -377,7 +360,7 @@ Google’s Go language for concurrent web programming is a modern language that 
 
 current techniques have two basic limitations. First, they pose engineering trade-offs. Some solutions are general but complex or expensive; others are simple but slow; still others are simple and cheap but not general. Second, many solutions are inherently non-modular: they require reasoning about the global structure of the system and internal implementation details of modules to understand or restrict how different modules can interact.
 
-Even with ample request parallelism, however, performance can often be disappointing. Once locks and condition variables are added to a server application to allow it to process requests concurrently, throughput may be only slightly faster on a fifty-way multiprocessor than on a uniprocessor. Most often, this can be due to three causes: Locking.
+/The major work for the parallel programming is to *find the parts of atommic operations, and figure out ways to protect them*/. Even with ample request parallelism, however, performance can often be disappointing. Once locks and condition variables are added to a server application to allow it to process requests concurrently, throughput may be only slightly faster on a fifty-way multiprocessor than on a uniprocessor. Most often, this can be due to three causes: Locking.
 
 The performance of a modern processor can vary by a factor of ten (or more) depending on whether the data needed by the processor is already in its cache or not. Modern processors are designed with large caches, so that almost all of the data needed by the processor will already be stored in the cache.
 

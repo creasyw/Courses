@@ -86,11 +86,13 @@ Many complex software systems have multiple users, run programs written by third
 
 The kernel, the lowest level of software running on the system, has full access to all of the machine hardware. The kernel is necessarily trusted to do anything with the hardware. Everything else — that is, the untrusted software running on the system — is run in a restricted environment with less than complete access to the full power of the hardware.
 
-The *stack* holds the state of local variables during procedure calls. The operating system also sets aside a memory region, called the heap, for any dynamically allocated data structures the program might need.
+The *stack* holds the state of local variables during procedure calls. The operating system also sets aside a memory region, called the heap, for any dynamically allocated data structures the program might need. The operating system sets aside a memory region, the execution stack, to hold the state of local variables during procedure calls. The operating system also sets aside a memory region, called the *heap*, for any dynamically allocated data structures the program might need. Attributes of  an object -execution stack; variablees in a method - goes into the heap.
 
-The operating system sets aside a memory region, the execution stack, to hold the state of local variables during procedure calls. The operating system also sets aside a memory region, called the *heap*, for any dynamically allocated data structures the program might need. Attributes of  an object -execution stack; variablees in a method - goes into the heap.
+/At a minimum, the hardware must support three things/:
 
-At a minimum, the hardware must support three things: Privileged Instructions. All potentially unsafe instructions are prohibited when executing in user mode. (Section 2.2.1) Memory Protection. All memory accesses outside of a process’s valid memory region are prohibited when executing in user mode. (Section 2.2.2) Timer Interrupts. Regardless of what the process does, the kernel must have a way to periodically regain control from the current process. (Section 2.2.3)
+- *Privileged Instructions*. All potentially unsafe instructions are prohibited when executing in user mode. (Section 2.2.1)
+- *Memory Protection*. All memory accesses outside of a process’s valid memory region are prohibited when executing in user mode. (Section 2.2.2)
+- *Timer Interrupts*. Regardless of what the process does, the kernel must have a way to periodically regain control from the current process. (Section 2.2.3)
 
 Process isolation is possible only if there is a way to limit programs running in user mode from directly changing their privilege level.
 
