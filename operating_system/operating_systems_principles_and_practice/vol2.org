@@ -130,6 +130,8 @@ race condition occurs when the behavior of a program depends on the interleaving
 
 atomic operations, indivisible operations that cannot be interleaved with or split by other operations.
 
+=test and set= is an atomic operation. /It is a very important concept/. The first verison of MIPS only had load and save to be atomic, which made it stuck with the 3rd solution of getting milk. It is a asymmetric logic for tow contending threads, and one of them has to do busy waiting if it doesn't get the shared resources. It was a bad design decision.
+
 safety (the program never enters a bad state) and liveness (the program eventually enters a good state)?
 
 given our programming model that we have shared memory on which we can perform atomic loads and stores — is to set a flag when going to buy milk and to check
