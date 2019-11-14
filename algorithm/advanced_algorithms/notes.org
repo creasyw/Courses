@@ -57,4 +57,4 @@ Assume that given X and Y fitting in a word each, we can do - (in C) + / * - ~ (
 - $V.summary$ is a $vEB_{\sqrt{u}}$ instance
 - $V.min$ and $V.max$ are integers in ${0, ..., u-1}$.
 - Assume $x \in {0, 1, ..., u-1}$ and denote it as $x = 10010011$
-- Divide the x into two part, namely leftmost and rightmost parts, $x = <c, i>$. Then, $c, i \in {0, ..., \sqrt{u}-1}$
+- Divide the x into two part, namely leftmost and rightmost parts, $x = <c, i>$. Then, \(c, i \in {0, ..., \sqrt{u}-1}\)
