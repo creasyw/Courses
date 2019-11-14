@@ -1,0 +1,60 @@
+* Lecture 1
+
+** Goal
+
+ - Increased ability to analyze and create algorithms
+ - Understanding of models and the inspiration behind models for which to analyze algorithms
+
+** Static Predecessor:
+
+ - data structure represents set =S= of items ={x_1,..., x_n}=
+ - Query pred(z) = max{x in S, x < z}
+ - Want low space and fast query
+ - /Static/ means that the set of items that does not change - no insertions
+ - /Dynamic/ - insertions
+
+ Example sol:
+
+ - Store numbers sorted, and do binary search (static)
+ - The query time is $log(n)$.
+ - Query =O(lgn)= dynamically should use a balanced search tree (e.g. BST).
+
+ As a result, the =O(nlgn)= is the fastest time for /comparison-based/ sorting. If we can have a linear space, we can insert the number into a tree structure for predecessors and record the largest (smallest) value using linear time. It takes =O(n)= time. Then, keep querying for its predecessor, which takes =O(lgn)= time to get the given array sorted.
+
+ There are algorithms can do even better. As computer doing sorting, the comparison is not the only operation that it can perform. For example, it can do bit-wise XOR and/or bit shifting.
+
+** Word RAM Model
+
+ - Items are integers in the range {0, 1,..., 2^w-1}
+ - w is the "word size, the universal size u = 2^w -1
+ - Also assume that pointers fit in a word
+ - Space >= n
+ - w >= lg(space) >= lgn
+
+*** Two data structures
+
+ 1. van Emde Boas tree (FOCS '75)
+    - Both =update= and =qeury= are $\theta(\log{n})$, the space is $\theta(u)$, which can be made $\theta(n)$ with randomization.
+    - y-fast tries. Same bounds (Willard, IPL '83)
+ 2. Fusion trees (Fredman, Willard, JCSS '93)
+    - Support query in time $\theta(\log_{w}(n))$ and linear space.
+    - It has already better than the $O(lgn)$ when word size is larger than 2 bits.
+ 3. Both of the two data structures above can achieve $min{\log(w), \log_w(n)} <= \sqrt(\log(n))$.
+ 4. For dynmaic (with insertions), it can be sorted in time in $n\sqrt(\log(n))$ with dynamic fusion tree.
+ 5. Get /faster sorting/.
+    - Get $O(nlglgn)$ deterministically (Han, STOC '02)
+    - Get $O(n\sqrt(lglgn))$ expected time randomized. (Han, Thoup, FOCS '02)
+
+*** Premises
+
+Assume that given X and Y fitting in a word each, we can do - (in C) + / * - ~ (bitwise negation), ^ (XOR), & (and), >> and << (bit shifting) /in constant time/.
+
+*** van Emde Boas Tree (vEB tree)
+
+- We're going to use bit manipulation to achive a better time performance.
+- vEB tree is definted recursively.
+- Aside from the minimum value of the entire data structure, we divide the entire $vEB_{u}$ tree into $\sqrt{u}$ size array of $vEB_{\sqrt{u}}$ trees, denoted as ${ V.cluster[0],..., v.cluser[\sqrt{u}-1]}$.
+- $V.summary$ is a $vEB_{\sqrt{u}}$ instance
+- $V.min$ and $V.max$ are integers in ${0, ..., u-1}$.
+- Assume $x \in {0, 1, ..., u-1}$ and denote it as $x = 10010011$
+- Divide the x into two part, namely leftmost and rightmost parts, $x = <c, i>$. Then, $c, i \in {0, ..., \sqrt{u}-1}$
