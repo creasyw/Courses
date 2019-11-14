@@ -1,0 +1,143 @@
+* Lecture 1
+
+** Goal
+
+ - Increased ability to analyze and create algorithms
+ - Understanding of models and the inspiration behind models for which to analyze algorithms
+
+** Static Predecessor:
+
+ - data structure represents set =S= of items ={x_1,..., x_n}=
+ - Query pred(z) = max{x in S, x < z}
+ - Want low space and fast query
+ - /Static/ means that the set of items that does not change - no insertions
+ - /Dynamic/ - insertions
+
+ Example sol:
+
+ - Store numbers sorted, and do binary search (static)
+ - The query time is $log(n)$.
+ - Query =O(lgn)= dynamically should use a balanced search tree (e.g. BST).
+
+ As a result, the =O(nlgn)= is the fastest time for /comparison-based/ sorting. If we can have a linear space, we can insert the number into a tree structure for predecessors and record the largest (smallest) value using linear time. It takes =O(n)= time. Then, keep querying for its predecessor, which takes =O(lgn)= time to get the given array sorted.
+
+ There are algorithms can do even better. As computer doing sorting, the comparison is not the only operation that it can perform. For example, it can do bit-wise XOR and/or bit shifting.
+
+** Word RAM Model
+
+ - Items are integers in the range {0, 1,..., 2^w-1}
+ - w is the "word size, the universal size u = 2^w -1
+ - Also assume that pointers fit in a word
+ - Space >= n
+ - w >= lg(space) >= lgn
+
+*** Two data structures
+
+ 1. van Emde Boas tree (FOCS '75)
+    - Both =update= and =qeury= are $\theta(\log{n})$, the space is $\theta(u)$, which can be made $\theta(n)$ with randomization.
+    - y-fast tries. Same bounds (Willard, IPL '83)
+ 2. Fusion trees (Fredman, Willard, JCSS '93)
+    - Support query in time $\theta(\log_{w}(n))$ and linear space.
+    - It has already better than the $O(lgn)$ when word size is larger than 2 bits.
+ 3. Both of the two data structures above can achieve $min{\log(w), \log_w(n)} <= \sqrt(\log(n))$.
+ 4. For dynmaic (with insertions), it can be sorted in time in $n\sqrt(\log(n))$ with dynamic fusion tree.
+ 5. Get /faster sorting/.
+    - Get $O(nlglgn)$ deterministically (Han, STOC '02)
+    - Get $O(n\sqrt(lglgn))$ expected time randomized. (Han, Thoup, FOCS '02)
+
+*** Premises
+
+Assume that given X and Y fitting in a word each, we can do - (in C) + / * - ~ (bitwise negation), ^ (XOR), & (and), >> and << (bit shifting) /in constant time/.
+
+*** van Emde Boas Tree (vEB tree)
+
+****  Description
+
+- We're going to use bit manipulation to achive a better time performance.
+- vEB tree is definted recursively.
+- Aside from the minimum value of the entire data structure, we divide the entire $vEB_{u}$ tree into $\sqrt{u}$ size array of $vEB_{\sqrt{u}}$ trees, denoted as ${ V.cluster[0],..., v.cluser[\sqrt{u}-1]}$.
+- $V.summary$ is a $vEB_{\sqrt{u}}$ instance
+- $V.min$ and $V.max$ are integers in ${0, ..., u-1}$.
+- Assume $x \in {0, 1, ..., u-1}$ and denote it as $x = 10010011$
+- Divide the x into two part, namely leftmost and rightmost parts, $x = <c, i>$. Then, $c, i \in {0, ..., \sqrt{u}-1}$
+- That is, the number $i$ stores at the $c$ of the cluster.
+- If the $c$ of the cluster is empty, also insert the $c$ itself into the $V.summary$
+- As a result, the summary keeps track of which clusters are nonempty.
+- The search steps are:
+  - Within the $c$ of the cluster, we look at its minimum value, if the given value is larger than this minimum value, we know that its predecessor is at the $c$ of the cluster so we can keep doing it recursively to find its predecessor.
+  - If that cluster happens to be empty, or the given value is smaller than the min, we know the predecessor of this value is in the bigger cluster that is nonempty. To find this, we would need to find the predecessor of the $c$ in the $V.summary$ and return the max in that cluster.
+
+**** Algorithms
+
+#+begin_example
+pred(V, x=<c, i>):
+    if x > V.max: return V.max
+    else if V.cluster[c].min < x:
+        return pred(V.cluster[c], i)
+    else:
+        c' = pred(V.summary, c)
+        return V.cluster[c'].max
+
+insert(V, x=<c,i>):
+    if V is empty:
+        V.min = x; return
+    if x < V.min:
+        swap(x, V.min)
+    if V.cluster[c].min is empty:
+        insert(V.summary, c)
+    insert(V.cluster[c], i)
+#+end_example
+
+**** Time Complexity
+
+- For predecessor: $T(u) = T(\sqrt(u)) + O(1) = O(\log{\log{u}}) = O(\log{w})$.
+- For insertion: $T(u) <= 2T(\sqrt{u}) + O(1)$ and $T(w) <= 2T(w/2) + O(1)$.
+  - This is over-pessimistic - if the =V.cluster[c].min is empty= is true, we can immediately return at the recursive call at the first condition since the sub-cluster is empty.
+  - As a result, the time of insertion also becomes $T(u) = T(\sqrt(u)) + O(1)$
+  - So, $T(u) = O(\log{\log{u}})$
+  - That is why we need to store the min separately so that the insertion costs $O(\log{\log{u}})$ instead of $O(w)$, which would be $O(\log{u})$.
+
+**** Space Complexity
+
+- $S(u) = (\sqrt{u} + 1)S(\sqrt{u}) + O(1) = \theta(u)$. It is not linear space, so we have to do better than it.
+- We can use "hashing" to improve the space complexity.
+  - The keys are cluster IDs $c$
+  - The values are the pointers to the corresponding nonempty clusters.
+  - There is no pointer to the empty clusters
+- /Claim/: vEB with hash table uses $\theta(n)$ space.
+  - If we charge the cost of storing (c, ptr to cluster c) to the minimum element of cluster c, each minimum is charged exactly once, so the amount of space will be linear in the number of elements we store.
+
+**** Short aside...
+
+- It is good to define the problem first and separate it from the algorithm and data structures that solve it.
+- Dictionary problem
+  - Store (key, value) pairs
+  - query(k) returns value that associated with the key =k= or =null= if the =k= does not associate to anything.
+  - insert(k) associates value v with key k.
+- Dynamic dictionary is possbile with (linear) $\theta(n)$ space and (constant) $\theta(1)$ worst case query and $\theta(1)$ expected insertion (with high probability). (Dietzfelbinger et al)
+
+*** Y-fast Tries
+
+- Another solution is using a bit array of length u
+- Build a binary tree on this bit array and each internal node stores the =OR= of its two children.
+- Store all of the ones in a doubly linked list
+- For any element within the binary tree
+  - Go up from the leaf of that element, until we find a one
+  - If the last route is a right-hand side branch, we know all its left-hand side branch should be smaller.
+  - If the last route is a left-hand side branch, the minimum element in this right-hand side sibbling is its successor. Since all elements are in the doubly linked list, we can go back one to find its predecessor.
+- The hight of the tree is $O(\log{u})$
+- On any leaf to root path, the bits are monotone. It means that there are 0s for a while and then 1s till the end.
+- To further improve the performance, the entire tree can be stored in an array from the root to the internal nodes and finally to the leaves
+  - For example, node =V= has left child at =2V+1= and right child at =2V+2=.
+  - By this way, we can calculate an arbitrary location within this tree with $O(1)$ time.
+  - That is, we can find kth ancester in constant time by doing bit shifting =>>k=.
+  - Could also for each node, store its $2^k$ -th ancestor for each k in $[0, ..., \log{\log{u}}]$.
+- To save space, only store the 1's in a hash table
+  - For each level of tree, hash table stores locations of 1's
+  - Or, use the height of tree of hash tables, which only stores the location of 1's
+  - ==> space $\theta(nw)$ (x-fast tries)
+  - The query time is also $\theta(w\log\log{u})$
+- To eliminate the factor $w$ (from x-fast to y-fast) in both space and time is to use the *indirection*.
+  - Each x-fast trie contains $n/w$ itmes.
+  - For each item, it actually is a "super" item, which contains $\theta{w}$ items. It contains somewhere between $w/2$ and $2w$ items.
+  - We can built a binary search tree on each of these $\theta{w}$ items
