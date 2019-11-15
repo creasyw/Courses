@@ -137,6 +137,12 @@ Atomic operations are (1) indivisible operations that cannot be interleaved with
 
 =Test-and-set= is an atomic operation. /It is a very important concept/. The first verison of MIPS only had load and save to be atomic, which made it stuck with the 3rd solution of getting milk. It is a asymmetric logic for tow contending threads, and one of them has to do busy waiting if it doesn't get the shared resources. It was a bad design decision. (On the other hand, we can always switch the locks of the critical sections for all threads but one to busy-waiting logics and get rid of all locks. Or, vice versa - switching the busy waiting logics to locks.)
 
+*Critical Section*:
+
+  - Doesn't mean no thread switching
+  - Doesn't mean no interrupt
+  - Mean there shouldn't be two threads running there that are protected by the same lock
+
 safety (the program never enters a bad state) and liveness (the program eventually enters a good state)?
 
 given our programming model that we have shared memory on which we can perform atomic loads and stores — is to set a flag when going to buy milk and to check
@@ -214,6 +220,8 @@ not only is it possible that the desired predicate on the state is no longer tru
 
 The modularity advantages of Mesa greatly simplify reasoning about an object’s core safety properties. For the properties we care most about (i.e., the safety properties that threads proceed only when they are supposed to) and for large programs where modularity matters, Mesa semantics seem vastly preferable.
 
+On the other hand, the Hoare-style requires passing locks around and couples the conditional variables with schedulers for ready queues, while Mesa-style gives one the freedom to run any type of schedulers in the ready queue which is completely independent from the conditional variables.
+
 Although multi-threaded programming has a reputation for being difficult, shared objects provide a basis for writing simple, safe code for multi-threaded programs.
 
 Signaling at the wrong time will never cause a waiting thread to proceed when it should not. Signal and broadcast can be regarded as hints that it might be a good time to proceed; if the hints prove to be wrong, no damage is done. You can always convert a signal to a broadcast, or add any number of signal or broadcast calls, without changing the semantics of a shared object. Avoiding extra signal and broadcast calls may matter for performance, but not for correctness.
@@ -240,13 +248,30 @@ for concurrent programs, the evidence is that the abstractions we describe are b
 
 We recommend that you be able to read and understand semaphores so you can understand legacy code, but that you only write new code using locks and condition variables. Almost always, code using locks and condition variables is clearer than the equivalent code using semaphores because it is more “self-documenting.”
 
-Semaphores are a huge step up, but:
+/Semaphores are a huge step up, but/:
 
 - They are confusing because they are dual purpose - both mutual exclusion and sheduling constraints.
 - /A cleaner idea/ is to use *locks* for mutual exclusion and *condition variables* for scheduling constraints.
   - When put these two things together, we get a *monitor*. It is a lock and zero or more condition variables for managing concurrent accesss to data.
   - Use of monitors is a programming paradigm,
   - /RULE/: must hold lock when doing condition variables
+    - Wait if necessary
+    - Signal when change something so any waiting threads can proceed
+
+A basic structure of the monitor-based program
+
+#+begin_example
+lock.acquire()
+while (need to wait):
+    condvar.wait()
+lock.release()
+
+# do something so no need to wait
+
+lock.acquire()
+condvar.signal()
+lock.release()
+#+end_example
 
 Always acquire the lock at the beginning of a method and release it right before the return. This extends the principle of consistent structure: pick one way to do things and always follow it. The benefit here is that it is easy to read code and see where the lock is or is not held because synchronization is structured on a method-by-method basis.
 
@@ -549,20 +574,18 @@ A promising avenue is to use automated tools for detecting memory races; a well-
 
 The best performance improvement is the transition from the non-working state to the working state. That’s infinite speedup. —John Ousterhout
 
-There are various kinds of scheduling policies and goals (e.g. maximizing throughput, minimizing wait time, or fairness). All of them are /to decide which job should be take off from the ready queue.
+There are various kinds of scheduling policies and goals (e.g. maximizing throughput, minimizing response time, or fairness). All of them are /to decide which job should be take off from the ready queue/.
 
 We begin with three simple policies — first-in-first-out, shortest-job-first, and round robin — as a way of illustrating scheduling concepts. Each approach has its own the strengths and weaknesses, and most resource allocation systems (whether for processors, memory, network or disk) combine aspects of all three.
 
-Because it minimizes overhead, if we have a fixed number of tasks, and those tasks only need the processor, FIFO will have the best throughput: it will complete the most tasks the most quickly. And
+Because it minimizes overhead, if we have a fixed number of tasks, and those tasks only need the processor, FIFO will have the /best throughput/: it will complete the most tasks the most quickly. And
 For this workload where tasks are roughly equal in size, FIFO is simple, minimizes average response time, and even maximizes throughput. Win-win!
 
-SJF can suffer from starvation and frequent context switches.
+SJF (/short job first/) can suffer from starvation and frequent context switches.
 
 The average response time for accessing web pages is dominated by the more frequent requests to short pages, while the bandwidth costs are dominated by the less frequent requests to large pages. This combination is almost ideal for using SJF for managing the allocation of network bandwidth by the server.
 
-policy that addresses starvation is to schedule tasks in a round robin fashion.
-
-A policy that addresses starvation is to schedule tasks in a round robin fashion.
+A policy that addresses starvation is to schedule tasks in a /round robin/ fashion. However, the time quantum for each job has to be carefully set. If it is too large, it is basically a FIFO. If it is too small, the overhead (context switching and caching) are too high. The quantum must be large with respect to conect switch.
 
 Modern processors often have multiple levels of cache to improve performance. Reloading just the first level on-chip cache from scratch can take several milliseconds; reloading the second and third level caches takes even longer. Thus, it is typical for operating systems to set their time slice interval to be somewhere between 10 and 100 milliseconds, depending on the goals of the system: better responsiveness or reduced overhead.
 
