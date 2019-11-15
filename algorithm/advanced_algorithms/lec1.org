@@ -141,3 +141,11 @@ insert(V, x=<c,i>):
   - Each x-fast trie contains $n/w$ itmes.
   - For each item, it actually is a "super" item, which contains $\theta{w}$ items. It contains somewhere between $w/2$ and $2w$ items.
   - We can built a binary search tree on each of these $\theta{w}$ items
+** References
+
+- Peter van Emde Boas. Preserving Order in a Forest in Less than Logarithmic Time. FOCS 1975: 75-84
+- Dan E. Willard. Log-Logarithmic Worst-Case Range Queries are Possible in Space Θ(N). Inf. Process. Lett. 17(2): 81-84 (1983)
+- Michael L. Fredman, Dan E. Willard: Surpassing the Information Theoretic Bound with Fusion Trees. J. Comput. Syst. Sci. 47(3): 424-436 (1993)
+- Yijie Han: Deterministic sorting in O(n log log n) time and linear space. STOC 2002: 602-608
+- Yijie Han, Mikkel Thorup. Integer Sorting in O(n FOCS 2002: 135-144 log n) Expected Time and Linear Space.
+- Martin Dietzfelbinger, Anna R. Karlin, Kurt Mehlhorn, Friedhelm Meyer auf der Heide, Hans Rohnert, Robert Endre Tarjan. Dynamic Perfect Hashing: Upper and Lower Bounds. SIAM J. Comput. 23(4): 738-761 (1994)
