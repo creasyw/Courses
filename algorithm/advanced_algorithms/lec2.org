@@ -1,0 +1,118 @@
+* Lecture 2
+
+** Overview of the fusion tree
+
+- Instead of binary searching tree, it has K-ary search tree where K > 2. Every node has =K= keys (buckets).
+  - For example, a node has an array of keys =[5, 15, 24, 32, 48]=
+  - The first child node is at the left-hand side of =5= with all childrens whose values are less than 5
+  - The second group of children has values that are between [5, 15]
+  - The third group has values between 15 and 24, and so on and so forth.
+- Static predecesor problem (Fredman and Willard, JCSS '93)
+- Dynamic fusion tree (Andersson and Thorup, JACM '07) - deterministic $O(\log_{w}{n} + \log\log_{n}) for update
+- (Raman ESA '96): expected time of $O(\log_{w}{n})$ for updates (in a randomized algorithm)
+- In all cases, the query time is $O(\log_{w}{n})$
+- It also requires polynomial time for preprocessing.
+- The basic structure with $k=\theta(w^{1/5})$ per node as the example above.
+- The height of the tree is $O{\log_{w^{1/5}}{n}) = O(\log_{w}{n})$
+- /we also need to figure out how long the algorithm spends on each node/. Then, the basic issue is how do we search a single Fusion tree node /in constant time/.
+  - In the last lecture, we use the 1st half of the number as its address of search space in the Word RAM to beat the lower bound of comparison-based search.
+  - We also needs "bit tricks" to achieve the constant time for each node in Fusion tree
+
+** General Data structure
+
+*** Basic ingredients
+
+ 1. Multiplications
+ 2. Sketch compression
+ 3. Word-level parallelism
+ 4. Most significant set bit (MSB)
+    - For any number, the time to find the MSB is $O(w)$
+    - From the rightmost bit to the left, perform the bitwise =AND= to mask out that bit and see if the result is zero or not.
+    - To beat the $O(w), we can do binary search to achieve $O(\log{w})$
+    - /The Word RAM can achieve $O(1)$/.
+    - Side note: for a 64-bits machine, the logarithm time is 6. The constant time of Word RAM might well be larger than 6... So, it is only useful when we're dealing with larger sizes of words (e.g. 1024 or more).
+
+*** Representation of a single node
+
+- For a given number in bit manner, go right for 1 and go left for 0 from the least significant bit to the most significant bit.
+  - /it feels like viterbi coding/...
+- Let $r < k$ be the number of the branch bits, and let their indices be $b_0 < b_1 <... < b_{r-1}$.
+- Define a sketch $sk(x)$ as keeping only the $x_{bi}$
+- Each $x_i$ has $sk(x_i)$ taking $r - O(w^{1/5})$ bits. That is, it can store all $sk(x_i) in $k * r = O(w^{2/5})$ bits. The information can fit into the single word.
+- As a result, we can use a pre-defined mask with bitwise =AND= in order to /only/ remember the "important" bits of each number.
+
+For any query $q$, define $\text{sk}(q)$ to be only the bits from branching levels, and let $r$ denote the number of branching levels, noting that $r<k$. For example, $\text{sk}(0010)$ will be $01$, as the first and third levels are the branching levels for our example fusion tree node.
+
+Suppose $\text{sk}(q)$ is between $\text{sk}(x_i)$ and $\text{sk}(x_{i+1})$. We would want for $q$ to be between $x_i$ and $x_{i+1}$. However, this is not necessarily the case. In the above picture, suppose that we queried $0101$. The sketch that we would get would be $00$, which is not in the correct position.
+
+Let $y$ be the node in our binary tree where the paths for the query $q$ and the path for $x_i$ or $x_{i+1}$ first diverges. If the path for $q$ falls off the right, let $e=y0111\ldots 1$, where here we denote $y$ as the bits corresponding to the path from the root to the node $y$. If $q$ falls off from the other paths to the left, then let $e=y1000\ldots 0$. The claim is that $\text{sk}(e)$ fits among the $\text{sk}(x_i)$ precisely where $q$ fits among the $x_i$ (exercise for you).
+
+Thus, after finding that $\text{sk}(q)$ is between $\text{sk}(x_i)$ and $\text{sk}(x_{i+1})$ (which we will show how to do later), we find $y$ by taking $\text{max}(\text{MSB}(x_i\text{ XOR } q), \text{MSB}(x_{i+1}\text{ XOR }q))$ (where MSB is most significant bit and XOR is bitwise exclusive or). We then form $e$, compute $\text{sk}(e)$, and find which sketches it is between, telling us the predecessor/sucessor of $q$.
+
+/By far, we still don't know how to form this kind of nodes. But the premise is that assuming we've had all the nodes available, and we the algorithm gets into an arbitrary node, it only needs constant time to know where (which child branch) to go./
+
+*** How to form sketches?
+
+- We'll compress down to $O(r^4)$ bits
+- The important bits will be represented with some (known) amount of 0-spacing inbetween.
+- Suppose we multiply $x * m$
+
+#+begin_equation
+x = \sum{i=0}[r-1}x_b*2^{b_i}, m = (\sum{i=0}[r-1}2^{m_i})
+#+end_equation
+
+/Lemma/: we can choose the $m_i$ subjected to:
+
+1. All the $b_i + m_j$ are distinct
+2. $b_0+m_0 < b_1+m_1 < ... < b_{r-1}+m_{r-1}$
+3. The range of the bits that spends from the biggest branch to the smallest branch - $(b_{r-1}+m_{r-1}) - (b_0+m_0) - O(r^4)$
+   - These are the "important" bits, which is at most $O(r^4)$
+   - We can also shift it to the in each given number as we mask out the irrelevant parts
+   - That is, the "essential" information is compressed from $O(w)$ to $O(r^4)$
+
+The point is
+
+#+begin_equation
+x - m = \sum{r-1}{i=0}\sum{r-1}{j=0} x_{b_i}2^{b_i+m_j}
+#+end_equation
+
+As long as $b_i+m_j$ are all distinct, we don't have to worry about carries. As a result, all data points can be projected to the buskets in the (2) step, and we can mask out all irrelevant information.
+
+- We first mask the $b_i$ important bits from $x_i$ to get $x$
+- Then we do $x*m$, mask out the bit $m_i$
+- Shift down so that $b_0+m_0$ maps to the least significant bit (LSB)
+
+Proof of Lemma:
+
+1. (Proof by induction)
+   - Suppose we've picked $m_1', m_2', .., m_{t-1}'$, subject to all the sums of $b_i'+m_j'$ are distinct (mod $r^3$) where $t<r$.
+   - Now we want to pick $m_t'$. It must avoid $m_i'- b_j + b_z$, which have $r*t^2$ values. The number of values is less than $r^3$
+   - Set $m_i = m_i'+ir^2+((w-b_i) rounded down to the nearest multiple of r^3)$
+   - Do the sketch in constant time, which involves a mask, a multiplication, another mask, and finally a bit shift.
+2. Sketch compression - now that we have sketches. Suppose node has $x_0 < ... < x_{k-1}$
+   - $sk(node) = 1 * sk(x_0) + 1 * sk(x_1) + ... + 1 * sk(x_{k-1})*$
+   - $sk^k(q) = 0 * sk(q) + 0 * sk(q) + ... + 0 * sk(q)$
+   - Subtract these two sketches $sk(node) - sk^k(q)$
+   - Mask out the substraction.
+   - In the resulting product, we note that at the most significant bit of the least significant block we can read off whether the box corresponding to $\text{sk}(x_{k-1})$ has a $1$, and looking at this position in the $k$'th least significant block of the product tells us the number of sketches that have a $1$.
+3. Word-level parallelism
+   - To access this value we then bit shift and mask.
+   - The appearance of the 1's is monotone, so we can just count the number of 1's to find the index of the first 1 (want MSB).
+   - All the 1's contribute by adding to the operation of multiplication.
+4. Most significant bit (MSB)
+   - The basic idea is to split x into $\sqrt{w}$ chunks of $\sqrt{w}$ bits each
+   - Create mask F with 1 and following by $\sqrt{w} -1$ of 0's for each chunk
+   - $x AND F$: tells us whether the leading bit of a block is $1$
+   - Take $x\text{ XOR }(x\text{ AND } F)$, which clears the leading bits from each block.
+   - Do a similar trick as in the previous section, where we take $F - (x\text{ XOR }(x\text{ AND } F))$. The first bit of each block tells us whether there exists a non-zero element apart from the leading element (note we need to XOR with $F$ to make it so that a $1$ corresponds a $1$ existing, rather than no $1$s existing).
+   - Finally, take $(x\text{ AND } F)\text{ OR }(F\text{ XOR } (F\text{ AND }(F - (x\text{ XOR }(x\text{ AND } F))))$, and now the first bit of each block tells us whether there exists a $1$ in the block.
+
+/Lemma/: when the $b_i$ are $i\sqrt{w} + \sqrt{w} - 1$, there is an $m$ such that mu;tiplying by $m$ makes all the important bits consecutive *with no gaps*.
+
+As a result, we can get the MSB in a word in constant time. So, do parallel comparison between the MSB and the bit shifted 00..010...0 to know the index of the cluster.
+
+** References
+
+1. Michael Fredman, Dan Willard. Surpassing the Information Theoretic Bound with Fusion Trees. J. Comput. Syst. Sci., 47(3):424–436, 1993.
+2. Arne Andersson, Mikkel Thorup. Dynamic ordered sets with exponential search trees. J. ACM, 54(3):13, 2007.
+3. Rajeev Raman. Priority Queues: Small, Monotone and Trans-dichotomous. ESA, 121-137, 1996.
