@@ -24,13 +24,24 @@ ghci> rightTriangles'
 [(6,8,10)]
 #+end_src
 
-- this is just so cool!
+- this is just so cool! It has nested loops and conditions in a single list comprehension.
 
-Haskell has a static type system, in which the type of every expression is known at compile time. It leads to safer code.
+* Types and Typeclasses
 
-It is a good practice to write the type of a function before actually implement it, except for the very short ones.
+Haskell has a static type system. The type of every expression is known at compile time, which leads to safer code. Furthermore, Haskell has type inference. A type is a kind of label that every expression has. It tells us in which category of things that expression fits.
 
-Int and Integer both stand for the type of integers. The difference is that the latter one is not bounded.
+Functions also have types. When writing our own functions, we can choose to give them an explicit type declaration. This is generally considered to be good practice except when writing very short functions.
+
+Int and Integer both stand for the type of integers. The difference is that the latter one is /not bounded/.
+
+Here's a simple function that takes three integers and adds them together:
+
+#+begin_src haskell
+addThree :: Int -> Int -> Int -> Int
+addThree x y z = x + y + z
+#+end_src
+
+This signature makes it possible to partially apply input parameters to a function and use it to generate new functions.
 
 A typeclass can be regarded as an interface that define some behavior. If a type is a part of a typeclass, that means that it supports and implement the behavior the typeclass describes.
 
