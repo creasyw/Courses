@@ -61,7 +61,15 @@ The signature of =read=  can generate a typeclass, which if there is no other op
 
 Most expressions are such that the compiler can infer what their type is by itself. But sometimes, the compiler doesn't know whether to return a value of type Int or Float for an expression like read "5". To see what the type is, Haskell would have to actually evaluate read "5". But since Haskell is a statically typed language, it has to know all the types before the code is compiled (or in the case of GHCI, evaluated). So we have to tell Haskell: "Hey, this expression should have this type, in case you don't know!".
 
-------------
+* Syntax in Functions
+
+The pattern matching in Haskell is in a whole new level and fucking crazy...
+
+#+begin_src haskell
+lucky :: (Integral a) => a -> String
+lucky 7 = "LUCKY NUMBER SEVEN!"
+lucky x = "Sorry, you're out of luck, pal!"
+#+end_src
 
 The pattern matching does not include the keyword "break", and will always exit after executing any one of the branches. The recommanded practice of writing cases from specific to general in LISP becomes mandatory here. Besides, there should always be a "catch-all" pattern at the end of the matching. Without it, it is possible to terminate the program while running when it fails to do the pattern matching.
 

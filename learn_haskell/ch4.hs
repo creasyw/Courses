@@ -1,3 +1,10 @@
+-- basic fucking crazy patten matching
+-- I still don't understand why I can only use Integral, rather than Num or
+-- Fractional here.
+foo :: (Integral a) => a -> String
+foo 5 = "five"
+foo x = "not five"
+
 -- patter matching could be achieve either from repeating the name of
 -- the function (in the exactly the same form) or using
 -- "case". ALthough guards could do similar stuff, it evaluates
