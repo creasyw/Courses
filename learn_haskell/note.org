@@ -71,7 +71,26 @@ lucky 7 = "LUCKY NUMBER SEVEN!"
 lucky x = "Sorry, you're out of luck, pal!"
 #+end_src
 
-The pattern matching does not include the keyword "break", and will always exit after executing any one of the branches. The recommanded practice of writing cases from specific to general in LISP becomes mandatory here. Besides, there should always be a "catch-all" pattern at the end of the matching. Without it, it is possible to terminate the program while running when it fails to do the pattern matching.
+The pattern matching does not include the keyword "break", and will /always exit after executing any one of the branches/. The recommanded practice of writing cases from specific to general in LISP becomes mandatory here, because /it *sequentially* checks all patterns from the first to the last/. Besides, there should always be a "catch-all" pattern at the end of the matching. Without it, it is possible to terminate the program while running when it fails to do the pattern matching.
+
+Another important use of pattern matching is with the list -
+
+#+begin_src haskell
+>> x:y:z:zs = [1,2,3,4,5,6,7]
+>> x
+  1
+>> zs
+  [4,5,6,7]
+#+end_src
+
+Note that if you want to bind to several variables (even if one of them is just =_= and doesn't actually bind at all), we have to surround them in parentheses.
+
+#+begin_src haskell
+length' []     = 0
+length' (x:xs) = 1 + length' xs
+#+end_src
+
+There's also a thing called /as patterns/. Those are a handy way of breaking something up according to a pattern and binding it to names whilst still keeping a reference to the whole thing. You do that by putting a name and an @ in front of a pattern. For instance, the pattern =xs@(x:y:ys)=. This pattern will match exactly the same thing as =x:y:ys= but you can easily get the whole list via =xs= instead of repeating yourself by typing out =x:y:ys= in the function body again.
 
 Although guards are similar to pattern matching, but they are fundamentally different. Every expression behind the guards will return a boolean result, which in turn dictate whether this branch will be executed. Furthermore, any condition within guards could use pattern matching to disassemble something, the result of the matching is either success or failed.
 

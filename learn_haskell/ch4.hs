@@ -1,7 +1,9 @@
 -- basic fucking crazy patten matching
--- I still don't understand why I can only use Integral, rather than Num or
--- Fractional here.
-foo :: (Integral a) => a -> String
+-- It is interesting that only Integral, rather than Num or Fractional, can be
+-- used in the signature with the given implementation. My guess is that it
+-- relates to pattern matching, but not sure.
+-- TODO: check the underlying mechanism of pattern matching
+foo :: Integral a => a -> String
 foo 5 = "five"
 foo x = "not five"
 
@@ -10,15 +12,18 @@ foo x = "not five"
 -- "case". ALthough guards could do similar stuff, it evaluates
 -- expressions and returns boolean value deciding if the part of code
 -- should be executed.
+factorial' :: Integral a => a -> a
+factorial' 0 = 1
+factorial' x = x * factorial'(x - 1)
+
 factorial :: Integral a => a -> a
 factorial x
   | x <= 1 = 1
-  | otherwise = x * factorial (x-1)
+  | otherwise = x * factorial (x - 1)
 
-length' [] = 0
-length' (x:xs) = 1 + length' xs
+length' xs = foldr (\ x -> (+) 1) 0 xs
 
-length1 lst = case lst of [] -> 0
+length1 lst = case lst of []     -> 0
                           (x:xs) -> 1 + length1 xs
 
 -- inline pattern matching with bars
