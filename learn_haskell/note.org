@@ -92,7 +92,9 @@ length' (x:xs) = 1 + length' xs
 
 There's also a thing called /as patterns/. Those are a handy way of breaking something up according to a pattern and binding it to names whilst still keeping a reference to the whole thing. You do that by putting a name and an @ in front of a pattern. For instance, the pattern =xs@(x:y:ys)=. This pattern will match exactly the same thing as =x:y:ys= but you can easily get the whole list via =xs= instead of repeating yourself by typing out =x:y:ys= in the function body again.
 
-Although guards are similar to pattern matching, but they are fundamentally different. Every expression behind the guards will return a boolean result, which in turn dictate whether this branch will be executed. Furthermore, any condition within guards could use pattern matching to disassemble something, the result of the matching is either success or failed.
+Whereas patterns are a way of making sure a value conforms to some form and deconstructing it, guards are a way of testing whether some property of a value (or several of them) are true or false. That sounds a lot like an if statement and it's very similar. The thing is that guards are a lot more readable when you have several conditions and they play really nicely with patterns.
+
+Although guards look similar to pattern matching, but they are fundamentally different. Every expression behind the guards will return a boolean result, which in turn dictate whether this branch will be executed. Furthermore, any condition within guards could use pattern matching to disassemble something, the result of the matching is either success or failed.
 
 Very similar to where bindings are let bindings. Where bindings are a syntactic construct that let you bind to variables at the end of a function and the whole function can see them, including all the guards. Let bindings let you bind to variables anywhere and are expressions themselves, but are very local, so they don't span across guards. Just like any construct in Haskell that is used to bind values to names, let bindings can be used for pattern matching.
 
