@@ -1,3 +1,5 @@
+import           Data.Char
+
 -- basic fucking crazy patten matching
 -- It is interesting that only Integral, rather than Num or Fractional, can be
 -- used in the signature with the given implementation. My guess is that it
@@ -45,10 +47,9 @@ bmiTell weight height
     bmi                   = weight / height ^ 2
     (skinny, normal, fat) = (18.5, 25.0, 30.0)
 
--- input is a list of pair tuples, and the output is a list of
--- floats. It is a little confusing to have three variables listed in
--- the first part of list comprehension. The reason for that is to
--- make the two variables within the pair visible to the "where" clause.
+-- input is a list of pair tuples, and the output is a list of floats. It is
+-- super cool to use =where= to define the function afterwards. It is the same
+-- as layers of abstractions in a math theory
 calcBmis :: (RealFloat a) => [(a, a)] -> [a]
 calcBmis xs = [ bmi weight height | (weight, height) <- xs ]
     where bmi weight height = weight / height ^ 2
@@ -63,3 +64,18 @@ a `myCompare` b
     | a > b     = GT
     | a == b    = EQ
     | otherwise = LT
+
+-- This is a whole new level of pattern matching for sure. It matches the
+-- expression
+describeList :: [a] -> String
+describeList xs = "The list is" ++ case xs of
+    []  -> "empty"
+    [_] -> "a singleton list"
+    xs  -> "a long list with length " ++ [intToDigit (length xs)]
+
+describeList' :: [a] -> String
+describeList' xs = "The list is" ++ what xs
+  where
+    what []  = "empty"
+    what [_] = "a singleton list"
+    what xs  = "a long list with length " ++ [intToDigit (length xs)]
