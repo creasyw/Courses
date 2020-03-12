@@ -10,6 +10,13 @@ dividTen = (10/)
 -- the missing variable is at the beginning of original expression
 isUpperCase = (`elem` ['A'..'Z'])
 
+-- higher order function
+-- It is interesting that in the signature, =->= is naturally right-associative,
+-- while in the actual function the parameters (data or function) are natually
+-- left-associative
+applyTwice :: (a -> a) -> a -> a
+applyTwice f x = f (f x)
+
 zipWith' :: (a -> b -> c) -> [a] -> [b] -> [c]
 zipWith' _ [] _ = []
 zipWith' _ _ [] = []
@@ -41,12 +48,11 @@ quicksort (x:xs) =
       larger = quicksort (filter (>=x) xs)
   in smaller ++ [x] ++ larger
 
--- find the largest number under 100000 that's divisible by 3829. The
--- `head` will make the iteration perform until it finds the first
--- value that meets the criterion. LAZINESS!! Besides, the definition
--- of the array is also a good example of defining infinite
--- array. Another side note, the anonymous function could be replaced
--- by a variable and use `where` to define it latter in the code
+-- find the largest number under 100000 that's divisible by 3829. The `head`
+-- will make the iteration perform until it finds the first value that meets the
+-- criterion. LAZINESS!! Besides, the definition of the array is also a good
+-- example of defining infinite array. Another side note, the anonymous function
+-- could also use `where` to define a function latter in the code
 largestDivisible1 = head (filter (\x -> x `mod` 3829 == 0) [100000, 99999..])
 
 -- dealing with nested list with "map"
@@ -55,9 +61,13 @@ testMap =
   in map (map (^2)) x
 
 -- example of lazy evaluation
+-- By default, the lists are infinite for both increase and decreasing
+-- directions. =takeWhile= is important for the lazy evaluation to stop
 sumOddSquare l = sum (takeWhile (< l) [n^2 | n<-[1..], odd(n^2)])
+sumOddSquare1 l = sum (takeWhile (< l) (filter odd (map (^2) [1..])))
 
 -- Collatz sequence
+-- this should be the poster child
 chain 1 = [1]
 chain n
   | even n = n : chain (div n 2)
@@ -74,9 +84,11 @@ twenty = (listOfFuns !! 4) 5
 
 -- reduce list to a single value with pattern matching of empty list
 -- encapsulated into higher order function (folds)
+sum1 :: (Num a) => [a] -> a
 sum1 xs = foldl (\acc x -> acc + x) 0 xs
 -- 1. the input variable can be eliminated, and only define the function
 -- 2. using curry to make it even more concise
+sum2 :: (Num a) => [a] -> a
 sum2 = foldl (+) 0
 
 elem' y ys = foldl (\acc x -> if x == y then True else acc) False ys
@@ -87,42 +99,42 @@ elem' y ys = foldl (\acc x -> if x == y then True else acc) False ys
 inconvenientType :: Integral a => [a] -> Float
 inconvenientType xs = foldl (\acc k -> acc / (fromIntegral k :: Float)) 1.0 xs
 
--- more examples of fold
--- they're also good examples of "curry", if the right-most
--- variable(s) of the function body are those needs to input, it's
--- ok/better to left them blank
-
-maximum' :: (Ord a) => [a] -> a
-maximum' = foldr1 (\x acc -> if x > acc then x else acc)
-
-reverse' = foldl (\acc x -> x : acc) []
-product' = foldr1 (*)
-
--- filter2 :: (a -> Bool) -> [a] -> a
-filter2 p = foldr (\x acc -> if p x then x:acc else acc) []
-
--- NOTE: there are nontrivial diff between foldl and foldr
-  -- foldl :: (a -> b -> a) -> a -> [b] -> a
-  -- foldr :: (a -> b -> b) -> b -> [a] -> b
--- It means for "foldl" the accumulator should be the 1st variable in
--- anonymous function, which "foldr" put accumulator in the 2nd place.
-
--- head and last are also good example for the accumulator.
--- They also make no sense for empty list, so use foldr1/foldl1 instead.
-head' = foldr1 (\x _ -> x)
-last' = foldl1 (\_ x -> x)
-
--- exmaple of scans
--- How many elements are there for the sum of roots of all natrual
--- numbers to exceed 1000?
--- it also takes advantage of lazy evaluation.
-sqrtSums = length (takeWhile (<1000) (scanl1 (+) (map sqrt [1..]))) + 1
-
--- ($) could get rid of parentheses, as well as means that function
--- application can be treated just like another function
-fancyDollar = map ($ 3) [(4+), (^2), (10*), (*8), sqrt]
-
--- The (negate. abs) is equal to (\x-> negate (abs x))
-functionComp = map (negate . abs) [5, -3, -6, 7, 2, -3]
-
-addSquareSum = sum . takeWhile (<10000) . filter odd $ map (^2) [1..]
+-- -- more examples of fold
+-- -- they're also good examples of "curry", if the right-most
+-- -- variable(s) of the function body are those needs to input, it's
+-- -- ok/better to left them blank
+--
+-- maximum' :: (Ord a) => [a] -> a
+-- maximum' = foldr1 (\x acc -> if x > acc then x else acc)
+--
+-- reverse' = foldl (\acc x -> x : acc) []
+-- product' = foldr1 (*)
+--
+-- -- filter2 :: (a -> Bool) -> [a] -> a
+-- filter2 p = foldr (\x acc -> if p x then x:acc else acc) []
+--
+-- -- NOTE: there are nontrivial diff between foldl and foldr
+--   -- foldl :: (a -> b -> a) -> a -> [b] -> a
+--   -- foldr :: (a -> b -> b) -> b -> [a] -> b
+-- -- It means for "foldl" the accumulator should be the 1st variable in
+-- -- anonymous function, which "foldr" put accumulator in the 2nd place.
+--
+-- -- head and last are also good example for the accumulator.
+-- -- They also make no sense for empty list, so use foldr1/foldl1 instead.
+-- head' = foldr1 (\x _ -> x)
+-- last' = foldl1 (\_ x -> x)
+--
+-- -- exmaple of scans
+-- -- How many elements are there for the sum of roots of all natrual
+-- -- numbers to exceed 1000?
+-- -- it also takes advantage of lazy evaluation.
+-- sqrtSums = length (takeWhile (<1000) (scanl1 (+) (map sqrt [1..]))) + 1
+--
+-- -- ($) could get rid of parentheses, as well as means that function
+-- -- application can be treated just like another function
+-- fancyDollar = map ($ 3) [(4+), (^2), (10*), (*8), sqrt]
+--
+-- -- The (negate. abs) is equal to (\x-> negate (abs x))
+-- functionComp = map (negate . abs) [5, -3, -6, 7, 2, -3]
+--
+-- addSquareSum = sum . takeWhile (<10000) . filter odd $ map (^2) [1..]

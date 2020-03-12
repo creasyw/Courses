@@ -110,3 +110,45 @@ Haskell takes that concept and one-ups it. Like the name implies, case expressio
 Recursion is important to Haskell because unlike imperative languages, you do computations in Haskell by /declaring what something is instead of declaring how you get it/. That's why there are no while loops or for loops in Haskell and instead we many times have to use recursion to declare what something is.
 
 There's a pattern for recursion. Usually you define an edge case and then you define a function that does something between some element and the function applied to the rest. It doesn't matter if it's a list, a tree or any other data structure. So when trying to think of a recursive way to solve a problem, try to think of when a recursive solution doesn't apply and see if you can use that as an edge case, think about identities and think about whether you'll break apart the parameters of the function (for instance, lists are usually broken into a head and a tail via pattern matching) and on which part you'll use the recursive call.
+
+* Higher order functions
+
+Haskell functions can take functions as parameters and return functions as return values. A function that does either of those is called a higher order function. Higher order functions aren't just a part of the Haskell experience, they pretty much are the Haskell experience. It turns out that if you want to define computations by defining what stuff is instead of defining steps that change some state and maybe looping them, higher order functions are indispensable. They're a really powerful way of solving problems and thinking about programs.
+
+Every function in Haskell officially only takes one parameter. If we call a function with too few parameters, we get back a partially applied function, meaning a function that takes as many parameters as we left out. Using partial application (calling functions with too few parameters, if you will) is a neat way to create functions on the fly so we can pass them to another function or to seed them with some data.
+
+The type of =max= is =max :: (Ord a) => a -> a -> a=. That can also be written as =max :: (Ord a) => a -> (a -> a)=. That could be read as: =max= takes an =a= and returns (that's the =->=) =a= function that takes an =a= and returns an =a=. /That's why the return type and the parameters of functions are all simply separated with arrows/.
+
+In functional programming, that pattern is achieved with mapping and filtering. You make a function that takes a value and produces some result. We map that function over a list of values and then we filter the resulting list out for the results that satisfy our search. /Thanks to Haskell's laziness, even if you map something over a list several times and filter it several times, it will only pass over the list once/.
+
+Lambdas are basically anonymous functions that are used because we need some functions only once. Normally, we make a lambda with the sole purpose of passing it to a higher-order function. To make a lambda, we write a \ (because it kind of looks like the greek letter lambda if you squint hard enough) and then we write the parameters, separated by spaces. After that comes a -> and then the function body. We usually surround them by parentheses, because otherwise they extend all the way to the right.
+
+The right fold, =foldr= works in a similar way to the left fold, only the accumulator eats up the values from the right. Also, the left fold's binary function has the accumulator as the first parameter and the current value as the second one (so =\acc x -> ...=), the right fold's binary function has the current value as the first parameter and the accumulator as the second one (so =\x acc -> ...=). It kind of makes sense that the right fold has the accumulator on the right, because it folds from the right side. /One big difference/ is that right folds work on infinite lists, whereas left ones don't! To put it plainly, if you take an infinite list at some point and you fold it up from the right, you'll eventually reach the beginning of the list. However, if you take an infinite list at a point and you try to fold it up from the left, you'll never reach an end!
+
+*Folds can be used to implement any function where you traverse a list once, element by element, and then return something based on that. Whenever you want to traverse a list to return something, chances are you want a fold*. That's why folds are, along with maps and filters, one of the most useful types of functions in functional programming.
+
+Whereas normal function application (putting a space between two things) has a really high precedence, the =$= function has the lowest precedence. Function application with a space is left-associative (so =f a b c= is the same as =((f a) b) c)=), function application with =$= is right-associative.
+
+Apart from getting rid of parentheses, =$= means that function application can be treated just like another function. That way, we can, for instance, map function application over a list of functions (this is sick...). When a =$= is encountered, the expression on its right is applied as the parameter to the function on its left
+
+#+begin_src haskell
+ghci> map ($ 3) [(4+), (10*), (^2), sqrt]
+[7.0,30.0,9.0,1.7320508075688772]
+#+end_src
+
+In Haskell, function composition with the =.= function is defined like so: (this is even sicker)
+
+#+begin_src haskell
+(.) :: (b -> c) -> (a -> b) -> a -> c
+f . g = \x -> f (g x)
+#+end_src
+
+#+begin_src haskell
+ghci> map (\x -> negate (abs x)) [5,-3,-6,7,-3,2,-19,24]
+[-5,-3,-6,-7,-3,-2,-19,-24]
+
+ghci> map (negate . abs) [5,-3,-6,7,-3,2,-19,24]
+[-5,-3,-6,-7,-3,-2,-19,-24]
+#+end_src
+
+Many times, a point free style is more readable and concise, because it makes you think about functions and what kind of functions composing them results in instead of thinking about data and how it's shuffled around. You can take simple functions and use composition as glue to form more complex functions. However, many times, writing a function in point free style can be less readable if a function is too complex. That's why making long chains of function composition is discouraged. The prefered style is to use let bindings to give labels to intermediary results or split the problem into sub-problems and then put it together so that the function makes sense to someone reading it instead of just making a huge composition chain.
