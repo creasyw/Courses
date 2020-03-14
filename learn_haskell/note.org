@@ -180,3 +180,5 @@ module Geometry
 #+end_src
 
 When making a module, we usually export only those functions that act as a sort of interface to our module so that the implementation is hidden. Modules can also be given a hierarchical structures. Each module can have a number of sub-modules and they can have sub-modules of their own.
+
+The next time you find yourself writing a file that's really big and has a lot of functions, try to see which functions serve some common purpose and then see if you can put them in their own module. You'll be able to just import your module the next time you're writing a program that requires some of the same functionality.
