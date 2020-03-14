@@ -15,18 +15,18 @@ firstStock stock = head (dropWhile (\(val, y, m, d) -> val < 1000) stock)
 
 
 tryout_buildin = do
-  putStrLn $ intercalate " " ["hey","there","guys"]
-  putStrLn $ intersperse '.' "DOG"
-  -- transpose uses the iteration to reverse the row and col of the
-  -- list, so it doesn't mind if the list is a 'real' matrix
-  putStrLn $ show $ transpose [[1,2,3],[4,5,6],[7,8,9]]
-  putStrLn $ show $ sum $ takeWhile (<10000) $ map (^3) [1..]
+    putStrLn $ intercalate " " ["hey", "there", "guys"]
+    putStrLn $ intersperse '.' "DOG"
+    -- transpose uses the iteration to reverse the row and col of the
+    -- list, so it doesn't mind if the list is a 'real' matrix
+    putStrLn $ show $ transpose [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    putStrLn $ show $ sum $ takeWhile (< 10000) $ map (^ 3) [1 ..]
 
 
 -- find how many times each element appears in the list
 -- To be a member of Ord, a type must first satisfy the class of Eq
 -- countDup :: (Ord a) => [a] -> [(a, Int)]
-countDup = map (\l@(x:xs) -> (x, length l)) . group . sort
+countDup = map (\l@(x : xs) -> (x, length l)) . group . sort
 
 
 -- concatMap comes to handy when the function that is about to apply
@@ -40,8 +40,12 @@ rep n = concatMap (replicate n)
 -- initial value is False. The takeWhile is arguably better since it
 -- could also deal with infinite lists
 search needle haystack =
-  let nlen = length needle
-  in  foldl (\acc x -> if take nlen x == needle then True else acc) False (tails haystack)
+    let nlen = length needle
+    in
+        foldl
+            (\acc x -> if take nlen x == needle then True else acc)
+            False
+            (tails haystack)
 
 
 -- check how many times each element appears in a list
@@ -50,7 +54,7 @@ search needle haystack =
 -- sub-list in the list into a list of tuples.
 -- occurance [1,1,1,1,2,2,2,2,3,3,2,2,2,5,6,7]
 -- ==> [(1,4),(2,7),(3,2),(5,1),(6,1),(7,1)]
-occurance = map (\l@(x:xs) -> (x, length l)) . group . sort
+occurance = map (\l@(x : xs) -> (x, length l)) . group . sort
 
 
 -- neither the "takeWhile" nor the "dropWhile" serve the purpose more
@@ -69,34 +73,42 @@ zeroCross :: (Num a, Ord a) => [a] -> [[a]]
 -- The condition below is much better than
 -- `\x y -> (x>0) && (y>0) || (x<=0) && (y<=0)`
 -- A better solution: zeroCross = groupBy (\x y -> (x>0) == (y>0))
-zeroCross = groupBy ((==) `on` (>0))
+zeroCross = groupBy ((==) `on` (> 0))
 
 zeroCross' :: (Num a, Ord a) => [a] -> [[a]]
-zeroCross' = groupBy ((==) `on` (>0))
+zeroCross' = groupBy ((==) `on` (> 0))
 
 -- this function performs the same as `words`
-sentenceToList = filter (not . any isSpace). groupBy ((==) `on` isSpace)
+sentenceToList = filter (not . any isSpace) . groupBy ((==) `on` isSpace)
 
 -- Caesar cipher
 -- It basically does three times of mapping: from msg to the list of
 -- ASCII numbers, then to the shifted (coded) ASCII numbers, and
 -- finally mapping back to the characters
 encode shift msg =
-  let ords = map ord msg
-      shifted = map (+ shift) ords
-  in map chr shifted
+    let
+        ords    = map ord msg
+        shifted = map (+ shift) ords
+    in map chr shifted
 
 decode shift msg = encode (negate shift) msg
 
 
 -- sample data for list/map example
-phoneBook =  [("betty","555-2938") ,("bonnie","452-2928") ,("patsy","493-2928") ,("lucille","205-2928") ,("wendy","939-8282") ,("penny","853-2492")]
+phoneBook =
+    [ ("betty"  , "555-2938")
+    , ("bonnie" , "452-2928")
+    , ("patsy"  , "493-2928")
+    , ("lucille", "205-2928")
+    , ("wendy"  , "939-8282")
+    , ("penny"  , "853-2492")
+    ]
 
 -- `snd` and its counterpart `fst` are similar to `car` and `cdr` in
 -- the Racket. `head` will terminate the following evaluation once it
 -- find the first match.
 findKey key [] = Nothing
-findKey key xs = snd. head . filter (\(k, v) -> key == k) $ xs
+findKey key xs = snd . head . filter (\(k, v) -> key == k) $ xs
 
 -- It can also be written as revursive function with edge case as an
 -- empty list. Then, splitting a list into a head and a tail,

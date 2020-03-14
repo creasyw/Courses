@@ -152,3 +152,31 @@ ghci> map (negate . abs) [5,-3,-6,7,-3,2,-19,24]
 #+end_src
 
 Many times, a point free style is more readable and concise, because it makes you think about functions and what kind of functions composing them results in instead of thinking about data and how it's shuffled around. You can take simple functions and use composition as glue to form more complex functions. However, many times, writing a function in point free style can be less readable if a function is too complex. That's why making long chains of function composition is discouraged. The prefered style is to use let bindings to give labels to intermediary results or split the problem into sub-problems and then put it together so that the function makes sense to someone reading it instead of just making a huge composition chain.
+* Modules
+
+A Haskell module is a collection of related functions, types and typeclasses. A Haskell program is a collection of modules where the main module loads up the other modules and then uses the functions defined in them to do something. Having code split up into several modules has quite a lot of advantages. If a module is generic enough, the functions it exports can be used in a multitude of different programs. If your own code is separated into self-contained modules which don't rely on each other too much (we also say they are loosely coupled), you can reuse them later on. It makes the whole deal of writing code more manageable by having it split into several parts, each of which has some sort of purpose.
+
+When you do import =Data.List=, all the functions that Data.List exports become available in the global namespace, meaning that you can call them from wherever in the script. To avoid name clashes, one can
+
+1. Only import the functions that are needed =import Data.List (nub, sort)=
+2. Exclude the functions that are not necessary or have clashed names =import Data.List hiding (nub)=
+3. Require the import path in the script =import qualified Data.Map=, or =import qualified Data.Map as M=.
+
+The last option makes it so that if we want to reference Data.Map's filter function, we have to do Data.Map.filter, whereas just filter still refers to the normal filter we all know and love, or to reference =Data.Map= 's =filter= function, we just use =M.filter=. (I'd prefer the 3rd option, but not so much for name clashes. It is rather for readability and maintainability - it is much easier to identify all functions that relates to one specific import.)
+
+Almost every programming language enables you to split your code up into several files and Haskell is no different. When making programs, it's good practice to take functions and types that work towards a similar purpose and put them in a module. That way, you can easily reuse those functions in other programs by just importing your module.
+
+At the beginning of a module, we specify the module name. Then, we specify the functions that it exports and after that, we can start writing the functions. (It is like defining the interface up from)
+
+#+begin_src haskell
+module Geometry
+( sphereVolume
+, sphereArea
+, cubeVolume
+, cubeArea
+, cuboidArea
+, cuboidVolume
+) where
+#+end_src
+
+When making a module, we usually export only those functions that act as a sort of interface to our module so that the implementation is hidden. Modules can also be given a hierarchical structures. Each module can have a number of sub-modules and they can have sub-modules of their own.
