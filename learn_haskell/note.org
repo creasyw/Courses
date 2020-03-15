@@ -245,3 +245,58 @@ I'm not sure how familiar you are with the concept of a =Monad= yet, but you hav
 Anyway, Monads like =IO= map types to new types that represent "computations that result in values" and you can lift functions into =Monad= types via a very =fmap=-like function called   =liftM= that turns a regular function into a "computation that results in the value obtained by evaluating the function."
 
 You have probably guessed (if you have read this far) that =Maybe= is also a =Monad=. It represents "computations that could fail to return a value". Just like with the =fmap= example, this lets you do a whole bunch of computations without having to explicitly check for errors after each step. And in fact, the way the =Monad= instance is constructed, a computation on =Maybe= values *stops* as soon as a =Nothing= is encountered, so it's kind of like an immediate abort or a valueless return in the middle of a computation.
+* Making our own types and typeclasses
+
+Value constructors are just functions that take the fields as parameters and return a value of some type (like Shape) as a result. So when we choose not to export them, we just prevent the person importing our module from using those functions, but if some other functions that are exported return a type, we can use them to make values of our custom data types.
+
+Not exporting the value constructors of a data types makes them more abstract in such a way that we hide their implementation. Also, whoever uses our module can't pattern match against the value constructors.
+
+#+begin_src haskell
+data Person = Person
+                { firstName   :: String
+                , lastName    :: String
+                , age         :: Int
+                , height      :: Float
+                , phoneNumber :: String
+                , flavor      :: String
+                }
+  deriving (Show)
+#+end_src
+
+So instead of just naming the field types one after another and separating them with spaces, we use curly brackets. First we write the name of the field, for instance, firstName and then we write a double colon :: (also called Paamayim Nekudotayim, haha) and then we specify the type. The resulting data type is exactly the same. The main benefit of this is that it creates functions that lookup fields in the data type. By using record syntax to create this data type, Haskell automatically made these functions: firstName, lastName, age, height, phoneNumber and flavor. There's another benefit to using record syntax. When we derive Show for the type, it displays it differently if we use record syntax to define and instantiate the type.
+
+Using type parameters is very beneficial, but only when using them makes sense. Usually we use them when our data type would work regardless of the type of the value it then holds inside it, like with our Maybe a type. If our type acts as some kind of box, it's good to use them.
+
+Another example of a parameterized type that we've already met is Map k v from Data.Map. The k is the type of the keys in a map and the v is the type of the values. This is a good example of where type parameters are very useful. Having maps parameterized enables us to have mappings from any type to any other type, as long as the type of the key is part of the Ord typeclass. If we were defining a mapping type, we could add a typeclass constraint in the data declaration:
+
+#+begin_src haskell
+data (Ord k) => Map k v = ...
+#+end_src
+
+However, it's a very strong convention in Haskell to never add typeclass constraints in data declarations. Why? Well, because we don't benefit a lot, but we end up writing more class constraints, even when we don't need them. If we put or don't put the Ord k constraint in the data declaration for Map k v, we're going to have to put the constraint into functions that assume the keys in a map can be ordered. But if we don't put the constraint in the data declaration, we don't have to put (Ord k) => in the type declarations of functions that don't care whether the keys can be ordered or not. So don't put type constraints into data declarations even if it seems to make sense, because you'll have to put them into the function type declarations either way.
+
+Once again, it's very important to distinguish between the type constructor and the value constructor. When declaring a data type, the part before the === is the type constructor and the constructors after it (possibly separated by =|= 's) are value constructors. Giving a function a type of =Vector t t t -> Vector t t t -> t= would be wrong, because we have to put types in *type* declaration and the vector type constructor takes only one parameter, whereas the value constructor takes three. Let's play around with our vectors.
+
+/A typeclass is a sort of an interface that defines some behavior. A type can be made an instance of a typeclass if it supports that behavior/. Typeclasses are more like interfaces. We don't make data from typeclasses. Instead, we first make our data type and then we think about what it can act like. If it can act like something that can be equated, we make it an instance of the Eq typeclass. If it can act like something that can be ordered, we make it an instance of the Ord typeclass.
+
+Previously, we mentioned that when writing types, the [Char] and String types are equivalent and interchangeable. That's implemented with type synonyms. Type synonyms don't really do anything per se, they're just about giving some types different names so that they make more sense to someone reading our code and documentation. Giving the String type synonyms is something that Haskell programmers do when they want to convey more information about what strings in their functions should be used as and what they represent.
+
+(The typeclass is mind-boggling complex... it is able to create new data type as well as having abstractions upon data types. Just to make things worse, the data types can also be recursive.)
+
+#+begin_src haskell
+import qualified Data.Map as Map
+
+data Either a b = Left a | Right b deriving (Eq, Ord, Read, Show)
+data LockerState = Taken | Free deriving (Show, Eq)
+type Code = String
+type LockerMap = Map.Map Int (LockerState, Code)
+
+-- fuck the `either`!
+lockerLookup :: Int -> LockerMap -> Either String Code
+lockerLookup lockerNumber map =
+    case Map.lookup lockerNumber map of
+        Nothing -> Left $ "Locker number " ++ show lockerNumber ++ " doesn't exist!"
+        Just (state, code) -> if state /= Taken
+                                then Right code
+                                else Left $ "Locker " ++ show lockerNumber ++ " is already taken!"
+#+end_src
