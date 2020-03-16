@@ -300,3 +300,73 @@ lockerLookup lockerNumber map =
                                 then Right code
                                 else Left $ "Locker " ++ show lockerNumber ++ " is already taken!"
 #+end_src
+
+Defining recursive data structure
+
+#+begin_src haskell
+-- This typeclass defines three data structures =EmptyTree=, =Node=, and =Tree=
+data Tree a = EmptyTree | Node a (Tree a) (Tree a) deriving (Show, Read, Eq)
+
+-- Similar to recursive function, it starts from the edge case
+singleton :: a -> Tree a
+singleton x = Node x EmptyTree EmptyTree
+
+-- This is interesting
+-- A tree is defined as (Node, Tree, Tree), which is =Node a left right= in the
+-- follow function, where =left= and =right= are two trees
+treeInsert :: (Ord a) => a -> Tree a -> Tree a
+treeInsert x EmptyTree = singleton x
+treeInsert x (Node a left right)
+    | x == a = Node x left right
+    | x < a  = Node a (treeInsert x left) right
+    | x > a  = Node a left (treeInsert x right)
+
+treeElem :: (Ord a) => a -> Tree a -> Bool
+treeElem x EmptyTree = False
+treeElem x (Node a left right)
+    | x == a = True
+    | x < a  = treeElem x left
+    | x > a  = treeElem x right
+#+end_src
+
+Typeclasses are like interfaces. A typeclass defines some behavior (like comparing for equality, comparing for ordering, enumeration) and then types that can behave in that way are made instances of that typeclass. The behavior of typeclasses is achieved by defining functions or just type declarations that we then implement. So when we say that a type is an instance of a typeclass, we mean that we can use the functions that the typeclass defines with that type. Besides, we can also make typeclasses that are subclasses of other typeclasses. (the first part smells very similar to the interface in Golang, but the 2nd part makes it more powerful than its counterpart in Golang.)
+
+Most of the times, class constraints in class declarations are used for making a typeclass a subclass of another typeclass and class constraints in instance declarations are used to express requirements about the contents of some type. When making instances, if you see that a type is used as a concrete type in the type declarations (like the =a= in =a -> a -> Bool=), you have to supply type parameters and add parentheses so that you end up with a concrete type.
+
+#+begin_src haskell
+data TrafficLight = Red | Yellow | Green
+
+-- here it assumes the =Eq= is not a native typeclass, otherwise, it can
+-- directly use =derive=. If it is not native, the type has to be initiated
+-- via =instance= as if initiating a class in OOP.
+-- I feel this is a bad naming.
+instance Eq TrafficLight where
+    Red == Red = True
+    Green == Green = True
+    Yellow == Yellow = True
+    _ == _ = False
+
+instance Show TrafficLight where
+    show Red = "Red light"
+    show Yellow = "Yellow light"
+    show Green = "Green light"
+#+end_src
+
+If you want to see what the instances of a typeclass are, just do =:info YourTypeClass= in GHCI. So typing =:info= Num will show which functions the typeclass defines and it will give you a list of the types in the typeclass. =:info= works for types and type constructors too. If you do =:info Maybe=, it will show you all the typeclasses that =Maybe= is an instance of. Also =:info= can show you the type declaration of a function. I think that's pretty cool. :)
+
+#+begin_src haskell
+ghci> :k Int
+Int :: *
+
+ghci> :k Maybe
+Maybe :: * -> *
+#+end_src
+
+A =*= means that the type is a concrete type. A concrete type is a type that doesn't take any type parameters and values can only have types that are concrete types.
+
+#+begin_src hasekll
+-- It is short for =:kind= for a type, and like =:t= (=:type=) for function
+ghci> :k Int
+Int :: *
+#+end_src
+In this section, we took a good look at how type parameters work and kind of formalized them with kinds, just like we formalized function parameters with type declarations. We saw that there are interesting parallels between functions and type constructors. They are, however, two completely different things. When working on real Haskell, you usually won't have to mess with kinds and do kind inference by hand like we did now. Usually, you just have to partially apply your own type to * -> * or * when making it an instance of one of the standard typeclasses, but it's good to know how and why that actually works. It's also interesting to see that types have little types of their own. Again, you don't really have to understand everything we did here to read on, but if you understand how kinds work, chances are that you have a very solid grasp of Haskell's type system.
