@@ -370,3 +370,24 @@ ghci> :k Int
 Int :: *
 #+end_src
 In this section, we took a good look at how type parameters work and kind of formalized them with kinds, just like we formalized function parameters with type declarations. We saw that there are interesting parallels between functions and type constructors. They are, however, two completely different things. When working on real Haskell, you usually won't have to mess with kinds and do kind inference by hand like we did now. Usually, you just have to partially apply your own type to * -> * or * when making it an instance of one of the standard typeclasses, but it's good to know how and why that actually works. It's also interesting to see that types have little types of their own. Again, you don't really have to understand everything we did here to read on, but if you understand how kinds work, chances are that you have a very solid grasp of Haskell's type system.
+* Input and Output
+
+Whereas in imperative languages you usually get things done by giving the computer a series of steps to execute, functional programming is more of defining what stuff is. The only thing a function can do in Haskell is give us back some result based on the parameters we gave it. While functions being unable to change state is good because it helps us reason about our programs, there's one problem with that. If we want to deal with impure data, we have to do it in an impure environment. So the taint of impurity spreads around much like the undead scourge and it's in our best interest to keep the I/O parts of our code as small as possible.
+
+*the return in Haskell is really nothing like the return in most other languages*. In Haskell (in I/O actions specifically), it makes an I/O action out of a pure value. If you think about the box analogy from before, it takes a value and wraps it up in a box. The resulting I/O action doesn't actually do anything, it just has that value encapsulated as its result. So in an I/O context, =return "haha"= will have a type of =IO String=, because we needed some I/O action to carry out in the case of an empty input line. That's why we just made a bogus I/O action that doesn't do anything by writing =return ()=. (so, is it like =yield= for I/O?...)
+
+=print= takes a value of any type that's an instance of =Show= (meaning that we know how to represent it as a string), calls =show= with that value to stringify it and then outputs that string to the terminal. Basically, it's just =putStrLn . show=. It first runs =show= on a value and then feeds that to =putStrLn=, which returns an I/O action that will print out our value.
+
+The =when= function is found in =Control.Monad= (to get access to it, do =import Control.Monad=). It's interesting because in a do block it looks like a control flow statement, but it's actually a normal function. It takes a boolean value and an I/O action if that boolean value is =True=, it returns the same I/O action that we supplied to it. However, if it's =False=, it returns the =return ()= action, so an I/O action that doesn't do anything.
+
+#+begin_src hasekll
+import Control.Monad
+
+main = do
+    c <- getChar
+    when (c /= ' ') $ do
+        putChar c
+        main
+#+end_src
+
+I/O actions are values much like any other value in Haskell. We can pass them as parameters to functions and functions can return I/O actions as results. What's special about them is that if they fall into the main function (or are the result in a GHCI line), they are performed. Each I/O action can also encapsulate a result with which it tells you what it got from the real world.
