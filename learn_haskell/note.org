@@ -414,3 +414,28 @@ we're going to solve a problem in three steps:
 1. Forget Haskell for a minute and think about how we'd solve the problem by hand
 2. Think about how we're going to represent our data in Haskell
 3. Figure out how to operate on that data in Haskell so that we produce at a solution
+
+* Functors, Applicative Functors and Monoids
+
+Haskell's combination of purity, higher order functions, parameterized algebraic data types, and typeclasses allows us to implement polymorphism on a much higher level than possible in other languages.
+
+Typeclasses are open, which means that we can define our own data type, think about what it can act like and connect it with the typeclasses that define its behaviors. Because of that and because of Haskell's great type system that allows us to know a lot about a function just by knowing its type declaration, we can define typeclasses that define behavior that's very general and abstract.
+
+Functors are things that can be mapped over, like lists, =Maybe= s, trees, and such. In Haskell, they're described by the typeclass Functor, which has only one typeclass method, namely =fmap=, which has a type of =fmap :: (a -> b) -> f a -> f b=. It says: give me a function that takes an =a= and returns a =b= and a box with an a (or several of them) inside it and I'll give you a box with a b (or several of them) inside it. It kind of applies the function to the element inside the box.
+
+#+begin_src haskell
+-- fuck! everyone can be the poster boy
+λ> :t fmap
+fmap :: Functor f => (a -> b) -> f a -> f b
+#+end_src
+
+If we want to make a type constructor an instance of =Functor=, it has to have a kind of =* -> *=, which means that it /has to take exactly one concrete type as a type parameter/. For example, =Maybe= can be made an instance because it takes one type parameter to produce a concrete type, like =Maybe Int= or =Maybe String=. If a type constructor takes two parameters, like =Either=, we have to /partially apply the type constructor until it only takes one type parameter/. So we can only write =instance Functor (Either a) where= and then if we imagine that =fmap= is only for =Either a=, it would have a type declaration of =fmap :: (b -> c) -> Either a b -> Either a c=.
+
+#+begin_src haskell
+instance Functor IO where
+    fmap f action = do
+        result <- action
+        return (f result)
+#+end_src
+
+The result of mapping something over an I/O action will be an I/O action, so right off the bat we use do syntax to glue two actions and make a new one. In the implementation for =fmap=, we make a new I/O action that first performs the original I/O action and calls its result =result=. Then, we do =return (f result)=. =return= is a function that /makes an I/O action that doesn't do anything but only presents something as its result/.
