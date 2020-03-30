@@ -438,4 +438,20 @@ instance Functor IO where
         return (f result)
 #+end_src
 
-The result of mapping something over an I/O action will be an I/O action, so right off the bat we use do syntax to glue two actions and make a new one. In the implementation for =fmap=, we make a new I/O action that first performs the original I/O action and calls its result =result=. Then, we do =return (f result)=. =return= is a function that /makes an I/O action that doesn't do anything but only presents something as its result/.
+The result of mapping something over an I/O action will be an I/O action, so right off the bat we use do syntax to glue two actions and make a new one. In the implementation for =fmap=, we make a new I/O action that first performs the original I/O action and calls its result =result=. Then, we do =return (f result)=. =return= is a function that /makes an I/O action that doesn't do anything but only presents something as its result/. (In other words, =fmap= is the way for Haskell to get around the inpurity of I/O to apply a "pure" function to the data within the "inpure" I/O box.)
+
+If we look at what =fmap='s type would be if it were limited to =IO=, it would be =fmap :: (a -> b) -> IO a -> IO b=. =fmap= takes a function and an I/O action and returns a new I/O action that's like the old one, except that the function is applied to its contained result. /If you ever find yourself binding the result of an I/O action to a name, only to apply a function to that and call that something else/ (yes, it almost killed me...), consider using =fmap=, because it looks *prettier* (seriously? it is sick). If you want to apply multiple transformations to some data inside a functor, /you can declare your own function at the top level/, make a lambda function or ideally, use function composition.
+
+#+begin_src haskell
+instance Functor ((->) r) where
+    fmap f g = (\x -> f (g x))
+#+end_src
+
+(Things just get sicker.) What we get now is =fmap :: (a -> b) -> (r -> a) -> (r -> b)=. Mapping one function over a function has to produce a function, just like mapping a function over a =Maybe= has to produce a =Maybe= and mapping a function over a list has to produce a list. What does the type =fmap :: (a -> b) -> (r -> a) -> (r -> b)= for this instance tell us? Well, we see that it takes a function from =a= to =b= and a function from =r= to =a= and returns a function from =r= to =b=. /It is the same as Function composition/! We pipe the output of =r -> a= into the input of =a -> b= to get a function =r -> b=, (It also means the second function =r -> a= first applies to the input variable, which is missing in this signature, and then =a -> b= applies. It also means we can use function to apply not only to data but also to another function. And, it also means the function composition =.= is a functor. sick.)
+
+*Functor laws*:
+
+1. If we map the id function over a functor, the functor that we get back should be the same as the original functor.
+2. Composing two functions and then mapping the resulting function over a functor should be the same as first mapping one function over the functor and then mapping the other one.
+
+Normal functors support mapping normal functions over existing functors. What if we want to take out the function from a curried functor and then map it to another functor (but why...)? =Applicative= typeclass, which lies in the =Control.Applicative= module, comes into picture for it. It defines two methods, =pure= and =<*>=. It doesn't provide a default implementation for any of them, so we have to define them both if we want something to be an applicative functor.
