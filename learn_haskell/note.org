@@ -454,4 +454,12 @@ instance Functor ((->) r) where
 1. If we map the id function over a functor, the functor that we get back should be the same as the original functor.
 2. Composing two functions and then mapping the resulting function over a functor should be the same as first mapping one function over the functor and then mapping the other one.
 
-Normal functors support mapping normal functions over existing functors. What if we want to take out the function from a curried functor and then map it to another functor (but why...)? =Applicative= typeclass, which lies in the =Control.Applicative= module, comes into picture for it. It defines two methods, =pure= and =<*>=. It doesn't provide a default implementation for any of them, so we have to define them both if we want something to be an applicative functor.
+Normal functors support mapping normal functions over existing functors. What if we want to take out the function from a curried functor and then map it to another functor (but why...)? =Applicative= typeclass, which lies in the =Control.Applicative= module, comes into picture for it. It defines two methods, =pure= and =<*>=. It doesn't provide a default implementation for any of them, so we have to define them both if we want something to be an applicative functor. (this is really sick...)
+
+#+begin_src haskell
+ghci> let a = fmap (*) [1,2,3,4]
+ghci> :t a
+a :: [Integer -> Integer]
+ghci> fmap (\f -> f 9) a
+[9,18,27,36]
+#+end_src
