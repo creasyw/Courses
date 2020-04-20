@@ -454,7 +454,9 @@ instance Functor ((->) r) where
 1. If we map the id function over a functor, the functor that we get back should be the same as the original functor.
 2. Composing two functions and then mapping the resulting function over a functor should be the same as first mapping one function over the functor and then mapping the other one.
 
-Normal functors support mapping normal functions over existing functors. What if we want to take out the function from a curried functor and then map it to another functor (but why...)? =Applicative= typeclass, which lies in the =Control.Applicative= module, comes into picture for it. It defines two methods, =pure= and =<*>=. It doesn't provide a default implementation for any of them, so we have to define them both if we want something to be an applicative functor. (this is really sick...)
+Functions in Haskell are curried by default, which means that a function that seems to take several parameters actually takes just one parameter and returns a function that takes the next parameter and so on. This mechanism is what enables us to partially apply functions by just calling them with too few parameters, which results in functions that we can then pass on to other functions. /Normal functors support mapping normal functions over existing functors. What if we want to take out the function from a curried functor and then map it to another functor/ (but why...)? In other words, with normal functors, you can just map a function over a functor and then you can't get the result out in any general way, /even if the result is a partially applied function/. Applicative functors, on the other hand, /allow you to operate on several functors with a single function/.
+
+=Applicative= typeclass, which lies in the =Control.Applicative= module, comes into picture for it. It defines two methods, =pure= and =<*>=. It doesn't provide a default implementation for any of them, so we have to define them both if we want something to be an applicative functor. (this is really sick...)
 
 #+begin_src haskell
 ghci> let a = fmap (*) [1,2,3,4]
@@ -463,3 +465,15 @@ a :: [Integer -> Integer]
 ghci> fmap (\f -> f 9) a
 [9,18,27,36]
 #+end_src
+
+#+begin_src haskell
+class (Functor f) => Applicative f where
+    pure :: a -> f a
+    (<*>) :: f (a -> b) -> f a -> f b
+#+end_src
+
+It starts the definition of the =Applicative= class and it also introduces a class constraint. It says that if we want to make a type constructor part of the =Applicative= typeclass, it has to be in =Functor= first. That's why if we know that if a type constructor is part of the =Applicative= typeclass, it's also in =Functor=, so we can use =fmap= on it.
+
+A better way of thinking about =pure= would be to say that it takes a value and puts it in some sort of default (or pure) context — a minimal context that still yields that value. Whereas =fmap= takes a function and a functor and applies the function inside the functor, =<*>= /takes a functor that has a function in it and another functor and sort of extracts that function from the first functor and then maps it over the second one/. When I say *extract*, I actually sort of mean /run/ and then /extract/, maybe even /sequence/.
+
+Use =pure= if you're dealing with =Maybe= values in an applicative context (i.e. using them with =<*>=), otherwise stick to =Just=, Applicative functors and the applicative style of doing =pure f <*> x <*> y <*> ...= allow us to take a function that expects parameters that aren't necessarily wrapped in functors and use that function to operate on several values that are in functor contexts. The function can take as many parameters as we want, because it's always partially applied step by step between occurences of =<*>=. This becomes even more handy and apparent if we consider the fact that =pure f <*> x= equals =fmap f x=. This is one of the applicative laws. =pure= puts a value in a default context. If we just put a function in a default context and then extract and apply it to a value inside another applicative functor, we did the same as just mapping that function over that applicative functor. Instead of writing =pure f <*> x <*> y <*> ...=, we can write =fmap f x <*> y <*> ....= This is why =Control.Applicative= exports a function called =<$>=, which is just =fmap= as an infix operator.
