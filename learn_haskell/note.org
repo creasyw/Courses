@@ -476,4 +476,19 @@ It starts the definition of the =Applicative= class and it also introduces a cla
 
 A better way of thinking about =pure= would be to say that it takes a value and puts it in some sort of default (or pure) context — a minimal context that still yields that value. Whereas =fmap= takes a function and a functor and applies the function inside the functor, =<*>= /takes a functor that has a function in it and another functor and sort of extracts that function from the first functor and then maps it over the second one/. When I say *extract*, I actually sort of mean /run/ and then /extract/, maybe even /sequence/.
 
-Use =pure= if you're dealing with =Maybe= values in an applicative context (i.e. using them with =<*>=), otherwise stick to =Just=, Applicative functors and the applicative style of doing =pure f <*> x <*> y <*> ...= allow us to take a function that expects parameters that aren't necessarily wrapped in functors and use that function to operate on several values that are in functor contexts. The function can take as many parameters as we want, because it's always partially applied step by step between occurences of =<*>=. This becomes even more handy and apparent if we consider the fact that =pure f <*> x= equals =fmap f x=. This is one of the applicative laws. =pure= puts a value in a default context. If we just put a function in a default context and then extract and apply it to a value inside another applicative functor, we did the same as just mapping that function over that applicative functor. Instead of writing =pure f <*> x <*> y <*> ...=, we can write =fmap f x <*> y <*> ....= This is why =Control.Applicative= exports a function called =<$>=, which is just =fmap= as an infix operator.
+Use =pure= if you're dealing with =Maybe= values in an applicative context (i.e. using them with =<*>=), otherwise stick to =Just=, Applicative functors and the applicative style of doing =pure f <*> x <*> y <*> ...= allow us to /take a function that expects parameters that aren't necessarily wrapped in functors and use that function to operate on several values that are in functor contexts/. The function can take as many parameters as we want, because it's always partially applied step by step between occurences of =<*>=. This becomes even more handy and apparent if we consider the fact that =pure f <*> x= equals =fmap f x=. This is one of the applicative laws. =pure= puts a value in a default context. If we just put a function in a default context and then extract and apply it to a value inside another applicative functor, we did the same as just mapping that function over that applicative functor. Instead of writing =pure f <*> x <*> y <*> ...=, we can write =fmap f x <*> y <*> ....= This is why =Control.Applicative= exports a function called =<$>=, which is just =fmap= as an infix operator.
+
+#+begin_src haskell
+(<$>) :: (Functor f) => (a -> b) -> f a -> f b
+f <$> x = fmap f x
+
+-- example
+λ> map (\x -> x * 2) [1..10]
+[2,4,6,8,10,12,14,16,18,20]
+
+λ> (\x -> x * 2) <$> [1..10]
+[2,4,6,8,10,12,14,16,18,20]
+
+λ> pure (\x -> x * 2) <*> [1..10]
+[2,4,6,8,10,12,14,16,18,20]
+#+end_src
