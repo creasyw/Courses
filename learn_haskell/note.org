@@ -115,25 +115,40 @@ There's a pattern for recursion. Usually you define an edge case and then you de
 
 Haskell functions can take functions as parameters and return functions as return values. A function that does either of those is called a higher order function. Higher order functions aren't just a part of the Haskell experience, they pretty much are the Haskell experience. It turns out that if you want to define computations by defining what stuff is instead of defining steps that change some state and maybe looping them, higher order functions are indispensable. They're a really powerful way of solving problems and thinking about programs.
 
-Every function in Haskell officially only takes one parameter. If we call a function with too few parameters, we get back a partially applied function, meaning a function that takes as many parameters as we left out. Using partial application (calling functions with too few parameters, if you will) is a neat way to create functions on the fly so we can pass them to another function or to seed them with some data.
+/Every function in Haskell officially only takes one parameter/. If we call a function with too few parameters, we get back a partially applied function, meaning a function that takes as many parameters as we left out. Using partial application (calling functions with too few parameters, if you will) is a neat way to create functions on the fly so we can pass them to another function or to seed them with some data.
 
 The type of =max= is =max :: (Ord a) => a -> a -> a=. That can also be written as =max :: (Ord a) => a -> (a -> a)=. That could be read as: =max= takes an =a= and returns (that's the =->=) =a= function that takes an =a= and returns an =a=. /That's why the return type and the parameters of functions are all simply separated with arrows/.
 
 In functional programming, that pattern is achieved with mapping and filtering. You make a function that takes a value and produces some result. We map that function over a list of values and then we filter the resulting list out for the results that satisfy our search. /Thanks to Haskell's laziness, even if you map something over a list several times and filter it several times, it will only pass over the list once/.
 
-Lambdas are basically anonymous functions that are used because we need some functions only once. Normally, we make a lambda with the sole purpose of passing it to a higher-order function. To make a lambda, we write a \ (because it kind of looks like the greek letter lambda if you squint hard enough) and then we write the parameters, separated by spaces. After that comes a -> and then the function body. We usually surround them by parentheses, because otherwise they extend all the way to the right.
+Lambdas are basically anonymous functions that are used because we need some functions only once. Normally, we make a lambda with the sole purpose of passing it to a higher-order function. To make a lambda, we write a =\= (because it kind of looks like the greek letter lambda if you squint hard enough) and then we write the parameters, separated by spaces. After that comes a =->= and then the function body. We usually surround them by parentheses, because otherwise they extend all the way to the right.
 
-The right fold, =foldr= works in a similar way to the left fold, only the accumulator eats up the values from the right. Also, the left fold's binary function has the accumulator as the first parameter and the current value as the second one (so =\acc x -> ...=), the right fold's binary function has the current value as the first parameter and the accumulator as the second one (so =\x acc -> ...=). It kind of makes sense that the right fold has the accumulator on the right, because it folds from the right side. /One big difference/ is that right folds work on infinite lists, whereas left ones don't! To put it plainly, if you take an infinite list at some point and you fold it up from the right, you'll eventually reach the beginning of the list. However, if you take an infinite list at a point and you try to fold it up from the left, you'll never reach an end!
+The right fold, =foldr= works in a similar way to the left fold, /only the accumulator eats up the values from the right/. Also, /the left fold's binary function has the accumulator as the first parameter and the current value as the second one (so =\acc x -> ...=), the right fold's binary function has the current value as the first parameter and the accumulator as the second one (so =\x acc -> ...=)/. It kind of makes sense that the right fold has the accumulator on the right, because it folds from the right side. /One big difference/ is that right folds work on infinite lists, whereas left ones don't! To put it plainly, if you take an infinite list at some point and you fold it up from the right, you'll eventually reach the beginning of the list. However, if you take an infinite list at a point and you try to fold it up from the left, you'll never reach an end!
 
 *Folds can be used to implement any function where you traverse a list once, element by element, and then return something based on that. Whenever you want to traverse a list to return something, chances are you want a fold*. That's why folds are, along with maps and filters, one of the most useful types of functions in functional programming.
 
 Whereas normal function application (putting a space between two things) has a really high precedence, the =$= function has the lowest precedence. Function application with a space is left-associative (so =f a b c= is the same as =((f a) b) c)=), function application with =$= is right-associative.
 
-Apart from getting rid of parentheses, =$= means that function application can be treated just like another function. That way, we can, for instance, map function application over a list of functions (this is sick...). When a =$= is encountered, the expression on its right is applied as the parameter to the function on its left
+Apart from getting rid of parentheses, =$= means that /function application can be treated just like another function/. That way, we can, for instance, map function application over a list of functions (this is sick...). When a =$= is encountered, the expression on its right is applied as the parameter to the function on its left
 
 #+begin_src haskell
 ghci> map ($ 3) [(4+), (10*), (^2), sqrt]
 [7.0,30.0,9.0,1.7320508075688772]
+#+end_src
+
+To look it more closely, we can see the trick of =$= -
+
+#+begin_src haskell
+Prelude> :t 3
+3 :: Num p => p
+-- it transforms the number to become a parameter in a two-parameters function
+Prelude> :t ($ 3)
+($ 3) :: Num a => (a -> b) -> b
+-- Note that the given parameter following the =$= could be either the first or
+-- the second parameter depending on the function that we feed into this function
+λ> map ($ 3) [(4+), (10/)]
+[7.0,3.3333333333333335]
+λ> map ($ 3) [(4+), (/10)]
 #+end_src
 
 In Haskell, function composition with the =.= function is defined like so: (this is even sicker)
@@ -151,7 +166,8 @@ ghci> map (negate . abs) [5,-3,-6,7,-3,2,-19,24]
 [-5,-3,-6,-7,-3,-2,-19,-24]
 #+end_src
 
-Many times, a point free style is more readable and concise, because it makes you think about functions and what kind of functions composing them results in instead of thinking about data and how it's shuffled around. You can take simple functions and use composition as glue to form more complex functions. However, many times, writing a function in point free style can be less readable if a function is too complex. That's why making long chains of function composition is discouraged. The prefered style is to use let bindings to give labels to intermediary results or split the problem into sub-problems and then put it together so that the function makes sense to someone reading it instead of just making a huge composition chain.
+Many times, a point free style is more readable and concise, because it makes you think about functions and what kind of functions composing them results in instead of thinking about data and how it's shuffled around. You can take simple functions and use composition as glue to form more complex functions. However, many times, writing a function in point free style can be less readable if a function is too complex. That's why /making long chains of function composition is discouraged/. The prefered style is to *use let bindings to give labels to intermediary results or split the problem into sub-problems and then put it together so that the function makes sense to someone reading it instead of just making a huge composition chain*.
+
 * Modules
 
 A Haskell module is a collection of related functions, types and typeclasses. A Haskell program is a collection of modules where the main module loads up the other modules and then uses the functions defined in them to do something. Having code split up into several modules has quite a lot of advantages. If a module is generic enough, the functions it exports can be used in a multitude of different programs. If your own code is separated into self-contained modules which don't rely on each other too much (we also say they are loosely coupled), you can reuse them later on. It makes the whole deal of writing code more manageable by having it split into several parts, each of which has some sort of purpose.
@@ -474,9 +490,9 @@ class (Functor f) => Applicative f where
 
 It starts the definition of the =Applicative= class and it also introduces a class constraint. It says that if we want to make a type constructor part of the =Applicative= typeclass, it has to be in =Functor= first. That's why if we know that if a type constructor is part of the =Applicative= typeclass, it's also in =Functor=, so we can use =fmap= on it.
 
-A better way of thinking about =pure= would be to say that it takes a value and puts it in some sort of default (or pure) context — a minimal context that still yields that value. Whereas =fmap= takes a function and a functor and applies the function inside the functor, =<*>= /takes a functor that has a function in it and another functor and sort of extracts that function from the first functor and then maps it over the second one/. When I say *extract*, I actually sort of mean /run/ and then /extract/, maybe even /sequence/.
+A better way of thinking about =pure= would be to say that /it takes a value and puts it in some sort of default (or pure) context/ — a minimal context that still yields that value. Whereas =fmap= takes a function and a functor and applies the function inside the functor, =<*>= has a type declaration of =f (a -> b) -> f a -> f b=, which looks similar to =fmap :: (a -> b) -> f a -> f b=. It /takes a functor that has a function in it and another functor and sort of extracts that function from the first functor and then maps it over the second one/. When I say *extract*, I actually sort of mean /run/ and then /extract/, maybe even /sequence/.
 
-Use =pure= if you're dealing with =Maybe= values in an applicative context (i.e. using them with =<*>=), otherwise stick to =Just=, Applicative functors and the applicative style of doing =pure f <*> x <*> y <*> ...= allow us to /take a function that expects parameters that aren't necessarily wrapped in functors and use that function to operate on several values that are in functor contexts/. The function can take as many parameters as we want, because it's always partially applied step by step between occurences of =<*>=. This becomes even more handy and apparent if we consider the fact that =pure f <*> x= equals =fmap f x=. This is one of the applicative laws. =pure= puts a value in a default context. If we just put a function in a default context and then extract and apply it to a value inside another applicative functor, we did the same as just mapping that function over that applicative functor. Instead of writing =pure f <*> x <*> y <*> ...=, we can write =fmap f x <*> y <*> ....= This is why =Control.Applicative= exports a function called =<$>=, which is just =fmap= as an infix operator.
+Use =pure= if you're dealing with =Maybe= values in an applicative context (i.e. using them with =<*>=), otherwise stick to =Just=, Applicative functors and the applicative style of doing =pure f <*> x <*> y <*> ...= allow us to /take a function that expects parameters that aren't necessarily wrapped in functors and use that function to operate on several values that are in functor contexts/. The function can take as many parameters as we want, because it's always partially applied step by step between occurences of =<*>=. This becomes even more handy and apparent if we consider the fact that =pure f <*> x= equals =fmap f x=. This is one of the applicative laws. =pure= puts a value in a default context. If we just put a function in a default context and then extract and apply it to a value inside another applicative functor, we did the same as just mapping that function over that applicative functor. Instead of writing =pure f <*> x <*> y <*> ...=, we can write =fmap f x <*> y <*> ....= This is why =Control.Applicative= exports a function called =<$>=, /which is just =fmap= as an infix operator/. By using =<$>=, the applicative style really shines, because now if we want to apply a function f between three applicative functors, we can write =f <$> x <*> y <*> z=. If the parameters weren't applicative functors but normal values, we'd write =f x y z=.
 
 #+begin_src haskell
 (<$>) :: (Functor f) => (a -> b) -> f a -> f b
@@ -491,4 +507,28 @@ f <$> x = fmap f x
 
 λ> pure (\x -> x * 2) <*> [1..10]
 [2,4,6,8,10,12,14,16,18,20]
+#+end_src
+
+There are some more useful examples for =<*>=
+
+#+begin_src haskell
+ghci> [(*0),(+100),(^2)] <*> [1,2,3]
+[0,0,0,101,102,103,1,4,9]
+
+ghci> [(+),(*)] <*> [1,2] <*> [3,4]
+[4,5,5,6,3,4,6,8]
+
+ghci> (*) <$> [2,5,10] <*> [8,10,11]
+[16,20,22,40,50,55,80,100,110]
+
+ghci> filter (>50) $ (*) <$> [2,5,10] <*> [8,10,11]
+[55,80,100,110]
+#+end_src
+
+If you ever find yourself binding some I/O actions to names and then calling some function on them and presenting that as the result by using return, consider using the applicative style because it's arguably a bit more concise and terse. (it is killing me..)
+
+#+begin_src haskell
+main = do
+    a <- (++) <$> getLine <*> getLine
+    putStrLn $ "The two lines concatenated turn out to be: " ++ a
 #+end_src
