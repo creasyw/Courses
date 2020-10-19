@@ -1,8 +1,8 @@
 * Functions
 
-Function application (calling a function by putting a space after it and then typing out the parameters) has the highest precedence of them all. What that means for us is that these two statements are equivalent. Besides, it is a very simple example of a common pattern you will see throughout Haskell - /making basic functions that are obviously correct and then combining them into more complex functions/. This way you also avoid repetition. Functions in Haskell don't have to be in any particular order, so it doesn't matter if you define doubleMe first and then doubleUs or if you do it the other way around.
+/Function application (calling a function by putting a space after it and then typing out the parameters) has the highest precedence of them all/. What that means for us is that these two statements are equivalent. Besides, it is a very simple example of a common pattern you will see throughout Haskell - *making basic functions that are obviously correct and then combining them into more complex functions*. This way you also avoid repetition. /Functions in Haskell don't have to be in any particular order/, so it doesn't matter if you define doubleMe first and then doubleUs or if you do it the other way around.
 
-The difference between Haskell's if statement and if statements in imperative languages is that the else part is mandatory in Haskell. Another thing about the if statement in Haskell is that it is an expression. /An expression is basically a piece of code that returns a value/. Because the else is mandatory, an if statement will always return something and that's why it's an expression.
+The difference between Haskell's if statement and if statements in imperative languages is that the else part is mandatory in Haskell. Another thing about the if statement in Haskell is that it is an expression. /An expression is basically a piece of code that returns a value/. Because the else is mandatory, /an =if= statement will always return something/ and that's why it's an expression.
 
 Note the ' at the end of the function name. That apostrophe doesn't have any special meaning in Haskell's syntax. It's a valid character to use in a function name. We usually use ' to either denote a strict version of a function (one that isn't lazy) or a slightly modified version of a function or a variable.
 
@@ -10,7 +10,7 @@ There are two noteworthy things about a function - the first is that functions c
 
 * List and tuples
 
-In Haskell, lists are a homogenous data structure. It stores several elements of the same type. That means that we can have a list of integers or a list of characters but we can't have a list that has a few integers and then a few characters.
+In Haskell, /lists are a homogenous data structure/. It stores several elements of the *same* type. That means that we can have a list of integers or a list of characters but we can't have a list that has a few integers and then a few characters.
 
 A common task is putting two lists together. *Watch out when repeatedly using the =++= operator on long strings*. This is done by using the =++= operator. For list concatination, Haskell will walk through the whole list at the left side of the =++=. So, /put the longer one at the right will be a good practice/. Or, use the append operation =:= to put the new element at the head of the original list.
 
@@ -28,9 +28,9 @@ ghci> rightTriangles'
 
 * Types and Typeclasses
 
-Haskell has a static type system. The type of every expression is known at compile time, which leads to safer code. Furthermore, Haskell has type inference. A type is a kind of label that every expression has. It tells us in which category of things that expression fits.
+Haskell has a static type system. /The type of every expression is known at compile time/, which leads to safer code. Furthermore, Haskell has type inference. A type is a kind of label that every expression has. It tells us in which category of things that expression fits.
 
-Functions also have types. When writing our own functions, we can choose to give them an explicit type declaration. This is generally considered to be good practice except when writing very short functions.
+Functions also have types. When writing our own functions, /we can choose to give them an explicit type declaration. This is generally considered to be good practice except when writing very short functions/.
 
 Int and Integer both stand for the type of integers. The difference is that the latter one is /not bounded/.
 
@@ -43,7 +43,7 @@ addThree x y z = x + y + z
 
 This signature makes it possible to partially apply input parameters to a function and use it to generate new functions.
 
-A typeclass can be regarded as an interface that define some behavior. If a type is a part of a typeclass, that means that it supports and implement the behavior the typeclass describes. (it is the exactly what an interface does in Golang - it has contract on the behavior of the data that a function receives or generates.) However, it /feels/ like a wider implication. For example,
+/A typeclass can be regarded as an interface that defines some behavior/. If a type is a part of a typeclass, that means that it supports and implement the behavior the typeclass describes. (it is the exactly what an interface does in Golang - it has contract on the behavior of the data that a function receives or generates.) However, it /feels/ like a wider implication. For example,
 
 #+begin_src haskell
 Prelude> :t read
@@ -51,7 +51,7 @@ read :: Read a => String -> a
 Prelude> read "4" + 0
 4
 Prelude> read "4"
-*** Exception: Prelude.read: no parse
+--- Exception: Prelude.read: no parse
 Prelude>
 Prelude> read "4" :: Int
 4
