@@ -43,7 +43,7 @@ addThree x y z = x + y + z
 
 This signature makes it possible to partially apply input parameters to a function and use it to generate new functions.
 
-/A typeclass can be regarded as an interface that defines some behavior/. If a type is a part of a typeclass, that means that it supports and implement the behavior the typeclass describes. (it is the exactly what an interface does in Golang - it has contract on the behavior of the data that a function receives or generates.) However, it /feels/ like a wider implication. For example,
+*A typeclass can be regarded as an interface that defines some behavior*. If a type is a part of a typeclass, that means that it supports and implement the behavior the typeclass describes. (it is the exactly what an interface does in Golang - it has contract on the behavior of the data that a function receives or generates.) However, it /feels/ like a wider implication. For example,
 
 #+begin_src haskell
 Prelude> :t read
@@ -170,6 +170,21 @@ Many times, a point free style is more readable and concise, because it makes yo
 
 * Modules
 
+  #+begin_quote
+At the beginning of this chapter, it introduces the module =Data.List=. I might have to continuously return to this chapter, since most of the data manipulations are based on the list.
+  #+end_quote
+
+In the following example, the "equal" has the same effect as =\x y -> (x > 0) && (y > 0) || (x <= 0) && (y <= 0)=, although the way in the example is more readable. An even clearer way to write equality functions for the By functions is if you import the =on= function from =Data.Function=.
+
+  #+begin_src haskell
+ghci> let values = [-4.3, -2.4, -1.2, 0.4, 2.3, 5.9, 10.5, 29.1, 5.3, -2.4, -14.5, 2.9, 2.3]
+ghci> groupBy (\x y -> (x > 0) == (y > 0)) values
+[[-4.3,-2.4,-1.2],[0.4,2.3,5.9,10.5,29.1,5.3],[-2.4,-14.5],[2.9,2.3]]
+-- A even better solution is:
+ghci> groupBy ((==) `on` (> 0)) values
+[[-4.3,-2.4,-1.2],[0.4,2.3,5.9,10.5,29.1,5.3],[-2.4,-14.5],[2.9,2.3]]
+  #+end_src
+
 A Haskell module is a collection of related functions, types and typeclasses. A Haskell program is a collection of modules where the main module loads up the other modules and then uses the functions defined in them to do something. Having code split up into several modules has quite a lot of advantages. If a module is generic enough, the functions it exports can be used in a multitude of different programs. If your own code is separated into self-contained modules which don't rely on each other too much (we also say they are loosely coupled), you can reuse them later on. It makes the whole deal of writing code more manageable by having it split into several parts, each of which has some sort of purpose.
 
 When you do import =Data.List=, all the functions that Data.List exports become available in the global namespace, meaning that you can call them from wherever in the script. To avoid name clashes, one can
@@ -182,7 +197,7 @@ The last option makes it so that if we want to reference Data.Map's filter funct
 
 A great way to pick up new Haskell knowledge is to just click through the standard library reference and explore the modules and their functions. You can also view the Haskell source code for each module. Reading the source code of some modules is a really good way to learn Haskell and get a solid feel for it. -- To search for functions or to find out where they're located, use Hoogle.
 
-Almost every programming language enables you to split your code up into several files and Haskell is no different. When making programs, it's good practice to take functions and types that work towards a similar purpose and put them in a module. That way, you can easily reuse those functions in other programs by just importing your module.
+Almost every programming language enables you to split your code up into several files and Haskell is no different. /When making programs, it's good practice to take functions and types that work towards a similar purpose and put them in a module/. That way, you can easily reuse those functions in other programs by just importing your module.
 
 At the beginning of a module, we specify the module name. Then, we specify the functions that it exports and after that, we can start writing the functions. (It is like defining the interface up from)
 
@@ -197,7 +212,7 @@ module Geometry
 ) where
 #+end_src
 
-When making a module, we usually export only those functions that act as a sort of interface to our module so that the implementation is hidden. Modules can also be given a hierarchical structures. Each module can have a number of sub-modules and they can have sub-modules of their own.
+When making a module, we usually /export only those functions that act as a sort of interface to our module so that the implementation is hidden/. Modules can also be given a hierarchical structures. Each module can have a number of sub-modules and they can have sub-modules of their own.
 
 The next time you find yourself writing a file that's really big and has a lot of functions, try to see which functions serve some common purpose and then see if you can put them in their own module. You'll be able to just import your module the next time you're writing a program that requires some of the same functionality.
 
@@ -263,9 +278,43 @@ Anyway, Monads like =IO= map types to new types that represent "computations tha
 You have probably guessed (if you have read this far) that =Maybe= is also a =Monad=. It represents "computations that could fail to return a value". Just like with the =fmap= example, this lets you do a whole bunch of computations without having to explicitly check for errors after each step. And in fact, the way the =Monad= instance is constructed, a computation on =Maybe= values *stops* as soon as a =Nothing= is encountered, so it's kind of like an immediate abort or a valueless return in the middle of a computation.
 * Making our own types and typeclasses
 
-Value constructors are just functions that take the fields as parameters and return a value of some type (like Shape) as a result. So when we choose not to export them, we just prevent the person importing our module from using those functions, but if some other functions that are exported return a type, we can use them to make values of our custom data types.
+  #+begin_quote
+The type feels like a class in an OOP language. It contains native or pre-defined data structures, and has constructors by default. It also needs to be "inherited" from an existing typeclass so that the compiler could leverage the interface and (existing) default functions of that typeclass to perform the regular operations on the new type. Then, we can define functions that do operations with the newly defined type.
+  #+end_quote
 
-Not exporting the value constructors of a data types makes them more abstract in such a way that we hide their implementation. Also, whoever uses our module can't pattern match against the value constructors.
+  #+begin_src haskell
+data Shape = Circle Float Float Float | Rectangle Float Float Float Float deriving (Show)
+  #+end_src
+
+In the example above, the type is =Shape= and the constructors are =Circle= and =Rectangle=.
+
+#+begin_src haskell
+Prelude> data Shape = Circle Float Float Float | Rectangle Float Float Float Float deriving (Show)
+Prelude> :t Circle
+Circle :: Float -> Float -> Float -> Shape
+Prelude> :info Shape
+data Shape
+  = Circle Float Float Float | Rectangle Float Float Float Float
+        -- Defined at <interactive>:7:1
+instance [safe] Show Shape -- Defined at <interactive>:7:85
+#+end_src
+
+If we wanted to export the functions and types that we defined here in a module, we could start it off like this:
+
+#+begin_src haskell
+module Shapes
+( Point(..)
+, Shape(..)
+, surface
+, nudge
+, baseCircle
+, baseRect
+) where
+#+end_src
+
+By doing =Shape(..)=, we exported all the value constructors for =Shape=, so that means that whoever imports our module can make shapes by using the =Rectangle= and =Circle= value constructors. It's the same as writing =Shape(Rectangle, Circle)=.
+
+We could also opt not to export any value constructors for =Shape= by just writing Shape in the export statement. /That way, someone importing our module could only make shapes by using the auxilliary functions =baseCircle= and =baseRect=/. =Data.Map= uses that approach. You can only make a mapping by using one of the auxilliary functions like =Map.fromList=. Remember, *value constructors are just functions that take the fields as parameters and return a value of some type (like =Shape)= as a result*. So when we choose not to export them, we just prevent the person importing our module from using those functions, but if some other functions that are exported return a type, we can use them to make values of our custom data types. /Not exporting the value constructors of a data types makes them more abstract in such a way that we hide their implementation. Also, whoever uses our module can't pattern match against the value constructors/ - that is called intentional design choice...
 
 #+begin_src haskell
 data Person = Person
@@ -279,25 +328,45 @@ data Person = Person
   deriving (Show)
 #+end_src
 
-So instead of just naming the field types one after another and separating them with spaces, we use curly brackets. First we write the name of the field, for instance, firstName and then we write a double colon :: (also called Paamayim Nekudotayim, haha) and then we specify the type. The resulting data type is exactly the same. The main benefit of this is that it creates functions that lookup fields in the data type. By using record syntax to create this data type, Haskell automatically made these functions: firstName, lastName, age, height, phoneNumber and flavor. There's another benefit to using record syntax. When we derive Show for the type, it displays it differently if we use record syntax to define and instantiate the type.
+So instead of just naming the field types one after another and separating them with spaces, we use curly brackets. First we write the name of the field, for instance, firstName and then we write a double colon =::= and then we specify the type. The resulting data type is exactly the same. The main benefit of this is that it creates functions that lookup fields in the data type. By using record syntax to create this data type, Haskell automatically made these functions: firstName, lastName, age, height, phoneNumber and flavor. There's another benefit to using record syntax. When we derive Show for the type, it displays it differently if we use record syntax to define and instantiate the type.
 
-Using type parameters is very beneficial, but only when using them makes sense. Usually we use them when our data type would work regardless of the type of the value it then holds inside it, like with our Maybe a type. If our type acts as some kind of box, it's good to use them.
+/Using type parameters is very beneficial, but only when using them makes sense/. Usually we use them when our data type would work regardless of the type of the value it then holds inside it, like with our =Maybe a= type. /If our type acts as some kind of box, it's good to use them/.
 
-Another example of a parameterized type that we've already met is Map k v from Data.Map. The k is the type of the keys in a map and the v is the type of the values. This is a good example of where type parameters are very useful. Having maps parameterized enables us to have mappings from any type to any other type, as long as the type of the key is part of the Ord typeclass. If we were defining a mapping type, we could add a typeclass constraint in the data declaration:
+We usually use type parameters when the type that's contained inside the data type's various value constructors isn't really that important for the type to work. A list of stuff is a list of stuff and it doesn't matter what the type of that stuff is, it can still work. If we want to sum a list of numbers, we can specify later in the summing function that we specifically want a list of numbers. Same goes for Maybe. Maybe represents an option of either having nothing or having one of something. It doesn't matter what the type of that something is.
+
+Another example of a parameterized type that we've already met is =Map k v= from =Data.Map=. The =k= is the type of the keys in a map and the v is the type of the values. This is a good example of where type parameters are very useful. Having maps parameterized enables us to have mappings from any type to any other type, as long as the type of the key is part of the Ord typeclass. If we were defining a mapping type, we could add a typeclass constraint in the data declaration:
 
 #+begin_src haskell
 data (Ord k) => Map k v = ...
 #+end_src
 
-However, it's a very strong convention in Haskell to never add typeclass constraints in data declarations. Why? Well, because we don't benefit a lot, but we end up writing more class constraints, even when we don't need them. If we put or don't put the Ord k constraint in the data declaration for Map k v, we're going to have to put the constraint into functions that assume the keys in a map can be ordered. But if we don't put the constraint in the data declaration, we don't have to put (Ord k) => in the type declarations of functions that don't care whether the keys can be ordered or not. So don't put type constraints into data declarations even if it seems to make sense, because you'll have to put them into the function type declarations either way.
+However, it's a very strong convention in Haskell /to never add typeclass constraints in data declarations/. Why? Well, because we don't benefit a lot, but we end up writing more class constraints, even when we don't need them. If we put or don't put the Ord k constraint in the data declaration for Map k v, we're going to have to put the constraint into functions that assume the keys in a map can be ordered. But if we don't put the constraint in the data declaration, we don't have to put (Ord k) => in the type declarations of functions that don't care whether the keys can be ordered or not. So don't put type constraints into data declarations even if it seems to make sense, because you'll have to put them into the function type declarations either way.
+
+#+begin_src haskell
+data Vector a = Vector a a a deriving (Show)
+
+vplus :: (Num t) => Vector t -> Vector t -> Vector t
+(Vector i j k) `vplus` (Vector l m n) = Vector (i+l) (j+m) (k+n)
+
+vectMult :: (Num t) => Vector t -> t -> Vector t
+(Vector i j k) `vectMult` m = Vector (i*m) (j*m) (k*m)
+
+scalarMult :: (Num t) => Vector t -> Vector t -> t
+(Vector i j k) `scalarMult` (Vector l m n) = i*l + j*m + k*n
+#+end_src
 
 Once again, it's very important to distinguish between the type constructor and the value constructor. When declaring a data type, the part before the === is the type constructor and the constructors after it (possibly separated by =|= 's) are value constructors. Giving a function a type of =Vector t t t -> Vector t t t -> t= would be wrong, because we have to put types in *type* declaration and the vector type constructor takes only one parameter, whereas the value constructor takes three. Let's play around with our vectors.
 
-/A typeclass is a sort of an interface that defines some behavior. A type can be made an instance of a typeclass if it supports that behavior/. Typeclasses are more like interfaces. We don't make data from typeclasses. Instead, we first make our data type and then we think about what it can act like. If it can act like something that can be equated, we make it an instance of the Eq typeclass. If it can act like something that can be ordered, we make it an instance of the Ord typeclass.
+/A typeclass is a sort of an interface that defines some behavior. A type can be made an instance of a typeclass if it supports that behavior/. Typeclasses are more like interfaces. We don't make data from typeclasses. Instead, we first make our data type and then we think about what it can act like. If it can act like something that can be equated, we make it an instance of the Eq typeclass. If it can act like something that can be ordered, we make it an instance of the =Ord= typeclass.
+
+We can derive instances for the =Ord= type class, which is for types that have values that can be ordered. /If we compare two values of the same type that were made using different constructors, the value which was made with a constructor that's defined first is considered smaller/. For instance, consider the =Bool= type, which can have a value of either =False= or =True=.
 
 Previously, we mentioned that when writing types, the [Char] and String types are equivalent and interchangeable. That's implemented with type synonyms. Type synonyms don't really do anything per se, they're just about giving some types different names so that they make more sense to someone reading our code and documentation. Giving the String type synonyms is something that Haskell programmers do when they want to convey more information about what strings in their functions should be used as and what they represent.
 
 (The typeclass is mind-boggling complex... it is able to create new data type as well as having abstractions upon data types. Just to make things worse, the data types can also be recursive.)
+
+So far, we've seen that =Maybe a= was mostly used to represent the results of computations that could have either failed or not. But somtimes, =Maybe a= isn't good enough because Nothing doesn't really convey much information other than that something has failed. That's cool for functions that can fail in only one way or if we're just not interested in how and why they failed. A =Data.Map= lookup fails only if the key we were looking for wasn't in the map, so we know exactly what happened. However, when we're interested in how some function failed or why, we usually use the result type of =Either a b=, where =a= is some sort of type that can tell us something about the possible failure and =b= is the type of a successful computation. Hence, errors use the Left value constructor while results use Right.
+
 
 #+begin_src haskell
 import qualified Data.Map as Map
@@ -368,6 +437,8 @@ instance Show TrafficLight where
     show Green = "Green light"
 #+end_src
 
+=data= means that we're defining a new data type. The parts after the === are *value constructors*. They specify the different values that this type can have. A *value constructor* can take some values parameters and then produce a new value. In a similar manner, *type constructors* can take types as parameters to produce new types. =class= is for defining new typeclasses and =instance= is for making our types instances of typeclasses.
+
 If you want to see what the instances of a typeclass are, just do =:info YourTypeClass= in GHCI. So typing =:info= Num will show which functions the typeclass defines and it will give you a list of the types in the typeclass. =:info= works for types and type constructors too. If you do =:info Maybe=, it will show you all the typeclasses that =Maybe= is an instance of. Also =:info= can show you the type declaration of a function. I think that's pretty cool. :)
 
 #+begin_src haskell
@@ -385,7 +456,84 @@ A =*= means that the type is a concrete type. A concrete type is a type that doe
 ghci> :k Int
 Int :: *
 #+end_src
+
 In this section, we took a good look at how type parameters work and kind of formalized them with kinds, just like we formalized function parameters with type declarations. We saw that there are interesting parallels between functions and type constructors. They are, however, two completely different things. When working on real Haskell, you usually won't have to mess with kinds and do kind inference by hand like we did now. Usually, you just have to partially apply your own type to * -> * or * when making it an instance of one of the standard typeclasses, but it's good to know how and why that actually works. It's also interesting to see that types have little types of their own. Again, you don't really have to understand everything we did here to read on, but if you understand how kinds work, chances are that you have a very solid grasp of Haskell's type system.
+
+And now, we're going to take a look at the Functor typeclass, which is basically for things that can be mapped over.
+
+#+begin_src haskell
+class Functor f where
+      fmap :: (a -> b) -> f a -> f b
+
+instance Functor [] where
+      fmap = map
+#+end_src
+
+The =f= is not a concrete type (a type that a value can hold, like =Int=, =Bool= or =Maybe String=), but a type constructor that takes one type parameter. A quick refresher example: =Maybe Int= is a concrete type, but =Maybe= is a type constructor that takes one type as the parameter. Anyway, we see that =fmap= takes a function from one type to another and a functor applied with one type and returns a functor applied with another type.
+
+#+begin_src haskell
+λ> :info fmap
+class Functor (f :: * -> *) where
+  fmap :: (a -> b) -> f a -> f b
+  ...
+  	-- Defined in ‘GHC.Base’
+λ> :info Functor
+class Functor (f :: * -> *) wher
+ 446 Int :: *
+ 447
+ 448 ghci> :k Maybe
+ 449 Maybe :: * -> *
+ 450 #+end_src
+ 451
+ 452 A =*= means that the type is a concrete type. A concrete type is a type that doesn't take any type parameters and values can only have types that are concrete types.
+ 453
+ 454 #+begin_src hasekll
+ 455 -- It is short for =:kind= for a type, and like =:t= (=:type=) for function
+ 456 ghci> :k Int
+ 457 Int :: *
+ 458 #+end_src
+ 459
+ 460 In this section, we took a good look at how type parameters work and kind of formalized them with kinds, just like we formalized function parameters with type declarations. We saw\
+      that there are interesting parallels between functions and type constructors. They are, however, two completely different things. When working on real Haskell, you usually won't \
+     have to mess with kinds and do kind inference by hand like we did now. Usually, you just have to partially apply your own type to * -> * or * when making it an instance of one of \
+     the standard typeclasses, but it's good to know how and why that actually works. It's also interesting to see that types have little types of their own. Again, you don't really ha\
+     ve to understand everything we did here to read on, but if you understand how kinds work, chances are that you have a very solid grasp of Haskell's type system.
+ 461
+ 462 And now, we're going to take a look at the Functor typeclass, which is basically for things that can be mapped over.
+ 463
+ 464 #+begin_src haskell
+ 465 class Functor f where
+ 466       fmap :: (a -> b) -> f a -> f b
+ 467
+ 468 instance Functor [] where
+ 469       fmap = map
+ 470 #+end_src
+ 471
+ 472 The =f= is not a concrete type (a type that a value can hold, like =Int=, =Bool= or =Maybe String=), but a type constructor that takes one type parameter. A quick refresher exampl\
+     e: =Maybe Int= is a concrete type, but =Maybe= is a type constructor that takes one type as the parameter. Anyway, we see that =fmap= takes a function from one type to another and\
+      a functor applied with one type and returns a functor applied with another type.
+ 473
+ 474 #+begin_src haskell
+ 475 λ> :info fmap
+ 476 class Functor (f :: * -> *) where
+ 477   fmap :: (a -> b) -> f a -> f b
+ 478   ...
+ 479     -- Defined in ‘GHC.Base’
+ 480 λ> :info Functore
+  fmap :: (a -> b) -> f a -> f b
+  (<$) :: a -> f b -> f a
+  {-# MINIMAL fmap #-}
+  	-- Defined in ‘GHC.Base’
+instance Functor (Either a) -- Defined in ‘Data.Either’
+instance Functor [] -- Defined in ‘GHC.Base’
+instance Functor Maybe -- Defined in ‘GHC.Base’
+instance Functor IO -- Defined in ‘GHC.Base’
+instance Functor ((->) r) -- Defined in ‘GHC.Base’
+instance Functor ((,) a) -- Defined in ‘GHC.Base’
+#+end_src
+
+Since for lists, =fmap= is just =map=, we get the same results when using them on lists. Types that can act like a box can be functors. You can think of a list as a box that has an infinite amount of little compartments and they can all be empty, one can be full and the others empty or a number of them can be full. So, what else has the properties of being like a box? For one, the =Maybe a= type.
+
 * Input and Output
 
 Whereas in imperative languages you usually get things done by giving the computer a series of steps to execute, functional programming is more of defining what stuff is. The only thing a function can do in Haskell is give us back some result based on the parameters we gave it. While functions being unable to change state is good because it helps us reason about our programs, there's one problem with that. If we want to deal with impure data, we have to do it in an impure environment. So the taint of impurity spreads around much like the undead scourge and /it's in our best interest to keep the I/O parts of our code as small as possible/. (I guess it is the same reason that everything about the I/O operatin is weird...
@@ -423,6 +571,7 @@ Haskell has a very good type system. Algebraic data types allow for types like =
 Despite having expressive types that support failed computations, Haskell still has support for exceptions, because they make more sense in I/O contexts. A lot of things can go wrong when dealing with the outside world because it is so unreliable.
 
 Earlier, we talked about how we should spend as little time as possible in the I/O part of our program. /The logic of our program should reside mostly within our pure functions, because their results are dependant only on the parameters that the functions are called with/. When dealing with pure functions, you only have to think about what a function returns, because it can't do anything else. This makes your life easier. Even though doing some logic in I/O is necessary (like opening files and the like), it should preferably be kept to a minimum. Pure functions are lazy by default, which means that we don't know when they will be evaluated and that it really shouldn't matter. However, once pure functions start throwing exceptions, it matters when they are evaluated. That's why we can only catch exceptions thrown from pure functions in the I/O part of our code. And that's bad, because we want to keep the I/O part as small as possible. However, if we don't catch them in the I/O part of our code, our program crashes. The solution? Don't mix exceptions and pure code. /Take advantage of Haskell's powerful type system and use types like =Either= and =Maybe= to represent results that may have failed/.
+
 * Functionally Solving Problems
 
 we're going to solve a problem in three steps:
