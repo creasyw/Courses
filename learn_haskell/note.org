@@ -459,7 +459,7 @@ Int :: *
 
 In this section, we took a good look at how type parameters work and kind of formalized them with kinds, just like we formalized function parameters with type declarations. We saw that there are interesting parallels between functions and type constructors. They are, however, two completely different things. When working on real Haskell, you usually won't have to mess with kinds and do kind inference by hand like we did now. Usually, you just have to partially apply your own type to * -> * or * when making it an instance of one of the standard typeclasses, but it's good to know how and why that actually works. It's also interesting to see that types have little types of their own. Again, you don't really have to understand everything we did here to read on, but if you understand how kinds work, chances are that you have a very solid grasp of Haskell's type system.
 
-And now, we're going to take a look at the Functor typeclass, which is basically for things that can be mapped over.
+And now, we're going to take a look at the *Functor typeclass*, which is /basically for things that can be mapped over/.
 
 #+begin_src haskell
 class Functor f where
@@ -469,7 +469,7 @@ instance Functor [] where
       fmap = map
 #+end_src
 
-The =f= is not a concrete type (a type that a value can hold, like =Int=, =Bool= or =Maybe String=), but a type constructor that takes one type parameter. A quick refresher example: =Maybe Int= is a concrete type, but =Maybe= is a type constructor that takes one type as the parameter. Anyway, we see that =fmap= takes a function from one type to another and a functor applied with one type and returns a functor applied with another type.
+The =f= is not a concrete type (a type that a value can hold, like =Int=, =Bool= or =Maybe String=), but a /type constructor/ that takes one type parameter. A quick refresher example: =Maybe Int= is a concrete type, but =Maybe= is a type constructor that takes one type as the parameter. Anyway, we see that =fmap= takes a function from one type to another and a functor applied with one type and returns a functor applied with another type. Functor wants a type constructor that takes one type and not a concrete type.
 
 #+begin_src haskell
 λ> :info fmap
@@ -479,47 +479,6 @@ class Functor (f :: * -> *) where
   	-- Defined in ‘GHC.Base’
 λ> :info Functor
 class Functor (f :: * -> *) wher
- 446 Int :: *
- 447
- 448 ghci> :k Maybe
- 449 Maybe :: * -> *
- 450 #+end_src
- 451
- 452 A =*= means that the type is a concrete type. A concrete type is a type that doesn't take any type parameters and values can only have types that are concrete types.
- 453
- 454 #+begin_src hasekll
- 455 -- It is short for =:kind= for a type, and like =:t= (=:type=) for function
- 456 ghci> :k Int
- 457 Int :: *
- 458 #+end_src
- 459
- 460 In this section, we took a good look at how type parameters work and kind of formalized them with kinds, just like we formalized function parameters with type declarations. We saw\
-      that there are interesting parallels between functions and type constructors. They are, however, two completely different things. When working on real Haskell, you usually won't \
-     have to mess with kinds and do kind inference by hand like we did now. Usually, you just have to partially apply your own type to * -> * or * when making it an instance of one of \
-     the standard typeclasses, but it's good to know how and why that actually works. It's also interesting to see that types have little types of their own. Again, you don't really ha\
-     ve to understand everything we did here to read on, but if you understand how kinds work, chances are that you have a very solid grasp of Haskell's type system.
- 461
- 462 And now, we're going to take a look at the Functor typeclass, which is basically for things that can be mapped over.
- 463
- 464 #+begin_src haskell
- 465 class Functor f where
- 466       fmap :: (a -> b) -> f a -> f b
- 467
- 468 instance Functor [] where
- 469       fmap = map
- 470 #+end_src
- 471
- 472 The =f= is not a concrete type (a type that a value can hold, like =Int=, =Bool= or =Maybe String=), but a type constructor that takes one type parameter. A quick refresher exampl\
-     e: =Maybe Int= is a concrete type, but =Maybe= is a type constructor that takes one type as the parameter. Anyway, we see that =fmap= takes a function from one type to another and\
-      a functor applied with one type and returns a functor applied with another type.
- 473
- 474 #+begin_src haskell
- 475 λ> :info fmap
- 476 class Functor (f :: * -> *) where
- 477   fmap :: (a -> b) -> f a -> f b
- 478   ...
- 479     -- Defined in ‘GHC.Base’
- 480 λ> :info Functore
   fmap :: (a -> b) -> f a -> f b
   (<$) :: a -> f b -> f a
   {-# MINIMAL fmap #-}
@@ -532,7 +491,16 @@ instance Functor ((->) r) -- Defined in ‘GHC.Base’
 instance Functor ((,) a) -- Defined in ‘GHC.Base’
 #+end_src
 
-Since for lists, =fmap= is just =map=, we get the same results when using them on lists. Types that can act like a box can be functors. You can think of a list as a box that has an infinite amount of little compartments and they can all be empty, one can be full and the others empty or a number of them can be full. So, what else has the properties of being like a box? For one, the =Maybe a= type.
+Since for lists, =fmap= is just =map=, we get the same results when using them on lists. /Types that can act like a box can be functors/. You can think of a list as a box that has an infinite amount of little compartments and they can all be empty, one can be full and the others empty or a number of them can be full. So, what else has the properties of being like a box? For one, the =Maybe a= type.
+
+/Type constructors/ take other types as parameters to eventually produce concrete types. We've seen that type constructors can be partially applied (=Either String= is a type that takes one type and produces a concrete type, like =Either String Int=), just like functions can.
+
+** Summary
+
+- =data= defines *type*, which has *type constructor* at the left side of the equation and *value constructor* at the right side of the constructor. More often than not, it also have =derive= which helps defines the basic behaviors of this type based on existing *typeclass*.
+- =type= is type synonyms. It can use basic types to construct a compound and give a short name.
+- =class= is to define =typeclass=.
+- =instance= is to define the customized behavior of the specific *type* under given *typeclass*, /if we choose not to use the =derive=/. It is especially useful to make the newly added type could be apply to =Functor= so that we could use =fmap= to "batch process the data of this type.
 
 * Input and Output
 
