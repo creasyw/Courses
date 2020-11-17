@@ -504,15 +504,49 @@ Since for lists, =fmap= is just =map=, we get the same results when using them o
 
 * Input and Output
 
-Whereas in imperative languages you usually get things done by giving the computer a series of steps to execute, functional programming is more of defining what stuff is. The only thing a function can do in Haskell is give us back some result based on the parameters we gave it. While functions being unable to change state is good because it helps us reason about our programs, there's one problem with that. If we want to deal with impure data, we have to do it in an impure environment. So the taint of impurity spreads around much like the undead scourge and /it's in our best interest to keep the I/O parts of our code as small as possible/. (I guess it is the same reason that everything about the I/O operatin is weird...
+Whereas in imperative languages you usually get things done by giving the computer a series of steps to execute, /functional programming is more of defining what stuff is/. /The only thing a function can do in Haskell is give us back some result based on the parameters we gave it/. While functions being unable to change state is good because it helps us reason about our programs, there's one problem with that. (I guess it is the same reason that everything about the I/O operatin is weird...) Haskell actually has a really clever system for dealing with functions that have side-effects that neatly separates the part of our program that is pure and the part of our program that is impure, which does all the dirty work like talking to the keyboard and the screen. With those two parts separated, we can still reason about our pure program and take advantage of all the things that purity offers, like laziness, robustness and modularity while efficiently communicating with the outside world.
 
-*the return in Haskell is really nothing like the return in most other languages*. In Haskell (in I/O actions specifically), it makes an I/O action out of a pure value. If you think about the box analogy from before, it takes a value and wraps it up in a box. The resulting I/O action doesn't actually do anything, it just has that value encapsulated as its result. So in an I/O context, =return "haha"= will have a type of =IO String=, because we needed some I/O action to carry out in the case of an empty input line. That's why we just made a bogus I/O action that doesn't do anything by writing =return ()=. (so, is it like =yield= for I/O?...)
+#+begin_src haskell
+ghci> :t putStrLn
+putStrLn :: String -> IO ()
+ghci> :t putStrLn "hello, world"
+putStrLn "hello, world" :: IO ()
+#+end_src
+
+An I/O action is something that, when performed, will carry out an action with a side-effect (that's usually either reading from the input or printing stuff to the screen) and will also contain some kind of return value inside it. Printing a string to the terminal doesn't really have any kind of meaningful return value, so a dummy value of =()= is used.
+
+If we're taking data out of an I/O action, we can only take it out when we're inside another I/O action. This is how Haskell manages to neatly separate the pure and impure parts of our code. =getLine= is in a sense impure because its result value is not guaranteed to be the same when performed twice. That's why it's sort of tainted with the IO type constructor and we can only get that data out in I/O code. And /because I/O code is tainted too, any computation that depends on tainted I/O data will have a tainted result/. If we want to deal with impure data, we have to do it in an impure environment. So the taint of impurity spreads around much like the undead scourge and *it's in our best interest to keep the I/O parts of our code as small as possible*.
+
+Remember, *to get the value out of an I/O action, you have to perform it inside another I/O action by binding it to a name with =<-=*.
+
+/I/O actions will only be performed when they are given a name of main or when they're inside a bigger I/O action that we composed with a do block/. We can also use a do block to glue together a few I/O actions and then we can use that I/O action in another do block and so on. Either way, they'll be performed only if they eventually fall into main. (this really fucks up things...)
+
+#+begin_src haskell
+import Data.Char
+
+main = do
+    putStrLn "What's your first name?"
+    -- bind the IO String to a regular String
+    firstName <- getLine
+    -- bind the IO String to a regular String
+    putStrLn "What's your last name?"
+    lastName <- getLine
+    -- operations using pure functions with pure data type to get another pure data type
+    let bigFirstName = map toUpper firstName
+        bigLastName = map toUpper lastName
+    -- feed the pure data types into another IO function
+    putStrLn $ "hey " ++ bigFirstName ++ " " ++ bigLastName ++ ", how are you?"
+#+end_src
+
+=<-= is (for now) for performing I/O actions and binding their results to names. =map toUpper firstName=, however, isn't an I/O action. It's a /pure/ expression in Haskell. So use =<-= when you want to bind results of I/O actions to names and you can use let bindings to bind pure expressions to names. Had we done something like =let firstName = getLine=, we would have just called the =getLine= I/O action a different name and we'd still have to run it through a =<-= to perform it.
+
+*The return in Haskell is really nothing like the return in most other languages*. In Haskell (in I/O actions specifically), it makes an I/O action out of a pure value. If you think about the box analogy from before, it takes a value and wraps it up in a box. The resulting I/O action doesn't actually do anything, it just has that value encapsulated as its result. So in an I/O context, =return "haha"= will have a type of =IO String=, because we needed some I/O action to carry out in the case of an empty input line. That's why we just made a bogus I/O action that doesn't do anything by writing =return ()=. (so, is it like =yield= for I/O?...) Using =return= doesn't cause the I/O do block to end in execution or anything like that.
 
 =print= takes a value of any type that's an instance of =Show= (meaning that we know how to represent it as a string), calls =show= with that value to stringify it and then outputs that string to the terminal. Basically, it's just =putStrLn . show=. It first runs =show= on a value and then feeds that to =putStrLn=, which returns an I/O action that will print out our value.
 
 The =when= function is found in =Control.Monad= (to get access to it, do =import Control.Monad=). It's interesting because in a do block it looks like a control flow statement, but it's actually a normal function. It takes a boolean value and an I/O action if that boolean value is =True=, it returns the same I/O action that we supplied to it. However, if it's =False=, it returns the =return ()= action, so an I/O action that doesn't do anything.
 
-#+begin_src hasekll
+#+begin_src haskell
 import Control.Monad
 
 main = do
@@ -520,6 +554,20 @@ main = do
     when (c /= ' ') $ do
         putChar c
         main
+#+end_src
+
+#+begin_src haskell
+import Control.Monad
+
+main = do
+    - forM get a list of IO (Monad) types of data
+    colors <- forM [1,2,3,4] (\a -> do
+        putStrLn $ "Which color do you associate with the number " ++ show a ++ "?"
+        color <- getLine
+        -- return an IO type which will be convert to a normal data type via <-
+        return color)
+    putStrLn "The colors that you associate with 1, 2, 3 and 4 are: "
+    mapM putStrLn colors
 #+end_src
 
 I/O actions are values much like any other value in Haskell. We can pass them as parameters to functions and functions can return I/O actions as results. What's special about them is that if they fall into the main function (or are the result in a GHCI line), they are performed. Each I/O action can also encapsulate a result with which it tells you what it got from the real world.
