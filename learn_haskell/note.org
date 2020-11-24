@@ -617,8 +617,9 @@ Despite having expressive types that support failed computations, Haskell still 
 
 Earlier, we talked about how we should spend as little time as possible in the I/O part of our program. /The logic of our program should reside mostly within our pure functions, because their results are dependant only on the parameters that the functions are called with/. *When dealing with pure functions, you only have to think about what a function returns, because it can't do anything else*. This makes your life easier. Even though doing some logic in I/O is necessary (like opening files and the like), it should preferably be kept to a minimum. *Pure functions are lazy by default, which means that we don't know when they will be evaluated and that it really shouldn't matter*. However, /once pure functions start throwing exceptions, it matters when they are evaluated. That's why we can only catch exceptions thrown from pure functions in the I/O part of our code/. And that's bad, because we want to keep the I/O part as small as possible. However, if we don't catch them in the I/O part of our code, our program crashes. The solution? *Don't mix exceptions and pure code. Take advantage of Haskell's powerful type system and use types like =Either= and =Maybe= to represent results that may have failed*.
 
-
 * Functionally Solving Problems
+
+It really helps to first think what the type declaration of a function should be before concerning ourselves with the implementation and then write it down. In Haskell, a function's type declaration tells us a whole lot about the function, due to the very strong type system.
 
 we're going to solve a problem in three steps:
 
@@ -628,14 +629,17 @@ we're going to solve a problem in three steps:
 
 * Functors, Applicative Functors and Monoids
 
-Haskell's combination of purity, higher order functions, parameterized algebraic data types, and typeclasses allows us to implement polymorphism on a much higher level than possible in other languages.
+** Functors redux
 
-Typeclasses are open, which means that we can define our own data type, think about what it can act like and connect it with the typeclasses that define its behaviors. Because of that and because of Haskell's great type system that allows us to know a lot about a function just by knowing its type declaration, we can define typeclasses that define behavior that's very general and abstract.
+/Haskell's combination of purity, higher order functions, parameterized algebraic data types, and typeclasses allows us to implement polymorphism on a much higher level than possible in other languages/. Typeclasses are open, which means that we can define our own data type, think about what it can act like and connect it with the typeclasses that define its behaviors. Because of that and because of Haskell's great type system that allows us to know a lot about a function just by knowing its type declaration, /we can define typeclasses that define behavior that's very general and abstract/. (Right... everything starts from a typeclass)
 
-Functors are things that can be mapped over, like lists, =Maybe= s, trees, and such. In Haskell, they're described by the typeclass Functor, which has only one typeclass method, namely =fmap=, which has a type of =fmap :: (a -> b) -> f a -> f b=. It says: give me a function that takes an =a= and returns a =b= and a box with an a (or several of them) inside it and I'll give you a box with a b (or several of them) inside it. It kind of applies the function to the element inside the box.
+Functors are things that can be mapped over, like lists, =Maybe= s, trees, and such. In Haskell, they're described by the typeclass Functor, which has only one typeclass method, namely =fmap=, which has a type of =fmap :: (a -> b) -> f a -> f b=. It says: give me a function that takes an =a= and returns a =b= and a box with an =a= (or several of them) inside it and I'll give you a box with a =b= (or several of them) inside it. It kind of /applies the function to the element inside the box/. A more correct term for what a functor is would be /computational context/. The context might be that the computation can have a value or it might have failed (Maybe and Either a) or that there might be more values (lists), stuff like that.
 
 #+begin_src haskell
--- fuck! everyone can be the poster boy
+-- the =f= is the "computational context" mentioned above.
+-- it means: the functor towards a context is that it receives a function
+-- derives =a= to =b=, so that the context with =a= in it becomes the context
+-- with =b= in it
 λ> :t fmap
 fmap :: Functor f => (a -> b) -> f a -> f b
 #+end_src
@@ -649,23 +653,34 @@ instance Functor IO where
         return (f result)
 #+end_src
 
-The result of mapping something over an I/O action will be an I/O action, so right off the bat we use do syntax to glue two actions and make a new one. In the implementation for =fmap=, we make a new I/O action that first performs the original I/O action and calls its result =result=. Then, we do =return (f result)=. =return= is a function that /makes an I/O action that doesn't do anything but only presents something as its result/. (In other words, =fmap= is the way for Haskell to get around the inpurity of I/O to apply a "pure" function to the data within the "inpure" I/O box.)
+The result of mapping something over an I/O action will be an I/O action, so right off the bat we use =do= syntax to glue two actions and make a new one. In the implementation for =fmap=, we make a new I/O action that first performs the original I/O action and calls its result =result=. Then, we do =return (f result)=. =return= is a function that /makes an I/O action that doesn't do anything but only presents something as its result/. (In other words, =fmap= is the way for Haskell to get around the inpurity of I/O to apply a "pure" function to the data within the "inpure" I/O box.)
 
 If we look at what =fmap='s type would be if it were limited to =IO=, it would be =fmap :: (a -> b) -> IO a -> IO b=. =fmap= takes a function and an I/O action and returns a new I/O action that's like the old one, except that the function is applied to its contained result. /If you ever find yourself binding the result of an I/O action to a name, only to apply a function to that and call that something else/ (yes, it almost killed me...), consider using =fmap=, because it looks *prettier* (seriously? it is sick). If you want to apply multiple transformations to some data inside a functor, /you can declare your own function at the top level/, make a lambda function or ideally, use function composition.
+
+#+begin_src haskell
+import Data.Char
+import Data.List
+
+-- this is actually another way to abstract the "pure" function out of the impure IO action
+main = do line <- fmap (intersperse '-' . reverse . map toUpper) getLine
+          putStrLn line
+#+end_src
 
 #+begin_src haskell
 instance Functor ((->) r) where
     fmap f g = (\x -> f (g x))
 #+end_src
 
-(Things just get sicker.) What we get now is =fmap :: (a -> b) -> (r -> a) -> (r -> b)=. Mapping one function over a function has to produce a function, just like mapping a function over a =Maybe= has to produce a =Maybe= and mapping a function over a list has to produce a list. What does the type =fmap :: (a -> b) -> (r -> a) -> (r -> b)= for this instance tell us? Well, we see that it takes a function from =a= to =b= and a function from =r= to =a= and returns a function from =r= to =b=. /It is the same as Function composition/! We pipe the output of =r -> a= into the input of =a -> b= to get a function =r -> b=, (It also means the second function =r -> a= first applies to the input variable, which is missing in this signature, and then =a -> b= applies. It also means we can use function to apply not only to data but also to another function. And, it also means the function composition =.= is a functor. sick.)
+What we get now is =fmap :: (a -> b) -> (r -> a) -> (r -> b)=. /Mapping one function over a function has to produce a function/, just like mapping a function over a =Maybe= has to produce a =Maybe= and mapping a function over a list has to produce a list. What does the type =fmap :: (a -> b) -> (r -> a) -> (r -> b)= for this instance tell us? Well, we see that it takes a function from =a= to =b= and a function from =r= to =a= and returns a function from =r= to =b=. /It is the same as Function composition/! We pipe the output of =r -> a= into the input of =a -> b= to get a function =r -> b=, (It also means the second function =r -> a= first applies to the input variable, which is missing in this signature, and then =a -> b= applies. /It also means we can use function to apply not only to data but also to another function/. And, *it also means the function composition =.= is a functor*.
+
+You can think of =fmap= as either a function that takes a function and a functor and then maps that function over the functor, or you can think of it as a function that takes a function and lifts that function so that it operates on functors. Both views are correct and in Haskell, equivalent.
 
 *Functor laws*:
 
 1. If we map the id function over a functor, the functor that we get back should be the same as the original functor.
 2. Composing two functions and then mapping the resulting function over a functor should be the same as first mapping one function over the functor and then mapping the other one.
 
-Functions in Haskell are curried by default, which means that a function that seems to take several parameters actually takes just one parameter and returns a function that takes the next parameter and so on. This mechanism is what enables us to partially apply functions by just calling them with too few parameters, which results in functions that we can then pass on to other functions. /Normal functors support mapping normal functions over existing functors. What if we want to take out the function from a curried functor and then map it to another functor/ (but why...)? In other words, with normal functors, you can just map a function over a functor and then you can't get the result out in any general way, /even if the result is a partially applied function/. Applicative functors, on the other hand, /allow you to operate on several functors with a single function/.
+Functions in Haskell are curried by default, which means that a function that seems to take several parameters actually takes just one parameter and returns a function that takes the next parameter and so on. This mechanism is what enables us to partially apply functions by just calling them with too few parameters, which results in functions that we can then pass on to other functions. /Normal functors support mapping normal functions over existing functors. What if we want to take out the function from a curried functor and then map it to another functor/. In other words, with normal functors, you can just map a function over a functor and then you can't get the result out in any general way, /even if the result is a partially applied function/. Applicative functors, on the other hand, /allow you to operate on several functors with a single function/.
 
 =Applicative= typeclass, which lies in the =Control.Applicative= module, comes into picture for it. It defines two methods, =pure= and =<*>=. It doesn't provide a default implementation for any of them, so we have to define them both if we want something to be an applicative functor. (this is really sick...)
 
