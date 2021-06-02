@@ -1,39 +1,3 @@
-
-* Types and Typeclasses
-
-Haskell has a /static/ type system. /The type of every expression is known at compile time/, which leads to safer code. Furthermore, Haskell has type inference. A type is a kind of label that every expression has. It tells us in which category of things that expression fits.
-
-Functions also have types. When writing our own functions, /we can choose to give them an explicit type declaration. This is generally considered to be good practice except when writing very short functions/.
-
-Int and Integer both stand for the type of integers. The difference is that the latter one is /not bounded/.
-
-Here's a simple function that takes three integers and adds them together:
-
-#+begin_src haskell
-addThree :: Int -> Int -> Int -> Int
-addThree x y z = x + y + z
-#+end_src
-
-This signature makes it possible to partially apply input parameters to a function and use it to generate new functions.
-
-*A typeclass can be regarded as an interface that defines some behavior*. If a type is a part of a typeclass, that means that it supports and implement the behavior the typeclass describes. (it is the exactly what an interface does in Golang - it has contract on the behavior of the data that a function receives or generates.) However, it /feels/ like a wider implication. For example,
-
-#+begin_src haskell
-Prelude> :t read
-read :: Read a => String -> a
-Prelude> read "4" + 0
-4
-Prelude> read "4"
---- Exception: Prelude.read: no parse
-Prelude>
-Prelude> read "4" :: Int
-4
-#+end_src
-
-The signature of =read=  can generate a typeclass, which if there is no other operation (e.g. =+0=) to help the compiler /infers/ its type, the compilation fails unless we tell it explicitly about the type.
-
-Most expressions are such that the compiler can infer what their type is by itself. But sometimes, the compiler doesn't know whether to return a value of type Int or Float for an expression like read "5". To see what the type is, Haskell would have to actually evaluate read "5". But since Haskell is a statically typed language, it has to know all the types before the code is compiled (or in the case of GHCI, evaluated). So we have to tell Haskell: "Hey, this expression should have this type, in case you don't know!".
-
 * Syntax in Functions
 
 The pattern matching in Haskell is in a whole new level and fucking crazy...
