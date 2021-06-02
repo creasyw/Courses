@@ -1,34 +1,7 @@
-* Functions
-
-/Function application (calling a function by putting a space after it and then typing out the parameters) has the highest precedence of them all/. What that means for us is that these two statements are equivalent. Besides, it is a very simple example of a common pattern you will see throughout Haskell - *making basic functions that are obviously correct and then combining them into more complex functions*. This way you also avoid repetition. /Functions in Haskell don't have to be in any particular order/, so it doesn't matter if you define doubleMe first and then doubleUs or if you do it the other way around.
-
-The difference between Haskell's if statement and if statements in imperative languages is that the else part is mandatory in Haskell. Another thing about the if statement in Haskell is that it is an expression. /An expression is basically a piece of code that returns a value/. Because the else is mandatory, /an =if= statement will always return something/ and that's why it's an expression.
-
-Note the ' at the end of the function name. That apostrophe doesn't have any special meaning in Haskell's syntax. It's a valid character to use in a function name. We usually use ' to either denote a strict version of a function (one that isn't lazy) or a slightly modified version of a function or a variable.
-
-There are two noteworthy things about a function - the first is that functions can't begin with uppercase letters. The second thing is that when a function doesn't take any parameters, we usually say it's a definition (or a name). Because we can't change what names (and functions) mean once we've defined them.
-
-* List and tuples
-
-In Haskell, /lists are a homogenous data structure/. It stores several elements of the *same* type. That means that we can have a list of integers or a list of characters but we can't have a list that has a few integers and then a few characters.
-
-A common task is putting two lists together. *Watch out when repeatedly using the =++= operator on long strings*. This is done by using the =++= operator. For list concatination, Haskell will walk through the whole list at the left side of the =++=. So, /put the longer one at the right will be a good practice/. Or, use the append operation =:= to put the new element at the head of the original list.
-
-Two lists can be compared! (if the stuff they contain can be compared) The comparison performs in a lexicographical order. If you want to get an element out of a list by index, use !!. The indices start at 0. In haskell, =head= and =tail= likes the =car= and =cons= in Racket - the former returns the first item of the list while the latter returns the /list/ without the first item.
-
-In some ways, tuples are like lists — they are a way to store several values into a single value. However, there are a few fundamental differences. A list of numbers is a list of numbers. That's its type and it doesn't matter if it has only one number in it or an infinite amount of numbers. Tuples, however, are used when you know exactly how many values you want to combine and its type depends on how many components it has and the types of the components. They are denoted with parentheses and their components are separated by commas. Another key difference is that they don't have to be homogenous. Unlike a list, a tuple can contain a combination of several types.
-
-#+begin_src haskell
-ghci> let rightTriangles' = [ (a,b,c) | c <- [1..10], b <- [1..c], a <- [1..b], a^2 + b^2 == c^2, a+b+c == 24]
-ghci> rightTriangles'
-[(6,8,10)]
-#+end_src
-
-- this is just so cool! It has nested loops and conditions in a single list comprehension.
 
 * Types and Typeclasses
 
-Haskell has a static type system. /The type of every expression is known at compile time/, which leads to safer code. Furthermore, Haskell has type inference. A type is a kind of label that every expression has. It tells us in which category of things that expression fits.
+Haskell has a /static/ type system. /The type of every expression is known at compile time/, which leads to safer code. Furthermore, Haskell has type inference. A type is a kind of label that every expression has. It tells us in which category of things that expression fits.
 
 Functions also have types. When writing our own functions, /we can choose to give them an explicit type declaration. This is generally considered to be good practice except when writing very short functions/.
 
@@ -57,7 +30,7 @@ Prelude> read "4" :: Int
 4
 #+end_src
 
-The signature of =read=  can generate a typeclass, which if there is no other operation (e.g. =+0=) to help the compiler infers its type, the compilation fails unless we tell it explicitly about the type.
+The signature of =read=  can generate a typeclass, which if there is no other operation (e.g. =+0=) to help the compiler /infers/ its type, the compilation fails unless we tell it explicitly about the type.
 
 Most expressions are such that the compiler can infer what their type is by itself. But sometimes, the compiler doesn't know whether to return a value of type Int or Float for an expression like read "5". To see what the type is, Haskell would have to actually evaluate read "5". But since Haskell is a statically typed language, it has to know all the types before the code is compiled (or in the case of GHCI, evaluated). So we have to tell Haskell: "Hey, this expression should have this type, in case you don't know!".
 
@@ -71,7 +44,7 @@ lucky 7 = "LUCKY NUMBER SEVEN!"
 lucky x = "Sorry, you're out of luck, pal!"
 #+end_src
 
-The pattern matching does not include the keyword "break", and will /always exit after executing any one of the branches/. The recommanded practice of writing cases from specific to general in LISP becomes mandatory here, because /it *sequentially* checks all patterns from the first to the last/. Besides, there should always be a "catch-all" pattern at the end of the matching. Without it, it is possible to terminate the program while running when it fails to do the pattern matching.
+The pattern matching does not include the keyword "break", and will /always exit after executing any one of the branches/. *The recommanded practice of writing cases from specific to general in LISP becomes mandatory here*, because /it *sequentially* checks all patterns from the first to the last/. Besides, there should always be a "catch-all" pattern at the end of the matching. Without it, it is possible to terminate the program while running when it fails to do the pattern matching.
 
 Another important use of pattern matching is with the list -
 
@@ -90,17 +63,17 @@ length' []     = 0
 length' (x:xs) = 1 + length' xs
 #+end_src
 
-There's also a thing called /as patterns/. Those are a handy way of breaking something up according to a pattern and binding it to names whilst still keeping a reference to the whole thing. You do that by putting a name and an @ in front of a pattern. For instance, the pattern =xs@(x:y:ys)=. This pattern will match exactly the same thing as =x:y:ys= but you can easily get the whole list via =xs= instead of repeating yourself by typing out =x:y:ys= in the function body again.
+There's also a thing called /as patterns/. Those are a handy way of breaking something up according to a pattern and binding it to names whilst still keeping a reference to the whole thing. You do that by putting a name and an =@= in front of a pattern. For instance, the pattern =xs@(x:y:ys)=. This pattern will match exactly the same thing as =x:y:ys= but you can easily get the whole list via =xs= instead of repeating yourself by typing out =x:y:ys= in the function body again.
 
-Whereas patterns are a way of making sure a value conforms to some form and deconstructing it, guards are a way of testing whether some property of a value (or several of them) are true or false. That sounds a lot like an if statement and it's very similar. The thing is that guards are a lot more readable when you have several conditions and they play really nicely with patterns.
+/Whereas patterns are a way of making sure a value conforms to some form and deconstructing it, guards are a way of testing whether some property of a value (or several of them) are true or false/. That sounds a lot like an if statement and it's very similar. The thing is that guards are a lot more readable when you have several conditions and they play really nicely with patterns.
 
-Although guards look similar to pattern matching, but they are fundamentally different. Every expression behind the guards will return a boolean result, which in turn dictate whether this branch will be executed. Furthermore, any condition within guards could use pattern matching to disassemble something, the result of the matching is either success or failed.
+*Although guards look similar to pattern matching, but they are fundamentally different*. Every expression behind the guards will return a boolean result, which in turn dictate whether this branch will be executed. Furthermore, any condition within guards could use pattern matching to disassemble something, the result of the matching is either success or failed.
 
-The names we define in the =where= section of a function are only visible to that function, so we don't have to worry about them polluting the namespace of other functions. Notice that all the names are aligned at a single column. If we don't align them nice and proper, Haskell gets confused because then it doesn't know they're all part of the same block. =where= bindings aren't shared across function bodies of different patterns. If you want several patterns of one function to access some shared name, you have to define it globally. =where= bindings can also be nested. /It's a common idiom to make a function and define some helper function in its =where= clause and then to give those functions helper functions as well, each with its own =where= clause/.
+The names we define in the =where= section of a function are only visible to that function, so we don't have to worry about them polluting the namespace of other functions. /Notice that all the names are aligned at a single column/. (the indentation is matter for Haskell...) If we don't align them nice and proper, Haskell gets confused because then it doesn't know they're all part of the same block. /=where= bindings aren't shared across function bodies of different patterns/. If you want several patterns of one function to access some shared name, you have to define it globally. =where= bindings can also be nested. /It's a common idiom to make a function and define some helper function in its =where= clause and then to give those functions helper functions as well, each with its own =where= clause/. (this might look pretty, but it also makes the nested helper functions hard to test. My rule of thumb is that unless it is obviously simple and correct, it is better to write it as a top-level function.)
 
 Very similar to =where= bindings are =let= bindings. Where bindings are a syntactic construct that let you bind to variables at the end of a function and the whole function can see them, including all the guards. =Let= bindings let you bind to variables anywhere and are expressions themselves, but are very local, so they don't span across guards. Just like any construct in Haskell that is used to bind values to names, let bindings can be used for pattern matching.
 
-The difference is that =let= bindings are expressions themselves, =where= bindings are just syntactic constructs. That is, /for the sake of pattern matching, let bindings cannot be used cross bars, since they are expressions and are firely local in the scope/. Some people prefer =where= bindings because the names come after the function they're being used in. That way, the function body is closer to its name and type declaration and to some that's more readable. (some people also include me...)
+*The difference is that =let= bindings are expressions themselves, =where= bindings are just syntactic constructs*. That is, /for the sake of pattern matching, let bindings cannot be used cross bars, since they are expressions and are firely local in the scope/. Some people prefer =where= bindings because the names come after the function they're being used in. That way, the function body is closer to its name and type declaration and to some that's more readable. (some people also include me...)
 
 Many imperative languages (C, C++, Java, etc.) have case syntax and if you've ever programmed in them, you probably know what it's about. It's about taking a variable and then executing blocks of code for specific values of that variable and then maybe including a catch-all block of code in case the variable has some value for which we didn't set up a case.
 
@@ -631,9 +604,14 @@ we're going to solve a problem in three steps:
 
 ** Functors redux
 
-/Haskell's combination of purity, higher order functions, parameterized algebraic data types, and typeclasses allows us to implement polymorphism on a much higher level than possible in other languages/. Typeclasses are open, which means that we can define our own data type, think about what it can act like and connect it with the typeclasses that define its behaviors. Because of that and because of Haskell's great type system that allows us to know a lot about a function just by knowing its type declaration, /we can define typeclasses that define behavior that's very general and abstract/. (Right... everything starts from a typeclass)
+/Haskell's combination of purity, higher order functions, parameterized algebraic data types, and typeclasses allows us to implement polymorphism on a much higher level than possible in other languages/. *Typeclasses are open*, which means that we can define our own data type, think about what it can act like and connect it with the typeclasses that define its behaviors. Because of that and because of Haskell's great type system that allows us to know a lot about a function just by knowing its type declaration, /we can define typeclasses that define behavior that's very general and abstract/. (Right... _*everything starts from a typeclass*_)
 
-Functors are things that can be mapped over, like lists, =Maybe= s, trees, and such. In Haskell, they're described by the typeclass Functor, which has only one typeclass method, namely =fmap=, which has a type of =fmap :: (a -> b) -> f a -> f b=. It says: give me a function that takes an =a= and returns a =b= and a box with an =a= (or several of them) inside it and I'll give you a box with a =b= (or several of them) inside it. It kind of /applies the function to the element inside the box/. A more correct term for what a functor is would be /computational context/. The context might be that the computation can have a value or it might have failed (Maybe and Either a) or that there might be more values (lists), stuff like that.
+_Functors are things that can be mapped over_, like lists, =Maybe= s, trees, and such. In Haskell, they're described by the typeclass Functor, which has only one typeclass method, namely =fmap=, which has a type of =fmap :: (a -> b) -> f a -> f b=. It says:
+
+1. give me a function that takes an =a= and returns a =b=, and
+2. a box with an =a= (or several of them) inside it and I'll give you a box with a =b= (or several of them) inside it.
+
+It kind of /applies the function to the element inside the box/. A more correct term for what a functor is would be /computational context/. The context might be that the computation can have a value or it might have failed (Maybe and Either a) or that there might be more values (lists), stuff like that.
 
 #+begin_src haskell
 -- the =f= is the "computational context" mentioned above.
@@ -643,6 +621,9 @@ Functors are things that can be mapped over, like lists, =Maybe= s, trees, and s
 λ> :t fmap
 fmap :: Functor f => (a -> b) -> f a -> f b
 #+end_src
+
+
+(_this is something that might be wrong_... the reason we want to make a type constructor an instance of Functor is to make this constructor a "computational context" that can be extracted by =fmap= so that the construction can be re-applied from =a= to =b=. That is, if we've had the new type that is contructed with basic type =a=, then =fmap= comes handy to make the same construction with =b= along with some internal relationship that we want to impose as =(a -> b)=.)
 
 If we want to make a type constructor an instance of =Functor=, it has to have a kind of =* -> *=, which means that it /has to take exactly one concrete type as a type parameter/. For example, =Maybe= can be made an instance because it takes one type parameter to produce a concrete type, like =Maybe Int= or =Maybe String=. If a type constructor takes two parameters, like =Either=, we have to /partially apply the type constructor until it only takes one type parameter/. So we can only write =instance Functor (Either a) where= and then if we imagine that =fmap= is only for =Either a=, it would have a type declaration of =fmap :: (b -> c) -> Either a b -> Either a c=.
 
@@ -655,7 +636,7 @@ instance Functor IO where
 
 The result of mapping something over an I/O action will be an I/O action, so right off the bat we use =do= syntax to glue two actions and make a new one. In the implementation for =fmap=, we make a new I/O action that first performs the original I/O action and calls its result =result=. Then, we do =return (f result)=. =return= is a function that /makes an I/O action that doesn't do anything but only presents something as its result/. (In other words, =fmap= is the way for Haskell to get around the inpurity of I/O to apply a "pure" function to the data within the "inpure" I/O box.)
 
-If we look at what =fmap='s type would be if it were limited to =IO=, it would be =fmap :: (a -> b) -> IO a -> IO b=. =fmap= takes a function and an I/O action and returns a new I/O action that's like the old one, except that the function is applied to its contained result. /If you ever find yourself binding the result of an I/O action to a name, only to apply a function to that and call that something else/ (yes, it almost killed me...), consider using =fmap=, because it looks *prettier* (seriously? it is sick). If you want to apply multiple transformations to some data inside a functor, /you can declare your own function at the top level/, make a lambda function or ideally, use function composition.
+If we look at what =fmap='s type would be if it were limited to =IO=, it would be =fmap :: (a -> b) -> IO a -> IO b=. =fmap= takes a function and an I/O action and returns a new I/O action that's like the old one, except that the function is applied to its contained result. /If you ever find yourself binding the result of an I/O action to a name, only to apply a function to that and call that something else/ (yes, it almost killed me...), consider using =fmap=, because it looks *prettier* (seriously?). If you want to apply multiple transformations to some data inside a functor, /you can declare your own function at the top level/, make a lambda function or ideally, use function composition.
 
 #+begin_src haskell
 import Data.Char
@@ -673,16 +654,16 @@ instance Functor ((->) r) where
 
 What we get now is =fmap :: (a -> b) -> (r -> a) -> (r -> b)=. /Mapping one function over a function has to produce a function/, just like mapping a function over a =Maybe= has to produce a =Maybe= and mapping a function over a list has to produce a list. What does the type =fmap :: (a -> b) -> (r -> a) -> (r -> b)= for this instance tell us? Well, we see that it takes a function from =a= to =b= and a function from =r= to =a= and returns a function from =r= to =b=. /It is the same as Function composition/! We pipe the output of =r -> a= into the input of =a -> b= to get a function =r -> b=, (It also means the second function =r -> a= first applies to the input variable, which is missing in this signature, and then =a -> b= applies. /It also means we can use function to apply not only to data but also to another function/. And, *it also means the function composition =.= is a functor*.
 
-You can think of =fmap= as either a function that takes a function and a functor and then maps that function over the functor, or you can think of it as a function that takes a function and lifts that function so that it operates on functors. Both views are correct and in Haskell, equivalent.
+You can think of =fmap= as either _a function that takes a function and a functor and then maps that function over the functor_, or you can think of it as _a function that takes a function and lifts that function so that it operates on functors_. Both views are correct and in Haskell, equivalent.
 
 *Functor laws* (what can be categorized as "computational context"):
 
 1. /Persistency (immutability)/: if we map the =id= function over a functor, the functor that we get back should be the same as the original functor. (the context does not change after applying a function)
 2. /Accept function composition/: composing two functions and then mapping the resulting function over a functor should be the same as first mapping one function over the functor and then mapping the other one. Formally written, that means that =fmap (f . g) = fmap f . fmap g=. Or to write it in another way, for any functor =F=, the following should hold: =fmap (f . g) F = fmap f (fmap g F)=. (the sequence of the functions has no effect on the context that they apply to)
 
-Functions in Haskell are curried by default, which means that a function that seems to take several parameters actually takes just one parameter and returns a function that takes the next parameter and so on. This mechanism is what enables us to partially apply functions by just calling them with too few parameters, which results in functions that we can then pass on to other functions. /Normal functors support mapping normal functions over existing functors. What if we want to take out the function from a curried functor and then map it to another functor/. In other words, with normal functors, you can just map a function over a functor and then you can't get the result out in any general way, /even if the result is a partially applied function/. Applicative functors, on the other hand, /allow you to operate on several functors with a single function/.
+/Functions in Haskell are curried by default/, which means that a function that seems to take several parameters actually takes just one parameter and returns a function that takes the next parameter and so on. This mechanism is what enables us to partially apply functions by just calling them with too few parameters, which results in functions that we can then pass on to other functions. /Normal functors support mapping normal functions over existing functors. What if we want to take out the function from a curried functor and then map it to another functor/. In other words, with normal functors, you can just map a function over a functor and then you can't get the result out in any general way, /even if the result is a partially applied function/. Applicative functors, on the other hand, /allow you to operate on several functors with a single function/.
 
-If we know that a type obeys both laws, we can make certain assumptions about how it will act. If a type obeys the functor laws, we know that calling fmap on a value of that type will only map the function over it, nothing more. This leads to code that is more abstract and extensible, because we can use laws to /reason about behaviors that any functor should have and make functions that operate reliably on any functor/ (these are two main concerns as well as advantages of this language mentioned throughout the book).
+If we know that a type obeys both laws, we can make certain assumptions about how it will act. /If a type obeys the functor laws, we know that calling fmap on a value of that type will only map the function over it, nothing more/. *This leads to code that is more abstract and extensible*, because we can use laws to /reason about behaviors that any functor should have and make functions that operate reliably on any functor/ (these are two main concerns as well as advantages of this language mentioned throughout the book).
 
 ** Applicative functors
 
