@@ -39,6 +39,7 @@ max' a b
     | otherwise = b
 
 
+-- nice example for both list, pattern matching, AND recursion
 quicksort lst = case lst of
     [] -> []
     (x : xs) ->
@@ -53,9 +54,11 @@ replicate' n x
 
 applyt f x = f (f x)
 
+-- Lazy evaluate the initial list of input
 largeDivide = head (filter p [100000, 99999 ..]) where p x = x `mod` 3829 == 0
 
 -- Collatz sequences
+-- Guards is for conditions, versus the pattern matching above
 chain n
     | n == 1 = [1]
     | even n = n : chain (n `div` 2)
