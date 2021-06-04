@@ -11,7 +11,7 @@ foo x = "not five"
 
 -- patter matching could be achieve either from repeating the name of
 -- the function (in the exactly the same form) or using
--- "case". ALthough guards could do similar stuff, it evaluates
+-- "case". Although guards could do similar stuff, it evaluates
 -- expressions and returns boolean value deciding if the part of code
 -- should be executed.
 factorial' :: Integral a => a -> a
@@ -29,7 +29,6 @@ length1 lst = case lst of
     []       -> 0
     (x : xs) -> 1 + length1 xs
 
--- inline pattern matching with bars
 max' a b
     | a > b     = a
     | otherwise = b
