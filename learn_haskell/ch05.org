@@ -1,0 +1,5 @@
+* Recursion
+
+Recursion is important to Haskell because unlike imperative languages, you do computations in Haskell by /declaring what something is instead of declaring how you get it/. That's why there are no while loops or for loops in Haskell and instead we many times have to use recursion to declare what something is.
+
+There's a pattern for recursion. /Usually you define an edge case and then you define a function that does something between some element and the function applied to the rest/. It doesn't matter if it's a list, a tree or any other data structure. So /when trying to think of a recursive way to solve a problem, try to think of when a recursive solution doesn't apply and see if you can use that as an edge case, think about identities and think about whether you'll break apart the parameters of the function (for instance, lists are usually broken into a head and a tail via pattern matching) and on which part you'll use the recursive call/.
