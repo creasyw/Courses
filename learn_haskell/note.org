@@ -1,9 +1,3 @@
-* Recursion
-
-Recursion is important to Haskell because unlike imperative languages, you do computations in Haskell by /declaring what something is instead of declaring how you get it/. That's why there are no while loops or for loops in Haskell and instead we many times have to use recursion to declare what something is.
-
-There's a pattern for recursion. Usually you define an edge case and then you define a function that does something between some element and the function applied to the rest. It doesn't matter if it's a list, a tree or any other data structure. So when trying to think of a recursive way to solve a problem, try to think of when a recursive solution doesn't apply and see if you can use that as an edge case, think about identities and think about whether you'll break apart the parameters of the function (for instance, lists are usually broken into a head and a tail via pattern matching) and on which part you'll use the recursive call.
-
 * Higher order functions
 
 Haskell functions can take functions as parameters and return functions as return values. A function that does either of those is called a higher order function. Higher order functions aren't just a part of the Haskell experience, they pretty much are the Haskell experience. It turns out that if you want to define computations by defining what stuff is instead of defining steps that change some state and maybe looping them, higher order functions are indispensable. They're a really powerful way of solving problems and thinking about programs.
