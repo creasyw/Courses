@@ -11,9 +11,9 @@ dividTen = (10/)
 isUpperCase = (`elem` ['A'..'Z'])
 
 -- higher order function
--- It is interesting that in the signature, =->= is naturally right-associative,
+-- It is interesting that in the signature, =->= is naturally *right-associative*,
 -- while in the actual function the parameters (data or function) are natually
--- left-associative
+-- *left-associative*
 applyTwice :: (a -> a) -> a -> a
 applyTwice f x = f (f x)
 
