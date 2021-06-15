@@ -2,7 +2,7 @@
 import Data.List
 import Data.Function  -- use 'on'
 import Data.Char
-import qualified Data.Map as Map
+import qualified Data.Map as Map -- this is the preferred approach
 
 numUniques :: (Eq a) => [a] -> Int
 numUniques = length . nub
