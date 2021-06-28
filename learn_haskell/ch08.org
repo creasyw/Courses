@@ -8,17 +8,30 @@ The type feels like a class in an OOP language. We can use =data= to define a ty
 data Shape = Circle Float Float Float | Rectangle Float Float Float Float deriving (Show)
   #+end_src
 
-In the example above, the type is =Shape= and the constructors are =Circle= and =Rectangle=.
+=data= is the keyword to define a /type/. In the example above, the *type* is =Shape= and the *constructors* are =Circle= and =Rectangle=.
 
 #+begin_src haskell
-Prelude> data Shape = Circle Float Float Float | Rectangle Float Float Float Float deriving (Show)
-Prelude> :t Circle
-Circle :: Float -> Float -> Float -> Shape
-Prelude> :info Shape
-data Shape
-  = Circle Float Float Float | Rectangle Float Float Float Float
-        -- Defined at <interactive>:7:1
-instance [safe] Show Shape -- Defined at <interactive>:7:85
+  -- this is the way to link a newly added type with constructors to a typeclass
+  Prelude> data Shape = Circle Float Float Float | Rectangle Float Float Float Float deriving (Show)
+  Prelude> :t Circle
+  Circle :: Float -> Float -> Float -> Shape
+  Prelude> :info Shape
+  data Shape
+    = Circle Float Float Float | Rectangle Float Float Float Float
+          -- Defined at <interactive>:7:1
+  instance [safe] Show Shape -- Defined at <interactive>:7:85
+  -- Value constructors are functions, so we can map them and partially apply them and everything.
+  ghci> map (Circle 10 20) [4,5,6,6]
+  [Circle 10.0 20.0 4.0,Circle 10.0 20.0 5.0,Circle 10.0 20.0 6.0,Circle 10.0 20.0 6.0]
+#+end_src
+
+The next thing we notice here is that we can pattern match against constructors - meaning, we could only use a pattern to extract /part of the values/ within one constructor.
+
+#+begin_src haskell
+  surface :: Shape -> Float
+  surface (Circle _ _ r) = pi * r ^ 2
+  -- this is the "pattern matching".
+  surface (Rectangle x1 y1 x2 y2) = (abs $ x2 - x1) * (abs $ y2 - y1)
 #+end_src
 
 If we wanted to export the functions and types that we defined here in a module, we could start it off like this:
@@ -52,17 +65,25 @@ data Person = Person
 
 So instead of just naming the field types one after another and separating them with spaces, we use curly brackets. First we write the name of the field, for instance, firstName and then we write a double colon =::= and then we specify the type. The resulting data type is exactly the same. The main benefit of this is that it creates functions that lookup fields in the data type. By using record syntax to create this data type, Haskell automatically made these functions: firstName, lastName, age, height, phoneNumber and flavor. There's another benefit to using record syntax. When we derive Show for the type, it displays it differently if we use record syntax to define and instantiate the type.
 
-/Using type parameters is very beneficial, but only when using them makes sense/. Usually we use them when our data type would work regardless of the type of the value it then holds inside it, like with our =Maybe a= type. /If our type acts as some kind of box, it's good to use them/.
+#+begin_src haskell
+data Maybe a = Nothing | Just a
+#+end_src
 
-We usually use type parameters when the type that's contained inside the data type's various value constructors isn't really that important for the type to work. A list of stuff is a list of stuff and it doesn't matter what the type of that stuff is, it can still work. If we want to sum a list of numbers, we can specify later in the summing function that we specifically want a list of numbers. Same goes for Maybe. Maybe represents an option of either having nothing or having one of something. It doesn't matter what the type of that something is.
+The =a= is a type parameter. /Using type parameters is very beneficial, but only when using them makes sense/. Usually we use them when our data type would work regardless of the type of the value it then holds inside it, like with our =Maybe a= type. /If our type acts as some kind of box, it's good to use them/.
 
-Another example of a parameterized type that we've already met is =Map k v= from =Data.Map=. The =k= is the type of the keys in a map and the v is the type of the values. This is a good example of where type parameters are very useful. Having maps parameterized enables us to have mappings from any type to any other type, as long as the type of the key is part of the Ord typeclass. If we were defining a mapping type, we could add a typeclass constraint in the data declaration:
+We usually use type parameters when the type that's contained inside the data type's various value constructors /isn't really that important for the type to work/. A list of stuff is a list of stuff and it doesn't matter what the type of that stuff is, it can still work. If we want to sum a list of numbers, we can specify later in the summing function that we specifically want a list of numbers. Same goes for =Maybe=. =Maybe= represents an option of either having nothing or having one of something. It doesn't matter what the type of that something is.
+
+#+begin_quote
+Both the type parameter and the type =Maybe= give the system of strong typing an additional degree of freedom. For weak typing languages, it doesn't care the type. For strong typing ones, like C/C++, everything has to be specific. Haskell takes advantage of the compilation of a strong typing language but also has some advantages that a function could have a wider usage because of the type parameter and the type inference during compilation.
+#+end_quote
+
+Another example of a parameterized type that we've already met is =Map k v= from =Data.Map=. The =k= is the type of the keys in a map and the =v= is the type of the values. This is a good example of where type parameters are very useful. /Having maps parameterized enables us to have mappings from any type to any other type, as long as the type of the key is part of the Ord typeclass/. If we were defining a mapping type, we could add a typeclass constraint in the data declaration:
 
 #+begin_src haskell
 data (Ord k) => Map k v = ...
 #+end_src
 
-However, it's a very strong convention in Haskell /to never add typeclass constraints in data declarations/. Why? Well, because we don't benefit a lot, but we end up writing more class constraints, even when we don't need them. If we put or don't put the Ord k constraint in the data declaration for Map k v, we're going to have to put the constraint into functions that assume the keys in a map can be ordered. But if we don't put the constraint in the data declaration, we don't have to put (Ord k) => in the type declarations of functions that don't care whether the keys can be ordered or not. So don't put type constraints into data declarations even if it seems to make sense, because you'll have to put them into the function type declarations either way.
+However, it's a very strong convention in Haskell *to never add typeclass constraints in data declarations*. Why? Well, because we don't benefit a lot, but we end up writing more class constraints, even when we don't need them. If we put or don't put the Ord k constraint in the data declaration for Map k v, we're going to have to put the constraint into functions that assume the keys in a map can be ordered. But if we don't put the constraint in the data declaration, we don't have to put (Ord k) => in the type declarations of functions that don't care whether the keys can be ordered or not. So /don't put type constraints into data declarations even if it seems to make sense, because you'll have to put them into the function type declarations either way/.
 
 #+begin_src haskell
 data Vector a = Vector a a a deriving (Show)
@@ -77,15 +98,29 @@ scalarMult :: (Num t) => Vector t -> Vector t -> t
 (Vector i j k) `scalarMult` (Vector l m n) = i*l + j*m + k*n
 #+end_src
 
-Once again, it's very important to distinguish between the type constructor and the value constructor. When declaring a data type, the part before the === is the type constructor and the constructors after it (possibly separated by =|= 's) are value constructors. Giving a function a type of =Vector t t t -> Vector t t t -> t= would be wrong, because we have to put types in *type* declaration and the vector type constructor takes only one parameter, whereas the value constructor takes three. Let's play around with our vectors.
+Once again, it's very important to distinguish between the type constructor and the value constructor. When declaring a data type, the part before the === is the *type constructor* and the constructors after it (possibly separated by =|= 's) are *value constructors*. Giving a function a type of =Vector t t t -> Vector t t t -> t= would be wrong, because we have to put types in *type* declaration and the vector type constructor takes only one parameter, whereas the value constructor takes three. Let's play around with our vectors.
 
-/A typeclass is a sort of an interface that defines some behavior. A type can be made an instance of a typeclass if it supports that behavior/. Typeclasses are more like interfaces. We don't make data from typeclasses. Instead, we first make our data type and then we think about what it can act like. If it can act like something that can be equated, we make it an instance of the Eq typeclass. If it can act like something that can be ordered, we make it an instance of the =Ord= typeclass.
+/A typeclass is a sort of an interface that defines some behavior. A type can be made an instance of a typeclass if it supports that behavior/ (like a "class" to an "interface"). Typeclasses are more like interfaces. We don't make data from typeclasses. Instead, we first make our data type and then we think about what it can act like. If it can act like something that can be equated, we make it an instance of the =Eq= typeclass. If it can act like something that can be ordered, we make it an instance of the =Ord= typeclass.
 
-We can derive instances for the =Ord= type class, which is for types that have values that can be ordered. /If we compare two values of the same type that were made using different constructors, the value which was made with a constructor that's defined first is considered smaller/. For instance, consider the =Bool= type, which can have a value of either =False= or =True=.
+We can derive instances for the =Ord= typeclass, which is for types that have values that can be ordered. /If we compare two values of the same type that were made using different constructors, the value which was made with a constructor that's defined first is considered smaller/. For instance, consider the =Bool= type, which can have a value of either =False= or =True=.
 
-Previously, we mentioned that when writing types, the [Char] and String types are equivalent and interchangeable. That's implemented with type synonyms. Type synonyms don't really do anything per se, they're just about giving some types different names so that they make more sense to someone reading our code and documentation. Giving the String type synonyms is something that Haskell programmers do when they want to convey more information about what strings in their functions should be used as and what they represent.
+Previously, we mentioned that when writing types, the =[Char]= and =String= types are equivalent and interchangeable. That's implemented with type synonyms. Type synonyms don't really do anything per se, they're just about giving some types different names so that they make more sense to someone reading our code and documentation. Giving the String type synonyms is something that Haskell programmers do when they want to convey more information about what strings in their functions should be used as and what they represent.
 
-(The typeclass is mind-boggling complex... it is able to create new data type as well as having abstractions upon data types. Just to make things worse, the data types can also be recursive.)
+Type synonyms can also be parameterized. If we want a type that represents an association list type but still want it to be general so it can use any type as the keys and values, we can do this:
+
+#+begin_src haskell
+type AssocList k v = [(k,v)]
+#+end_src
+
+Somtimes, =Maybe a= isn't good enough because =Nothing= doesn't really convey much information other than that something has failed. That's cool for functions that can fail in only one way or if we're just not interested in how and why they failed. A =Data.Map= lookup fails only if the key we were looking for wasn't in the map, so we know exactly what happened. However, when we're interested in how some function failed or why, we usually use the result type of =Either a b=, where =a= is some sort of type that can tell us something about the possible failure and =b= is the type of a successful computation. Hence, errors use the =Left= value constructor while results use =Right=. (This is surprisingly similar to the tuple return from a Golang function - one of them is the result and the other is the error - but in reverse order. In Haskell, if =Right= is =Nothing=, there must be something wrong which we could retrieve from from the =Left=.)
+
+** Recursive data structures
+
+#+begin_quote
+The typeclass is mind-boggling complex... it is able to create new data type as well as having abstractions upon data types. Just to make things worse, the data types can also be recursive. In comparison, it is possible to make (implicit) recursive data structure in other language, by using the pointers. Haskell is to define the behavior at the highest level possible - typeclass dictate how the types work, which in turn has the concrete data "initiated" based on the type.
+
+The differences in behaviors also come from the fact that the data is "immutable" in Haskell, so one could not adding something or change the direction of a pointer to increment in the existing data structure (in memory). Rather, the contract is set in stone from the get-go. It returns a (completely) new data structure based on the type when something needs to change on the existing one. It looks inefficient, but that's where the "laziness" comes into picture.
+#+end_quote
 
 So far, we've seen that =Maybe a= was mostly used to represent the results of computations that could have either failed or not. But somtimes, =Maybe a= isn't good enough because Nothing doesn't really convey much information other than that something has failed. That's cool for functions that can fail in only one way or if we're just not interested in how and why they failed. A =Data.Map= lookup fails only if the key we were looking for wasn't in the map, so we know exactly what happened. However, when we're interested in how some function failed or why, we usually use the result type of =Either a b=, where =a= is some sort of type that can tell us something about the possible failure and =b= is the type of a successful computation. Hence, errors use the Left value constructor while results use Right.
 
@@ -136,9 +171,31 @@ treeElem x (Node a left right)
     | x > a  = treeElem x right
 #+end_src
 
-Typeclasses are like interfaces. A typeclass defines some behavior (like comparing for equality, comparing for ordering, enumeration) and then types that can behave in that way are made instances of that typeclass. The behavior of typeclasses is achieved by defining functions or just type declarations that we then implement. So when we say that a type is an instance of a typeclass, we mean that we can use the functions that the typeclass defines with that type. Besides, we can also make typeclasses that are subclasses of other typeclasses. (the first part smells very similar to the interface in Golang, but the 2nd part makes it more powerful than its counterpart in Golang.)
+** Typeclasses 102
+
+Typeclasses are like interfaces. /A typeclass defines some behavior/ (like comparing for equality, comparing for ordering, enumeration) and then /types that can behave in that way are made instances of that typeclass/. The behavior of typeclasses is achieved by defining functions or just type declarations that we then implement. So when we say that *a type is an instance of a typeclass*, we mean that we can use the functions that the typeclass defines with that type. Besides, we can also make typeclasses that are subclasses of other typeclasses. (the first part smells very similar to the interface in Golang, but the 2nd part makes it more powerful than its counterpart in Golang.)
 
 Most of the times, class constraints in class declarations are used for making a typeclass a subclass of another typeclass and class constraints in instance declarations are used to express requirements about the contents of some type. When making instances, if you see that a type is used as a concrete type in the type declarations (like the =a= in =a -> a -> Bool=), you have to supply type parameters and add parentheses so that you end up with a concrete type.
+
+#+begin_src haskell
+class Eq a where
+    (==) :: a -> a -> Bool
+    (/=) :: a -> a -> Bool
+    x == y = not (x /= y)
+    x /= y = not (x == y)
+#+end_src
+
+Because ==== was defined in terms of =/== and vice versa in the class declaration, we only had to overwrite one of them in the instance declaration. That's called the *minimal complete definition* for the typeclass — the minimum of functions that we have to implement so that our type can behave like the class advertises. To fulfill the minimal complete definition for =Eq=, we have to overwrite either one of ==== or =/==.
+
+If Eq was defined simply like this:
+
+#+begin_src haskell
+class Eq a where
+    (==) :: a -> a -> Bool
+    (/=) :: a -> a -> Bool
+#+end_src
+
+we'd have to implement both of these functions when making a type an instance of it, because Haskell wouldn't know how these two functions are related. The minimal complete definition would then be: both ==== and =/==.
 
 #+begin_src haskell
 data TrafficLight = Red | Yellow | Green
@@ -162,6 +219,38 @@ instance Show TrafficLight where
 =data= means that we're defining a new data type. The parts after the === are *value constructors*. They specify the different values that this type can have. A *value constructor* can take some values parameters and then produce a new value. In a similar manner, *type constructors* can take types as parameters to produce new types. =class= is for defining new typeclasses and =instance= is for making our types instances of typeclasses.
 
 If you want to see what the instances of a typeclass are, just do =:info YourTypeClass= in GHCI. So typing =:info= Num will show which functions the typeclass defines and it will give you a list of the types in the typeclass. =:info= works for types and type constructors too. If you do =:info Maybe=, it will show you all the typeclasses that =Maybe= is an instance of. Also =:info= can show you the type declaration of a function. I think that's pretty cool. :)
+
+You can also make typeclasses that are subclasses of other typeclasses. The class declaration for Num is a bit long, but here's the first part:
+
+#+begin_src haskell
+class (Eq a) => Num a where
+   ...
+#+end_src
+
+As we mentioned previously, there are a lot of places where we can cram in class constraints. So this is just like writing =class Num a where=, only we state that our type =a= must be an instance of =Eq=. We're essentially saying that /we have to make a type an instance of =Eq= before we can make it an instance of =Num=/. Before some type can be considered a number, it makes sense that we can determine whether values of that type can be equated or not. /That's all there is to subclassing really, it's just a class constraint on a class declaration/!
+
+#+begin_quote
+Until now, there are a few keywords:
+
+- =data= links /type constructor/ to the /data constructor/.
+  - There are two kinds of types.
+  - =Maybe= is an /abstrct type/.
+  - Something like =TrafficLight= is a /concrete type/.
+- =type= provides a /type synonyms/.
+- =class= constructs a =typeclass=, which provides general /interface/ (or contracts) of the classes that derive from this typeclass.
+  - =deriving= is an easy way to link a type with an existing typeclass
+  - =instance= is the keyword to make a *concrete type* comply with the "contract" of a typeclass
+#+end_quote
+
+#+begin_src haskell
+  -- First of all, =instance= has to deal with concrete type, so it has to be
+  -- =Eq (Maybe m)= rather than =Eq Maybe=. This is a good way to deal with
+  -- optional data in a type
+  instance (Eq m) => Eq (Maybe m) where
+    Just x == Just y = x == y
+    Nothing == Nothing = True
+    _ == _ = False
+#+end_src
 
 #+begin_src haskell
 ghci> :k Int
