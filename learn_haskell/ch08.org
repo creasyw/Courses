@@ -229,19 +229,6 @@ class (Eq a) => Num a where
 
 As we mentioned previously, there are a lot of places where we can cram in class constraints. So this is just like writing =class Num a where=, only we state that our type =a= must be an instance of =Eq=. We're essentially saying that /we have to make a type an instance of =Eq= before we can make it an instance of =Num=/. Before some type can be considered a number, it makes sense that we can determine whether values of that type can be equated or not. /That's all there is to subclassing really, it's just a class constraint on a class declaration/!
 
-#+begin_quote
-Until now, there are a few keywords:
-
-- =data= links /type constructor/ to the /data constructor/.
-  - There are two kinds of types.
-  - =Maybe= is an /abstrct type/.
-  - Something like =TrafficLight= is a /concrete type/.
-- =type= provides a /type synonyms/.
-- =class= constructs a =typeclass=, which provides general /interface/ (or contracts) of the classes that derive from this typeclass.
-  - =deriving= is an easy way to link a type with an existing typeclass
-  - =instance= is the keyword to make a *concrete type* comply with the "contract" of a typeclass
-#+end_quote
-
 #+begin_src haskell
   -- First of all, =instance= has to deal with concrete type, so it has to be
   -- =Eq (Maybe m)= rather than =Eq Maybe=. This is a good way to deal with
@@ -268,9 +255,13 @@ ghci> :k Int
 Int :: *
 #+end_src
 
-In this section, we took a good look at how type parameters work and kind of formalized them with kinds, just like we formalized function parameters with type declarations. We saw that there are interesting parallels between functions and type constructors. They are, however, two completely different things. When working on real Haskell, you usually won't have to mess with kinds and do kind inference by hand like we did now. Usually, you just have to partially apply your own type to * -> * or * when making it an instance of one of the standard typeclasses, but it's good to know how and why that actually works. It's also interesting to see that types have little types of their own. Again, you don't really have to understand everything we did here to read on, but if you understand how kinds work, chances are that you have a very solid grasp of Haskell's type system.
+In this section, we took a good look at how type parameters work and kind of formalized them with kinds, just like we formalized function parameters with type declarations. We saw that there are interesting parallels between functions and type constructors. They are, however, two completely different things. When working on real Haskell, you usually won't have to mess with kinds and do kind inference by hand like we did now. Usually, you just have to partially apply your own type to =* -> *= or =*= when making it an instance of one of the standard typeclasses, but it's good to know how and why that actually works. It's also interesting to see that types have little types of their own. Again, you don't really have to understand everything we did here to read on, but if you understand how kinds work, chances are that you have a very solid grasp of Haskell's type system.
+
+** The Functor typeclass
 
 And now, we're going to take a look at the *Functor typeclass*, which is /basically for things that can be mapped over/.
+
+The =f= is not a concrete type (a type that a value can hold, like =Int=, =Bool= or =Maybe String=), but a /type constructor/ that takes one type parameter. A quick refresher example: =Maybe Int= is a concrete type, but =Maybe= is a type constructor that takes one type as the parameter. Anyway, we see that /=fmap= takes a function from one type to another and a functor applied with one type and returns a functor applied with another type/. *Functor wants a type constructor that takes one type and not a concrete type*. (The most common example of this is =map= and =list=. =map= is the =fmap= and the =List= is the type constructor. It's signature is =map :: (a -> b) -> [a] -> [b]=.)
 
 #+begin_src haskell
 class Functor f where
@@ -280,7 +271,7 @@ instance Functor [] where
       fmap = map
 #+end_src
 
-The =f= is not a concrete type (a type that a value can hold, like =Int=, =Bool= or =Maybe String=), but a /type constructor/ that takes one type parameter. A quick refresher example: =Maybe Int= is a concrete type, but =Maybe= is a type constructor that takes one type as the parameter. Anyway, we see that =fmap= takes a function from one type to another and a functor applied with one type and returns a functor applied with another type. Functor wants a type constructor that takes one type and not a concrete type.
+Notice how we didn't write =instance Functor [a] where=, because from =fmap :: (a -> b) -> f a -> f b=, we see that the f has to be a type constructor that takes one type. =[a]= is already a concrete type (of a list with any type inside it), while =[]= is a type constructor that takes one type and can produce types such as =[Int]=, =[String]= or even =[[String]]=.
 
 #+begin_src haskell
 λ> :info fmap
@@ -302,13 +293,49 @@ instance Functor ((->) r) -- Defined in ‘GHC.Base’
 instance Functor ((,) a) -- Defined in ‘GHC.Base’
 #+end_src
 
+#+begin_quote
+I think this is one of the most powerful place of the Haskell. Takes the =map= as an example, or =fmap= in general, What =Functor= does isn
+
+1. Have a function that take concrete type =a= as input and concrete type =b= as output.
+2. Have another type constructor =f= with type =a=
+3. It lifts the type constructor =f= and apply the function =a->b= to the concrete type =a=
+4. After getting the result from the previous step =b=, re-apply the type constructor =f= to =b=.
+5. Finally, it gets the result =f b=.
+
+We could regard the type constructor (abstract type) as another kind of functions, to extend or modify the behavoirs of the given concrete type =a= or =b=. And the function =a -> b= also works on the types =a= and =b=. As a result, we have two folds of operations - one of which is directly working on the concrete data (function), while another is "wrapping" to enrich the underlying data types (=f=).
+#+end_quote
+
 Since for lists, =fmap= is just =map=, we get the same results when using them on lists. /Types that can act like a box can be functors/. You can think of a list as a box that has an infinite amount of little compartments and they can all be empty, one can be full and the others empty or a number of them can be full. So, what else has the properties of being like a box? For one, the =Maybe a= type.
 
-/Type constructors/ take other types as parameters to eventually produce concrete types. We've seen that type constructors can be partially applied (=Either String= is a type that takes one type and produces a concrete type, like =Either String Int=), just like functions can.
+Maps from =Data.Map= can also be made a functor because they hold values (or not!). In the case of =Map k v=, =fmap= will map a function =v -> v'= over a map of type =Map k v= and return a map of type =Map k v'=. In this case, the =Map k= is a functor!
+
+** A gentle introduction of the type system
+
+/Type constructors/ take other types as parameters to eventually produce concrete types. That kind of reminds me of functions, which take values as parameters to produce values. We've seen that type constructors can be partially applied (=Either String= is a type that takes one type and produces a concrete type, like =Either String Int=), just like functions can.
+
+Types are little labels that values carry so that we can reason about the values. But types have their own little labels, called kinds. A kind is more or less the type of a type. This may sound a bit weird and confusing, but it's actually a really cool concept.
+
+#+begin_src haskell
+ghci> :k Int
+Int :: *
+#+end_src
+
+A star? How quaint. What does that mean? A =*= means that the type is a concrete type. A concrete type is a type that doesn't take any type parameters and values can only have types that are concrete types. We used =:k= on a type to get its kind, just like we can use =:t= on a value to get its type.
+
+#+begin_src haskell
+ghci> :k Either
+Either :: * -> * -> *
+#+end_src
+
+=Either= takes two concrete types as type parameters to produce a concrete type. It also looks kind of like a type declaration of a function that takes two values and returns something. Type constructors are curried (just like functions), so we can partially apply them. When we wanted to make Either a part of the Functor typeclass, we had to partially apply it because Functor wants types that take only one parameter while Either takes two. In other words, Functor wants types of kind =* -> *= and so we had to partially apply Either to get a type of kind =* -> *= instead of its original kind =* -> * -> *=.
 
 ** Summary
 
 - =data= defines *type*, which has *type constructor* at the left side of the equation and *value constructor* at the right side of the constructor. More often than not, it also have =derive= which helps defines the basic behaviors of this type based on existing *typeclass*.
+  - There are two kinds of types.
+  - =Maybe= is an /abstrct type/. Or, we could call it /type constructor/, which takes one type as parameter.
+  - Something like =TrafficLight= is a /concrete type/.
 - =type= is type synonyms. It can use basic types to construct a compound and give a short name.
-- =class= is to define =typeclass=.
-- =instance= is to define the customized behavior of the specific *type* under given *typeclass*, /if we choose not to use the =derive=/. It is especially useful to make the newly added type could be apply to =Functor= so that we could use =fmap= to "batch process the data of this type.
+- =class= constructs a =typeclass=, which provides general /interface/ (or contracts) of the classes that derive from this typeclass.
+  - =deriving= is an easy way to link a type with an existing typeclass
+  - =instance= is to define the customized behavior of the specific *type* under given *typeclass*, /if we choose not to use the =derive=/. It is especially useful to make the newly added type could be apply to =Functor= so that we could use =fmap= to "batch process the data of this type.
