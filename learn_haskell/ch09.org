@@ -26,28 +26,35 @@ Remember, *to get the value out of an I/O action, you have to perform it inside 
 
 When I say tainted, I don't mean tainted in such a way that we can never use the result contained in an I/O action ever again in pure code. No, we temporarily un-taint the data inside an I/O action when we bind it to a name. When we do =name <- getLine=, =name= is just a normal string, because it represents what's inside the box.
 
-/I/O actions will only be performed when they are given a name of main or when they're inside a bigger I/O action that we composed with a do block/. We can also use a do block to glue together a few I/O actions and then we can use that I/O action in another do block and so on. *Either way, they'll be performed only if they eventually fall into main* (this really fucks up things).
+/I/O actions will only be performed when they are given a name of main or when they're inside a bigger I/O action that we composed with a do block/. We can also use a =do= block to glue together a few I/O actions and then we can use that I/O action in another =do= block and so on. *Either way, they'll be performed only if they eventually fall into main* (this really fucks up things).
 
 #+begin_src haskell
-import Data.Char
+  import Data.Char
 
-main = do
-    putStrLn "What's your first name?"
-    -- bind the IO String to a regular String
-    firstName <- getLine
-    -- bind the IO String to a regular String
-    putStrLn "What's your last name?"
-    lastName <- getLine
-    -- operations using pure functions with pure data type to get another pure data type
-    let bigFirstName = map toUpper firstName
-        bigLastName = map toUpper lastName
-    -- feed the pure data types into another IO function
-    putStrLn $ "hey " ++ bigFirstName ++ " " ++ bigLastName ++ ", how are you?"
+  main = do
+      putStrLn "What's your first name?"
+      -- bind the IO String to a regular String
+      firstName <- getLine
+      -- bind the IO String to a regular String
+      putStrLn "What's your last name?"
+      lastName <- getLine
+      -- operations using pure functions with pure data type to get another pure data type
+      let bigFirstName = map toUpper firstName
+          bigLastName = map toUpper lastName
+      -- feed the pure data types into another IO function
+      -- Also, in a do block, the last action cannot be bound to a name like the first two were
+      putStrLn $ "hey " ++ bigFirstName ++ " " ++ bigLastName ++ ", how are you?"
 #+end_src
 
-=<-= is (for now) for performing I/O actions and binding their results to names. =map toUpper firstName=, however, isn't an I/O action. It's a /pure/ expression in Haskell. So use =<-= when you want to bind results of I/O actions to names and you can use let bindings to bind pure expressions to names. Had we done something like =let firstName = getLine=, we would have just called the =getLine= I/O action a different name and we'd still have to run it through a =<-= to perform it.
+Also notice how the =let= is lined up with the I/O actions and the names of the =let= are lined up with each other? That's good practice, because indentation is important in Haskell. =<-= is (for now) for performing I/O actions and binding their results to names. =map toUpper firstName=, however, isn't an I/O action. It's a /pure/ expression in Haskell. So use =<-= when you want to bind results of I/O actions to names and you can use let bindings to bind pure expressions to names. Had we done something like =let firstName = getLine=, we would have just called the =getLine= I/O action a different name and we'd still have to run it through a =<-= to perform it.
 
-*The return in Haskell is really nothing like the return in most other languages*. In Haskell (in I/O actions specifically), it makes an I/O action out of a pure value. If you think about the box analogy from before, it takes a value and wraps it up in a box. The resulting I/O action doesn't actually do anything, it just has that value encapsulated as its result. So in an I/O context, =return "haha"= will have a type of =IO String=, because we needed some I/O action to carry out in the case of an empty input line. That's why we just made a bogus I/O action that doesn't do anything by writing =return ()=. (so, is it like =yield= for I/O?...) Using =return= doesn't cause the I/O do block to end in execution or anything like that.
+*The return in Haskell is really nothing like the return in most other languages*. In Haskell (in I/O actions specifically), it makes an I/O action out of a pure value. If you think about the box analogy from before, it takes a value and wraps it up in a box. The resulting I/O action doesn't actually do anything, it just has that value encapsulated as its result. So in an I/O context, =return "haha"= will have a type of =IO String=, because we needed some I/O action to carry out in the case of an empty input line. That's why we just made a bogus I/O action that doesn't do anything by writing =return ()=. (so, is it like =yield= for I/O?...) /Using =return= doesn't cause the I/O do block to end in execution/ or anything like that.
+
+When dealing with I/O do blocks, we mostly use =return= either because we need to create an I/O action that doesn't do anything or because we don't want the I/O action that's made up from a do block to have the result value of its last action, but we want it to have a different result value, so we use =return= to make an I/O action that always has our desired result contained and we put it at the end.
+
+#+begin_quote
+To run a program you can either compile it and then run the produced executable file by doing =ghc --make helloworld.hs= and then =./helloworld= or you can use the runhaskell command like so: =runhaskell helloworld.hs= and your program will be executed on the fly.
+#+end_quote
 
 =print= takes a value of any type that's an instance of =Show= (meaning that we know how to represent it as a string), calls =show= with that value to stringify it and then outputs that string to the terminal. Basically, it's just =putStrLn . show=. It first runs =show= on a value and then feeds that to =putStrLn=, which returns an I/O action that will print out our value.
 
@@ -81,7 +88,19 @@ main = do
 
 I/O actions are values much like any other value in Haskell. We can pass them as parameters to functions and functions can return I/O actions as results. What's special about them is that if they fall into the main function (or are the result in a GHCI line), they are performed. Each I/O action can also encapsulate a result with which it tells you what it got from the real world.
 
+Don't think of a function like =putStrLn= as a function that takes a string and prints it to the screen. Think of it as a function that takes a string and returns an I/O action. That I/O action will, when performed, print beautiful poetry to your terminal.
+
 ** File and Streams
+
+   #+begin_src haskell
+import Data.Char
+
+main = do
+    contents <- getContents
+    putStr (map toUpper contents)
+   #+end_src
+
+Keep in mind that because strings are basically lists, which are lazy, and =getContents= is I/O lazy, it won't try to read the whole content at once and store it into memory before printing out the capslocked version. Rather, it will print out the capslocked version as it reads it, because it will only read a line from the input when it really needs to.
 
    #+begin_src haskell
 main = interact $ unlines . filter ((<10) . length) . lines
@@ -96,10 +115,6 @@ We can also use =hFlush=, which is a function that takes a handle and returns an
 *Haskell is a pure functional language. What that means is that it has referential transparency. What THAT means is that a function, if given the same parameters twice, must produce the same result twice*. That's really cool because /it allows us to reason differently about programs and it enables us to defer evaluation until we really need it/. However, this makes it a bit tricky for getting random numbers.
 
 /Haskell's laziness allows us to exchange the for and while loops of other languages for filtering and mapping over lists, because evaluation will only happen once it really needs to, so things like infinite lists (and even infinite lists of infinite lists!) are no problem for us/. That's why lists can also be used to represent streams, either when reading from the standard input or when reading from files. We can just open a file and read it as a string, even though it will only be accessed when the need arises.
-
-/Whenever you need better performance in a program that reads a lot of data into strings, give bytestrings a try, chances are you'll get some good performance boosts with very little effort on your part. I usually write programs by using normal strings and then convert them to use bytestrings if the performance is not satisfactory./
-
-Haskell has a very good type system. Algebraic data types allow for types like =Maybe= and =Either= and we can use values of those types to represent results that may be there or not. In C, returning, say, -1 on failure is completely a matter of convention. It only has special meaning to humans. If we're not careful, we might treat these abnormal values as ordinary ones and then they can cause havoc and dismay in our code. Haskell's type system gives us some much-needed safety in that aspect. A function =a -> Maybe b= clearly indicates that it it may produce a =b= wrapped in =Just= or that it may return =Nothing=. The type is different from just plain =a -> b= and if we try to use those two functions interchangeably, the compiler will complain at us.
 
 ** Command line arguments
 
@@ -118,8 +133,39 @@ main = do
    putStrLn progName
    #+end_src
 
+** Randomness
+
+Haskell is a pure functional language. What that means is that it has referential transparency. What THAT means is that a function, if given the same parameters twice, must produce the same result twice. That's really cool because it allows us to reason differently about programs and it enables us to defer evaluation until we really need it.
+
+#+begin_src haskell
+λ> Random.random (Random.mkStdGen 100) :: (Int, StdGen)
+(9216477508314497915,StdGen {unStdGen = SMGen 712633246999323047 2532601429470541125})
+λ> Random.random (Random.mkStdGen 100) :: (Int, StdGen)
+(9216477508314497915,StdGen {unStdGen = SMGen 712633246999323047 2532601429470541125})
+#+end_src
+
+The random function can return a value of any type that's part of the Random typeclass, so we have to inform Haskell what kind of type we want. Also let's not forget that it returns a random value and a random generator in a pair.
+
+#+begin_quote
+More importantly, it is interesting to see the =Random.random= returns exactly the same number if it gets the same random generator. (it is to main the *referential transparency*) As a result, we can use the new generator that comes out of the previous step for the next "random number". However, a new problem emerges - every function call of the =Random.random= is *deterministic*, meaning it returns the same "random" number and the same "random generator". If we start from the same random generator and follow the previous steps, we could get the same list of the "random" numbers.
+#+end_quote
+
+** Bytestring
+
+Lists are a cool and useful data structure. So far, we've used them pretty much everywhere. There are a multitude of functions that operate on them and Haskell's laziness allows us to exchange the for and while loops of other languages for filtering and mapping over lists, because evaluation will only happen once it really needs to, so things like infinite lists (and even infinite lists of infinite lists!) are no problem for us. That's why lists can also be used to represent streams, either when reading from the standard input or when reading from files. We can just open a file and read it as a string, even though it will only be accessed when the need arises.
+
+That overhead doesn't bother us so much most of the time, but it turns out to be a liability when reading big files and manipulating them. That's why Haskell has bytestrings. Bytestrings are sort of like lists, only each element is one byte (or 8 bits) in size. The way they handle laziness is also different.
+
+=Bytestrings= come in two flavors: strict and lazy ones. Strict bytestrings reside in =Data.ByteString= and they do away with the laziness completely. There are no promises involved; a strict bytestring represents a series of bytes in an array. You can't have things like infinite strict bytestrings. If you evaluate the first byte of a strict bytestring, you have to evaluate it whole. The upside is that there's less overhead because there are no thunks (the technical term for promise) involved. The downside is that they're likely to fill your memory up faster because they're read into memory at once.
+
+The other variety of bytestrings resides in =Data.ByteString.Lazy=. They're lazy, but not quite as lazy as lists. Like we said before, there are as many thunks in a list as there are elements. That's what makes them kind of slow for some purposes. Lazy bytestrings take a different approach — they are stored in chunks (not to be confused with thunks!), each chunk has a size of 64K. So if you evaluate a byte in a lazy bytestring (by printing it or something), the first 64K will be evaluated. After that, it's just a promise for the rest of the chunks. Lazy bytestrings are kind of like lists of strict bytestrings with a size of 64K. When you process a file with lazy bytestrings, it will be read chunk by chunk. This is cool because it won't cause the memory usage to skyrocket and the 64K probably fits neatly into your CPU's L2 cache.
+
+/Whenever you need better performance in a program that reads a lot of data into strings, give bytestrings a try, chances are you'll get some good performance boosts with very little effort on your part. I usually write programs by using normal strings and then convert them to use bytestrings if the performance is not satisfactory./
+
 ** Exceptions
 
-Despite having expressive types that support failed computations, Haskell still has support for exceptions, because they make more sense in I/O contexts. A lot of things can go wrong when dealing with the outside world because it is so unreliable.
+Haskell has a very good type system. Algebraic data types allow for types like =Maybe= and =Either= and we can use values of those types to represent results that may be there or not. In C, returning, say, -1 on failure is completely a matter of convention. It only has special meaning to humans. If we're not careful, we might treat these abnormal values as ordinary ones and then they can cause havoc and dismay in our code. Haskell's type system gives us some much-needed safety in that aspect. A function =a -> Maybe b= clearly indicates that it it may produce a =b= wrapped in =Just= or that it may return =Nothing=. The type is different from just plain =a -> b= and if we try to use those two functions interchangeably, the compiler will complain at us.
+
+Despite having expressive types that support failed computations, Haskell still has support for exceptions, /because they make more sense in I/O contexts/. A lot of things can go wrong when dealing with the outside world because it is so unreliable.
 
 Earlier, we talked about how we should spend as little time as possible in the I/O part of our program. /The logic of our program should reside mostly within our pure functions, because their results are dependant only on the parameters that the functions are called with/. *When dealing with pure functions, you only have to think about what a function returns, because it can't do anything else*. This makes your life easier. Even though doing some logic in I/O is necessary (like opening files and the like), it should preferably be kept to a minimum. *Pure functions are lazy by default, which means that we don't know when they will be evaluated and that it really shouldn't matter*. However, /once pure functions start throwing exceptions, it matters when they are evaluated. That's why we can only catch exceptions thrown from pure functions in the I/O part of our code/. And that's bad, because we want to keep the I/O part as small as possible. However, if we don't catch them in the I/O part of our code, our program crashes. The solution? *Don't mix exceptions and pure code. Take advantage of Haskell's powerful type system and use types like =Either= and =Maybe= to represent results that may have failed*.

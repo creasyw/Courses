@@ -2,6 +2,7 @@ import Control.Monad as Monad
 import Data.Char as Char
 import Data.List as List
 import System.IO as IO
+import System.Random as Random
 
 reverseInput = do
     line <- IO.getLine
@@ -19,8 +20,16 @@ foreverDo = Monad.forever $ do
     IO.putStrLn $ map toUpper l
 
 -- I tried a one-liner =IO.putStrLn $ fmap Char.toUpper IO.getContents= and it
--- doesn't work. It seems that the IO:Stream has to have a place-holder for
--- further processing
+-- doesn't work. It is because the Char.toUpper is a "pure function" which could
+-- only work on Char, while the IO.getContents returns =IO String=. It needs the
+-- =<-= to convert the =IO String= to "regular" string
 foreverDo' = do
     l <- IO.getContents
     IO.putStrLn $ map Char.toUpper l
+
+
+threeCoins :: StdGen -> (Bool, Bool, Bool)
+threeCoins gen = (first, second, third)
+  where (first, newGen) = Random.random gen
+        (second, newGen') = Random.random newGen
+        (third, _) = Random.random newGen'
