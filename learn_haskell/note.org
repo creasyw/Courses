@@ -1,13 +1,3 @@
-* Functionally Solving Problems
-
-It really helps to first think what the type declaration of a function should be before concerning ourselves with the implementation and then write it down. In Haskell, a function's type declaration tells us a whole lot about the function, due to the very strong type system.
-
-we're going to solve a problem in three steps:
-
-1. Forget Haskell for a minute and think about how we'd solve the problem by hand
-2. Think about how we're going to represent our data in Haskell
-3. Figure out how to operate on that data in Haskell so that we produce at a solution
-
 * Functors, Applicative Functors and Monoids
 
 ** Functors redux
