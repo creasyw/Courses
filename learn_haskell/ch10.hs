@@ -1,10 +1,19 @@
 import Data.List as List
 
--- the `Maybe` makes teh function tolerate bad input
-solveRPN :: String -> Float
+-- The function could also use `Maybe` to make it tolerate bad input, but it
+-- would be a bit tedious because it would involve a lot of checking for
+-- =Nothing= on every step.
+--
+-- An interesting signature for the function, which doesn't have input parameter
+-- but only indicates its type in the type declaration. It uses the "curry" by
+-- default of the functions
+solveRPN :: (Floating a, Read a) => String -> a
 solveRPN = head . foldl foldingFunction [] . words
   where
     -- interesting to make the pattern matching within the =where=
+    -- ACTUALLY, the pattern matching is to the input parameter of a function
+    -- Also, the fold function amazingly behaves like a "stack", which could do
+    -- both push and pop and the operations in between
     foldingFunction (x : y : ys) "*"          = (x * y) : ys
     foldingFunction (x : y : ys) "+"          = (x + y) : ys
     foldingFunction (x : y : ys) "-"          = (x - y) : ys
