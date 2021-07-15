@@ -1,8 +1,20 @@
 * Functors, Applicative Functors and Monoids
 
-** Functors redux
+/Haskell's combination of purity, higher order functions, parameterized algebraic data types, and typeclasses allows us to implement polymorphism on a much higher level than possible in other languages/. We don't have to think about types belonging to a big hierarchy of types. Instead, we think about what the types can act like and then connect them with the appropriate typeclasses. An =Int= can act like a lot of things. It can act like an equatable thing, like an ordered thing, like an enumerable thing, etc.
 
-/Haskell's combination of purity, higher order functions, parameterized algebraic data types, and typeclasses allows us to implement polymorphism on a much higher level than possible in other languages/. *Typeclasses are open*, which means that we can define our own data type, think about what it can act like and connect it with the typeclasses that define its behaviors. Because of that and because of Haskell's great type system that allows us to know a lot about a function just by knowing its type declaration, /we can define typeclasses that define behavior that's very general and abstract/. (Right... _*everything starts from a typeclass*_)
+*Typeclasses are open*, which means that we can define our own data type, think about what it can act like and connect it with the typeclasses that define its behaviors. Because of that and because of Haskell's great type system that allows us to know a lot about a function just by knowing its type declaration, /we can define typeclasses that define behavior that's very general and abstract/. (Right... _*everything starts from a typeclass*_)
+
+#+begin_quote
+Why do Haskell functions need type signature?
+
+- when you have big Haskell programs, having type signatures often gives you better error messages from the compiler
+- sometime you can derive what a function does from its name and its signature
+- often a function is understandable a lot better with type signatures, e.g. if you make use of currying
+- *Peace of mind*. It's nice sometimes to make sure that the compiler agrees with your perception of what a function's type should be. If the inferred type doesn't unify with your given type, then the compiler will yell at you. Once you become familiar with the type system, you will find that optional type signatures can be a great boon to your coding confidence.
+  - even writing programs gets easier, I often start with type signatures and most functions declared as undefined. It everything compiles I know that my idea seems to fit not too bad. Then I go on and replace undefined by real code
+#+end_quote
+
+** Functors redux
 
 _Functors are things that can be mapped over_, like lists, =Maybe= s, trees, and such. In Haskell, they're described by the typeclass Functor, which has only one typeclass method, namely =fmap=, which has a type of =fmap :: (a -> b) -> f a -> f b=. It says:
 
@@ -23,7 +35,7 @@ fmap :: Functor f => (a -> b) -> f a -> f b
 
 (_this is something that might be wrong_... the reason we want to make a type constructor an instance of Functor is to make this constructor a "computational context" that can be extracted by =fmap= so that the construction can be re-applied from =a= to =b=. That is, if we've had the new type that is contructed with basic type =a=, then =fmap= comes handy to make the same construction with =b= along with some internal relationship that we want to impose as =(a -> b)=.)
 
-If we want to make a type constructor an instance of =Functor=, it has to have a kind of =* -> *=, which means that it /has to take exactly one concrete type as a type parameter/. For example, =Maybe= can be made an instance because it takes one type parameter to produce a concrete type, like =Maybe Int= or =Maybe String=. If a type constructor takes two parameters, like =Either=, we have to /partially apply the type constructor until it only takes one type parameter/. So we can only write =instance Functor (Either a) where= and then if we imagine that =fmap= is only for =Either a=, it would have a type declaration of =fmap :: (b -> c) -> Either a b -> Either a c=.
+If we want to make a type constructor an instance of =Functor=, it has to have a kind of =* -> *=, which means that it /has to take exactly *one concrete type* as a type parameter/. For example, =Maybe= can be made an instance because it takes one type parameter to produce a concrete type, like =Maybe Int= or =Maybe String=. If a type constructor takes two parameters, like =Either=, we have to /partially apply the type constructor until it only takes one type parameter/. So we can only write =instance Functor (Either a) where= and then if we imagine that =fmap= is only for =Either a=, it would have a type declaration of =fmap :: (b -> c) -> Either a b -> Either a c=.
 
 #+begin_src haskell
 instance Functor IO where
@@ -32,9 +44,9 @@ instance Functor IO where
         return (f result)
 #+end_src
 
-The result of mapping something over an I/O action will be an I/O action, so right off the bat we use =do= syntax to glue two actions and make a new one. In the implementation for =fmap=, we make a new I/O action that first performs the original I/O action and calls its result =result=. Then, we do =return (f result)=. =return= is a function that /makes an I/O action that doesn't do anything but only presents something as its result/. (In other words, =fmap= is the way for Haskell to get around the inpurity of I/O to apply a "pure" function to the data within the "inpure" I/O box.)
+/The result of mapping something over an I/O action will be an I/O action/, so right off the bat we use =do= syntax to glue two actions and make a new one. In the implementation for =fmap=, we make a new I/O action that first performs the original I/O action and calls its result =result=. Then, we do =return (f result)=. =return= is a function that /makes an I/O action that doesn't do anything but only presents something as its result/. (In other words, =fmap= is the way for Haskell to get around the inpurity of I/O to apply a "pure" function to the data within the "inpure" I/O box. /I guess/ its intention is to make the necessary "functional" operations with the IO actions so that we could have a cleaner/easier line between pure and inpure parts of the code.)
 
-If we look at what =fmap='s type would be if it were limited to =IO=, it would be =fmap :: (a -> b) -> IO a -> IO b=. =fmap= takes a function and an I/O action and returns a new I/O action that's like the old one, except that the function is applied to its contained result. /If you ever find yourself binding the result of an I/O action to a name, only to apply a function to that and call that something else/ (yes, it almost killed me...), consider using =fmap=, because it looks *prettier* (seriously?). If you want to apply multiple transformations to some data inside a functor, /you can declare your own function at the top level/, make a lambda function or ideally, use function composition.
+If we look at what =fmap='s type would be if it were limited to =IO=, it would be =fmap :: (a -> b) -> IO a -> IO b=. =fmap= takes a function and an I/O action and returns a new I/O action that's like the old one, except that the function is applied to its contained result. /If you ever find yourself binding the result of an I/O action to a name, only to apply a function to that and call that something else/, consider using =fmap=, because it looks *prettier*. If you want to apply multiple transformations to some data inside a functor, /you can declare your own function at the top level/, make a lambda function or ideally, use function composition. (I might use it to deal with the input file from Project Euler.)
 
 #+begin_src haskell
 import Data.Char
@@ -45,12 +57,34 @@ main = do line <- fmap (intersperse '-' . reverse . map toUpper) getLine
           putStrLn line
 #+end_src
 
+Another instance of Functor that we've been dealing with all along but didn't know was a Functor is =(->) r=. You're probably slightly confused now, since what the heck does =(->) r= mean? The function type =r -> a= can be rewritten as =(->) r a=, much like we can write =2 + 3= as =(+) 2 3=. When we look at it as =(->) r a=, we can see =(->)= in a slighty different light, because we see that it's just a type constructor that takes two type parameters, just like =Either=. But remember, we said that /a type constructor has to take exactly one type parameter so that it can be made an instance of Functor/. That's why we can't make =(->)= an instance of Functor, but if we partially apply it to =(->) r=, it doesn't pose any problems. If the syntax allowed for type constructors to be partially applied with sections (like we can partially apply =+= by doing =(2+)=, which is the same as =(+) 2=), you could write =(->) r= as =(r= ->). (NOW, the term of "computational context makes more sense - the =(2+)= is exactly one kind of computational context.)
+
 #+begin_src haskell
 instance Functor ((->) r) where
     fmap f g = (\x -> f (g x))
 #+end_src
 
-What we get now is =fmap :: (a -> b) -> (r -> a) -> (r -> b)=. /Mapping one function over a function has to produce a function/, just like mapping a function over a =Maybe= has to produce a =Maybe= and mapping a function over a list has to produce a list. What does the type =fmap :: (a -> b) -> (r -> a) -> (r -> b)= for this instance tell us? Well, we see that it takes a function from =a= to =b= and a function from =r= to =a= and returns a function from =r= to =b=. /It is the same as Function composition/! We pipe the output of =r -> a= into the input of =a -> b= to get a function =r -> b=, (It also means the second function =r -> a= first applies to the input variable, which is missing in this signature, and then =a -> b= applies. /It also means we can use function to apply not only to data but also to another function/. And, *it also means the function composition =.= is a functor*.
+What we get now is =fmap :: (a -> b) -> (r -> a) -> (r -> b)=. /Mapping one function over a function has to produce a function/, just like mapping a function over a =Maybe= has to produce a =Maybe= and mapping a function over a list has to produce a list. What does the type =fmap :: (a -> b) -> (r -> a) -> (r -> b)= for this instance tell us? Well, we see that it takes a function from =a= to =b= and a function from =r= to =a= and returns a function from =r= to =b=. /It is the same as *Function composition*/! We pipe the output of =r -> a= into the input of =a -> b= to get a function =r -> b=, (It also means the second function =r -> a= first applies to the input variable, which is missing in this signature, and then =a -> b= applies. /It also means we can use function to apply not only to data but also to another function/. And, *it also means the function composition =.= is a functor*.
+
+#+begin_src haskell
+λ> :t fmap
+fmap :: Functor f => (a -> b) -> f a -> f b
+λ> :t fmap (*3)
+fmap (*3) :: (Functor f, Num b) => f b -> f b
+λ> :t fmap (*3) (+100)
+fmap (*3) (+100) :: Num b => b -> b
+λ> fmap (*3) (+100) 1
+303
+λ>
+-- More interesting thing:
+λ> :t (+)
+(+) :: Num a => a -> a -> a
+λ> :t (+100)
+(+100) :: Num a => a -> a
+-- In this example, (+100) is a "computational context", aka. instance of
+-- Functor. So as (*3). The former one is the =r -> a= in the previous
+-- paragraph, and the latter one is =a -> b=. The final result is =r -> b=.
+#+end_src
 
 You can think of =fmap= as either _a function that takes a function and a functor and then maps that function over the functor_, or you can think of it as _a function that takes a function and lifts that function so that it operates on functors_. Both views are correct and in Haskell, equivalent.
 
