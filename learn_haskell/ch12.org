@@ -94,4 +94,22 @@ In this section, we took some functions that we had and saw that they would work
 
 ** do notation
 
-In a =do= expression, every line is a monadic value.
+In a =do= expression, every line is a monadic value. Because =do= expressions are written line by line, they may look like imperative code to some people. But the thing is, they're just sequential, as each value in each line relies on the result of the previous ones, along with their contexts (in this case, whether they succeeded or failed).
+
+When to use do notation and when to explicitly use >>= is up to you.
+
+In do notation, when we bind monadic values to names, we can utilize pattern matching, just like in let expressions and function parameters. Here's an example of pattern matching in a do expression:
+
+#+begin_src haskell
+  justH :: Maybe Char
+  justH = do
+    (x:xs) <- Just "hello"
+    return x
+#+end_src
+
+What if this pattern matching were to fail? When matching on a pattern in a function fails, the next pattern is matched. If the matching falls through all the patterns for a given function, an error is thrown and our program crashes. On the other hand, failed pattern matching in =let= expressions results in an error being produced right away, because the mechanism of falling through patterns isn't present in =let= expressions. When pattern matching fails in a =do= expression, the =fail= function is called. It's part of the Monad type class and it enables failed pattern matching to result in a failure in the context of the current monad instead of making our program crash. Its default implementation is this:
+
+#+begin_src haskell
+  fail :: (Monad m) => String -> m a
+  fail msg = error msg
+#+end_src
