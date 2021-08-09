@@ -1,0 +1,97 @@
+* A Fistful of Monads
+
+When we first talked about functors, we saw that they were a useful concept for values that can be mapped over. Then, we took that concept one step further by introducing applicative functors, which allow us to view values of certain data types as values with contexts and use normal functions on those values while preserving the meaning of those contexts.
+
+Monads are just beefed up applicative functors, much like applicative functors are only beefed up functors.
+
+The Functor type class was to answer the question: when we have a function of type =a -> b= and some data type =f a=, how do we map that function over the data type to end up with =f b=? We saw how to map something over a =Maybe a=, a list =[a]=, an =IO a= etc. We even saw how to map a function =a -> b= over other functions of type =r -> a= to get functions of type =r -> b=.
+
+#+begin_src haskell
+fmap :: (Functor f) => (a -> b) -> f a -> f b
+#+end_src
+
+Then we saw a possible improvement of functors and said, hey, what if that function =a -> b= is already wrapped inside a functor value? Like, what if we have =Just (*3)=, how do we apply that to =Just 5=? What if we don't want to apply it to =Just 5= but to a =Nothing= instead? Or if we have =[(*2),(+4)]=, how would we apply that to =[1,2,3]=? How would that work even? For this, the Applicative type class was introduced
+
+#+begin_src haskell
+(<*>) :: (Applicative f) => f (a -> b) -> f a -> f b
+#+end_src
+
+We also saw that we can take a normal value and wrap it inside a data type. For instance, we can take a 1 and wrap it so that it becomes a Just 1. Or we can make it into a [1]. Or an I/O action that does nothing and just yields 1. The function that does this is called =pure=.
+
+*An applicative value can be seen as a value with an added context*. It was neat to see how the Applicative type class allowed us to use normal functions on these values with context and how that context was preserved.
+
+Monads are a natural extension of applicative functors and with them we're concerned with this: if you have a value with a context, =m a=, how do you apply to it a function that takes a normal =a= and returns =a= value with a context? That is, how do you apply a function of type =a -> m b= to a value of type =m a=? or, "*if we have a fancy value and a function that takes a normal value but returns a fancy value, how do we feed that fancy value into the function*"? The =>>== function is pronounced as =bind=.
+
+#+begin_src haskell
+(>>=) :: (Monad m) => m a -> (a -> m b) -> m b
+#+end_src
+
+When we use the applicative style to have normal functions act on Maybe values, it's similar. All the values have to be Just values, otherwise it's all for Nothing!
+
+#+begin_src haskell
+  -- one of the best example for applicative functor
+  ghci> max <$> Just 3 <*> Just 6
+  Just 6
+  ghci> max <$> Just 3 <*> Nothing
+  Nothing
+#+end_src
+
+>>= takes a monadic value, and a function that takes a normal value and returns a monadic value and manages to apply that function to the monadic value. How does it do that, if the function takes a normal value? Well, to do that, it has to take into account the context of that monadic value.
+
+#+begin_src haskell
+ghci> (\x -> Just (x+1)) 1
+Just 2
+ghci> (\x -> Just (x+1)) 100
+Just 101
+#+end_src
+
+** The Monad type class
+
+#+begin_src haskell
+  class Monad m where
+      -- It takes a value and puts it in a minimal default context that still
+      -- holds that value. In other words, it takes something and wraps it in a
+      -- monad. It always does the same thing as the pure function from the
+      -- Applicative type class
+      return :: a -> m a
+
+      -- It's like function application, only instead of taking a normal value
+      -- and feeding it to a normal function, it takes a monadic value (that is,
+      -- a value with a context) and feeds it to a function that takes a normal
+      -- value but returns a monadic value.
+      (>>=) :: m a -> (a -> m b) -> m b
+
+      (>>) :: m a -> m b -> m b
+      x >> y = x >>= \_ -> y
+
+      -- It is seldom used explicitly in our code. Instead, it's used by Haskell
+      -- to enable failure in a special syntactic construct for monads
+      fail :: String -> m a
+      fail msg = error msg
+#+end_src
+
+Note that =return= is nothing like the =return= that's in most other languages. It doesn't end function execution or anything, it just *takes a normal value and puts it in a context*. (Both =applicative= and so as =monad= are to open doors for more general operations and functions. One extra interesting thing of the =monad= that is different from the regular =applicative= is the =fail=. It is another way to gracefully handle the failures for the given type class, especially when there are function concatenations - the next function needs to apply itself to the value within the context but also handle the failure that passes by the previous function.)
+
+** Walk the line
+
+#+begin_src haskell
+  -- This definition is nuts
+  x -: f = f x
+#+end_src
+
+#+begin_src haskell
+  ghci> 100 -: (*3)
+  300
+  ghci> True -: not
+  False
+  ghci> (0,0) -: landLeft 2
+    (2,0)
+#+end_src
+
+(Please refer to the example. It is great.) We couldn't have achieved this by just using Maybe as an applicative. If you try it, you'll get stuck, because applicative functors don't allow for the applicative values to interact with each other very much. They can, at best, be used as parameters to a function by using the applicative style. The applicative operators will fetch their results and feed them to the function in a manner appropriate for each applicative and then put the final applicative value together, but *there isn't that much interaction going on between them* (*this is the major improvement of =monad= over applicative*). Here, however, each step relies on the previous one's result. On every landing, the possible result from the previous one is examined and the pole is checked for balance. This determines whether the landing will succeed or fail.
+
+In this section, we took some functions that we had and saw that they would work better if the values that they returned supported failure. By turning those values into Maybe values and replacing normal function application with >>=, we got a mechanism for handling failure pretty much for free, because >>= is supposed to preserve the context of the value to which it applies functions. In this case, the context was that our values were values with failure and so when we applied functions to such values, the possibility of failure was always taken into account.
+
+** do notation
+
+In a =do= expression, every line is a monadic value.
