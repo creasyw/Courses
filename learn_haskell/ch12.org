@@ -113,3 +113,56 @@ What if this pattern matching were to fail? When matching on a pattern in a func
   fail :: (Monad m) => String -> m a
   fail msg = error msg
 #+end_src
+
+** The list monad
+
+In this section, we're going to take a look at how to use the monadic aspects of lists to *bring non-determinism into our code in a clear and readable manner*. A value like 5 is deterministic. It has only one result and we know exactly what it is. On the other hand, a value like [3,8,9] contains several results, so we can view it as one value that is actually many values at the same time.
+
+#+begin_src haskell
+  instance Monad [] where
+    return x = [x]
+    xs >>= f = concat (map f xs)
+    fail _ = []
+#+end_src
+
+#+begin_src haskell
+  λ> return 10 :: [] Int
+  [10]
+  -- like a sick version of list comprehension
+  λ> [2, 3, 4] >>= \x -> [x, x*2]
+  [2,4,3,6,4,8]
+#+end_src
+
+#+begin_src haskell
+  -- this is an interesting example
+  λ> [1,2] >>= \n -> ['a','b'] >>= \ch -> return (n,ch)
+  [(1,'a'),(1,'b'),(2,'a'),(2,'b')]
+  λ> [1,2] >>= \n -> ['a','b']
+  "abab"
+  -- Note that the following function has error. It means the two functions use
+  -- the same =n=... like enclosure in the monad
+  λ> [1,2] >>= \ch -> return (n,ch)
+
+  <interactive>:257:26: error: Variable not in scope: n
+
+  -- OR, we can do the following...
+  λ> [ (n,ch) | n <- [1,2], ch <- ['a','b'] ]
+  [(1,'a'),(1,'b'),(2,'a'),(2,'b')]
+
+  -- it equals to the function below
+  listOfTuples :: [(Int,Char)]
+    listOfTuples = do
+    n <- [1,2]
+    ch <- ['a','b']
+    return (n,ch)
+#+end_src
+
+In fact, *list comprehensions are just syntactic sugar for using lists as monads* (?!!!!!!!!!!!!!!!!!!!). In the end, list comprehensions and lists in do notation translate to using >>= to do computations that feature non-determinism.
+
+** Monad laws
+
+Haskell allows any type to be an instance of any type class as long as the types check out. It can't check if the monad laws hold for a type though, so if we're making a new instance of the Monad type class, we have to be reasonably sure that all is well with the monad laws for that type. We can rely on the types that come with the standard library to satisfy the laws, but later when we go about making our own monads, we're going to have to manually check the if the laws hold. But don't worry, they're not complicated.
+
+1. =return x >>= f= is the same damn thing as =f x=
+2. =m >>= return= is no different than just =m=
+3. Doing =(m >>= f) >>= g= is just like doing =m >>= (\x -> f x >>= g)=
