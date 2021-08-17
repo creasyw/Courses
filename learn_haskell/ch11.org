@@ -220,3 +220,7 @@ Whereas data can be used to make your own types from scratch, newtype is for mak
 ** Monoids
 
 A monoid is when you have an associative binary function and a value which acts as an identity with respect to that function. When something acts as an identity with respect to a function, it means that when called with that function and some other value, the result is always equal to that other value.
+
+- The function takes two parameters.
+- The parameters and the returned value have the same type.
+- There exists such a value that doesn't change other values when used with the binary function.

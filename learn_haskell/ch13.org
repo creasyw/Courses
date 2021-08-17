@@ -1,0 +1,41 @@
+* For a Few Monads More
+
+Monads are "using =>>== or =do= notation to *focus on the values themselves while the context gets handled for us*". We've met the =Maybe= monad and seen how it adds a context of possible failure to values (I think this is one of the places that the Haskell does way better than Go - it takes advantage of the Monads =Maybe= and =Either= to gracefully handle the results with potential errors). We've learned about the list monad and saw how it lets us easily introduce non-determinism into our programs.
+
+** Writer
+
+Whereas Maybe is for values with an added context of failure and the list is for non-deterministic values, the Writer monad is for values that have another value attached that acts as a sort of log value. Writer allows us to do computations while making sure that all the log values are combined into one log value that then gets attached to the result.
+
+** Reader
+
+We see that the reader monad allows us to treat functions as values with a context. We can act as if we already know what the functions will return. It does this by gluing functions together into one function and then giving that function's parameter to all of the functions that it was glued from. So if we have a lot of functions that are all just missing one parameter and they'd eventually be applied to the same thing, we can use the reader monad to sort of extract their future results and the >>= implementation will make sure that it all works out.
+
+** State
+
+Some problems are inherently stateful in that they rely on some state that changes over time. While such problems aren't a problem for Haskell, they can be a bit tedious to model sometimes. That's why Haskell features a thing called the state monad, which makes dealing with stateful problems a breeze while still keeping everything nice and pure.
+
+This stateful computation, a function that takes a state and returns a result and a new state, can be thought of as a value with a context as well.
+
+#+begin_quote
+The "computational context" can be data structure (tree, list), functions, or state. Monad is able to strip the context, operate on the data, and eventually update its contexgt and put the data back into it.
+#+end_quote
+
+** Error error on the wall
+
+We know by now that =Maybe= is used to add a context of possible failure to values. A value can be a =Just= something or a =Nothing=. However useful it may be, when we have a Nothing, all we know is that there was some sort of failure, but there's no way to cram some more info in there telling us what kind of failure it was or why it failed.
+
+The =Either= e a type on the other hand, allows us to incorporate a context of possible failure to our values while also being able to attach values to the failure, so that they can describe what went wrong or provide some other useful info regarding the failure. An =Either= e a value can either be a =Right= value, signifying the right answer and a success, or it can be a =Left= value, signifying failure.
+
+The =>>== examines two possible cases: a =Left= and a =Right=. In the case of a =Right=, the function f is applied to the value inside it, similar to how in the case of a =Just=, the function is just applied to its contents. In the case of an error, the =Left= value is kept, along with its contents, which describe the failure.
+
+** Some useful monadic functions
+
+When we started our journey to the top of Monad Mountain, we first looked at functors, which are for things that can be mapped over. Then, we learned about improved functors called applicative functors, which allowed us to apply normal functions between several applicative values as well as to take a normal value and put it in some default context. Finally, we introduced monads as improved applicative functors, which added the ability for these values with context to somehow be fed into normal functions.
+
+So every monad is an applicative functor and every applicative functor is a functor. The =Applicative= type class has a class constraint such that our type has to be an instance of =Functor= before we can make it an instance of =Applicative=. But even though =Monad= should have the same constraint for =Applicative=, as every monad is an applicative functor, it doesn't, because the =Monad= type class was introduced to Haskell way before =Applicative=.
+
+But even though every monad is a functor, we don't have to rely on it having a =Functor= instance because of the =liftM= function. =liftM= takes a function and a monadic value and maps it over the monadic value. So it's pretty much the same thing as =fmap=!
+
+** Making monads
+
+We don't usually set out to make a monad with the sole purpose of making a monad. Instead, we usually make a type that whose purpose is to model an aspect of some problem and then later on if we see that the type represents a value with a context and can act like a monad, we give it a Monad instance.
