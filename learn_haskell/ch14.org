@@ -1,3 +1,0 @@
-* Zippers
-
-While Haskell's purity comes with a whole bunch of benefits, it makes us tackle some problems differently than we would in impure languages. Because of referential transparency, one value is as good as another in Haskell if it represents the same thing.
