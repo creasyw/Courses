@@ -38,9 +38,9 @@ Mutators take a reference to a list as first arg.
 /* Representation of a word count object.
    Includes next field for constructing singly linked list*/
 struct word_count {
-    char *word;
-    int count;
-    struct word_count *next;
+	char *word;
+	int count;
+	struct word_count *next;
 };
 
 /* Introduce a type name for the struct */
@@ -70,5 +70,3 @@ void wordcount_insert_ordered(WordCount **wclist, WordCount *elem, bool less(con
 void wordcount_sort(WordCount **wclist, bool less(const WordCount *, const WordCount *));
 
 #endif /* word_count_h */
-
-
