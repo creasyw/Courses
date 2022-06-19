@@ -1,0 +1,5 @@
+* HW 0
+
+In C, header files (suffixed by .h) are how we engineer abstractions. They define the objects, types, methods, and—most importantly—documentation. The corresponding .c file provides the implementation of the abstraction. You should be able to write code with the header file without peeking under the covers at its implementation.
+
+In this case, words/word_count.h provides the definition of the word_count struct, which we will use as a linked list to keep track of a word and its frequency. This has been typedef’d into WordCount. This means that instead of typing out struct word_count, we can use WordCount as shorthand. The header file also gives us a list of functions that are defined in words/word_count.c. Part of this assignment is to write code for these functions in words/word_count.c.
