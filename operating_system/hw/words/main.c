@@ -57,6 +57,8 @@ int num_words(FILE* infile) {
  * Useful functions: fgetc(), isalpha(), tolower(), add_word().
  */
 void count_words(WordCount **wclist, FILE *infile) {
+	char ch;
+
 }
 
 /*
@@ -132,9 +134,11 @@ int main (int argc, char *argv[]) {
 		// The first file can be found at argv[optind]. The last file can be
 		// found at argv[argc-1].
 		for (int i = optind; i < argc; i++) {
-			infile = fopen(argv[i]);
-			count_words(&word_counts, infile);
-			fclose(infile);
+			infile = fopen(argv[i], "r");
+			if (infile) {
+				count_words(&word_counts, infile);
+				fclose(infile);
+			}
 		}
 	}
 
