@@ -60,26 +60,25 @@ int num_words(FILE* infile) {
 void count_words(WordCount **wclist, FILE *infile) {
 	char word[100];
 	int counter = 0;
-	WordCount* wc = *wclist;
 	char* new_word = NULL;
 
-	word[counter] = fgetc(infile);
-	while( word[counter] != EOF) {
-		printf("Now we're at %d - %c\n", counter, word[counter]);
+	word[counter] = tolower(fgetc(infile));
+	while( (word[counter]) != EOF) {
 		if (!isalpha(word[counter])) {
-			new_word = (char *) malloc((counter - 1) * sizeof(char));
-			strncpy(new_word, word, counter - 1);
-			add_word(&wc, new_word);
-			counter = -1;
-		}
-		counter++;
-		word[counter] = fgetc(infile);
+			printf("The current word has length - %d\n", counter);
+			new_word = (char *) malloc(counter * sizeof(char));
+			strncpy(new_word, word, counter);
+			add_word(wclist, new_word);
+			counter = 0;
+		} else
+			counter++;
+		word[counter] = tolower(fgetc(infile));
 	}
-	if (!counter && counter != -1) {
+	if (!counter && counter != 0) {
 		printf("here??? - %d", counter);
 		new_word = (char *) malloc((counter - 1) * sizeof(char));
 		strncpy(new_word, word, counter - 1);
-		add_word(&wc, new_word);
+		add_word(wclist, new_word);
 	}
 }
 
@@ -164,17 +163,14 @@ int main (int argc, char *argv[]) {
 		}
 	}
 
-	print_words(word_counts);
+	total_words = len_words(word_counts);
+	if (count_mode) {
+		printf("The total number of words is: %i\n", total_words);
+	} else {
+		wordcount_sort(&word_counts, wordcount_less);
 
-	/*
-	  if (count_mode) {
-	  printf("The total number of words is: %i\n", total_words);
-	  } else {
-	  wordcount_sort(&word_counts, wordcount_less);
-
-	  printf("The frequencies of each word are: \n");
-	  fprint_words(word_counts, stdout);
-	  }
-	 */
+		printf("The frequencies of each word are: \n");
+		fprint_words(word_counts, stdout);
+	}
 	return 0;
 }

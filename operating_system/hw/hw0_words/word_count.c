@@ -44,11 +44,16 @@ size_t len_words(WordCount *wchead) {
 	return len;
 }
 
+// return either the node with the matched word or the last word if the search
+// fails
 WordCount *find_word(WordCount *wchead, char *word) {
 	/* Return count for word, if it exists */
 	WordCount *wc = wchead;
-	if (!wchead)
+
+	if (!wchead) {
+		printf("Empty wchead\n");
 		return wc;
+	}
 
 	while (wc->next) {
 		if (strcmp(wc->word, word) == 0)
@@ -59,13 +64,24 @@ WordCount *find_word(WordCount *wchead, char *word) {
 }
 
 void add_word(WordCount **wclist, char *word) {
-	/* If word is present in word_counts list, increment the count, otw insert with count 1. */
+	/* If word is present in word_counts list, increment the count, otw
+	insert with count 1. */
 	WordCount *wc = find_word(*wclist, word);
+	WordCount *new_word;
+	// wc is the start of the wclist in this case
 	if (!wc) {
-		printf("Find the words?\n");
+		// wc points to a new place as the newly allocated WordCount
 		wc = (WordCount *) malloc(sizeof(WordCount));
 		wc->word = word;
 		wc->count = 1;
+		// put it back to the wclist
+		*wclist = wc;
+	} else if (strcmp(word, wc->word)) {
+		printf("Find a new words\n");
+		new_word = (WordCount *) malloc(sizeof(WordCount));
+		new_word->word = word;
+		new_word->count = 1;
+		wc->next = new_word;
 	} else {
 		wc->count++;
 	}
