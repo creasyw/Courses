@@ -63,6 +63,9 @@ void add_word(WordCount **wclist, char *word);
 /* print word counts to a file */
 void fprint_words(WordCount *wchead, FILE *ofile);
 
+/* print the words in the stdout */
+void print_words(WordCount *wchead);
+
 /* Inserts a word into the list in order. Assumes the existing list is already sorted */
 void wordcount_insert_ordered(WordCount **wclist, WordCount *elem, bool less(const WordCount *, const WordCount *));
 

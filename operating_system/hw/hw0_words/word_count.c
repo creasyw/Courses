@@ -62,18 +62,12 @@ void add_word(WordCount **wclist, char *word) {
 	/* If word is present in word_counts list, increment the count, otw insert with count 1. */
 	WordCount *wc = find_word(*wclist, word);
 	if (!wc) {
+		printf("Find the words?\n");
 		wc = (WordCount *) malloc(sizeof(WordCount));
 		wc->word = word;
 		wc->count = 1;
 	} else {
-		if (strcmp(wc->word, word) == 0)
-			wc->count++;
-		else {
-			wc->next = (WordCount *) malloc(sizeof(WordCount));
-			wc = wc->next;
-			wc->word = word;
-			wc->count = 1;
-		}
+		wc->count++;
 	}
 }
 
@@ -82,5 +76,13 @@ void fprint_words(WordCount *wchead, FILE *ofile) {
 	WordCount *wc;
 	for (wc = wchead; wc; wc = wc->next) {
 		fprintf(ofile, "%i\t%s\n", wc->count, wc->word);
+	}
+}
+
+void print_words(WordCount *wchead) {
+	/* print word counts to a file */
+	WordCount *wc;
+	for (wc = wchead; wc; wc = wc->next) {
+		printf("%i\t%s\n", wc->count, wc->word);
 	}
 }
