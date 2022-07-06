@@ -50,10 +50,8 @@ WordCount *find_word(WordCount *wchead, char *word) {
 	/* Return count for word, if it exists */
 	WordCount *wc = wchead;
 
-	if (!wchead) {
-		printf("Empty wchead\n");
+	if (!wchead)
 		return wc;
-	}
 
 	while (wc->next) {
 		if (strcmp(wc->word, word) == 0)
@@ -77,7 +75,6 @@ void add_word(WordCount **wclist, char *word) {
 		// put it back to the wclist
 		*wclist = wc;
 	} else if (strcmp(word, wc->word)) {
-		printf("Find a new words\n");
 		new_word = (WordCount *) malloc(sizeof(WordCount));
 		new_word->word = word;
 		new_word->count = 1;
