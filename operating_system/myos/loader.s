@@ -16,6 +16,7 @@
 
 loader:
   mov $kernel_stack, %esp
+  call kernelMain
 
 
 _stop:
